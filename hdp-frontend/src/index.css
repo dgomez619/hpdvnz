@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  /* Elegant, deep colors instead of pure black */
+  --color-brand-charcoal: #1a1a1a;
+  --color-brand-gold: #c5a059;
+  --color-brand-cream: #f9f7f2;
+
+  /* Sophisticated Serif for headings, Clean Sans for UI */
+  --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}

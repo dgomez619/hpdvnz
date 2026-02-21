@@ -1,0 +1,107 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+const AVAILABLE_CITIES = ['Valencia', 'Lecheria', 'Chiciriviche', 'Tinaquillo'];
+
+export const SearchTab = () => {
+  const { t } = useTranslation();
+  
+  // State Management
+  const [cityOpen, setCityOpen] = useState(false);
+  const [guestOpen, setGuestOpen] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('');
+  const [guests, setGuests] = useState(1);
+  const [dates, setDates] = useState({ checkIn: '', checkOut: '' });
+
+  return (
+    <div className="mx-auto flex w-full flex-col divide-y divide-gray-100 rounded-xl bg-white p-2 shadow-2xl md:flex-row md:divide-x md:divide-y-0 relative">
+      
+      {/* 1. Location Dropdown */}
+      <div className="relative flex-1">
+        <div 
+          onClick={() => { setCityOpen(!cityOpen); setGuestOpen(false); }}
+          className="flex h-full flex-col items-start px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+        >
+          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.location')}</label>
+          <span className={`mt-1 font-medium ${selectedCity ? 'text-slate-900' : 'text-slate-400'}`}>
+            {selectedCity || t('search.placeholder_location')}
+          </span>
+        </div>
+        {cityOpen && (
+          <div className="absolute top-full left-0 mt-2 w-full min-w-[200px] rounded-lg bg-white shadow-xl ring-1 ring-black/5 z-30">
+            {AVAILABLE_CITIES.map((city) => (
+              <button key={city} onClick={() => { setSelectedCity(city); setCityOpen(false); }}
+                className="w-full px-6 py-3 text-left text-sm text-slate-700 hover:bg-slate-50 hover:text-brand-gold transition-colors">
+                {city}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 2. Date Picker (Simplified for MVP) */}
+      <div className="flex flex-1 flex-col items-start px-6 py-4 hover:bg-gray-50 transition-colors">
+        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.dates')}</label>
+        <div className="flex gap-2 mt-1">
+          <input 
+            type="date" 
+            className="bg-transparent text-sm font-medium text-slate-900 outline-none"
+            onChange={(e) => setDates({...dates, checkIn: e.target.value})}
+          />
+          <span className="text-slate-300">-</span>
+          <input 
+            type="date" 
+            className="bg-transparent text-sm font-medium text-slate-900 outline-none"
+            onChange={(e) => setDates({...dates, checkOut: e.target.value})}
+          />
+        </div>
+      </div>
+
+      {/* 3. Guest Selector */}
+      <div className="relative flex-1">
+        <div 
+          onClick={() => { setGuestOpen(!guestOpen); setCityOpen(false); }}
+          className="flex h-full flex-col items-start px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+        >
+          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.guests')}</label>
+          <span className="mt-1 font-medium text-slate-900">{guests} {guests === 1 ? t('search.guest') : t('search.guests_plural')}</span>
+        </div>
+        {guestOpen && (
+          <div className="absolute top-full right-0 mt-2 w-56 rounded-xl border border-black/10 bg-white p-4 shadow-2xl ring-1 ring-black/5 z-30">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">
+                {t('search.how_many')}
+              </span>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setGuests(Math.max(1, guests - 1))}
+                  className="h-7 w-7 rounded-full border border-slate-300 text-slate-700 flex items-center justify-center hover:border-slate-400 hover:bg-slate-100"
+                >
+                  -
+                </button>
+                <span className="text-base font-bold text-slate-900">{guests}</span>
+                <button
+                  onClick={() => setGuests(guests + 1)}
+                  className="h-7 w-7 rounded-full border border-slate-300 text-slate-700 flex items-center justify-center hover:border-slate-400 hover:bg-slate-100"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => setGuestOpen(false)}
+              className="mt-5 w-full rounded-md bg-slate-900 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white hover:bg-slate-800 active:scale-95"
+            >
+              Apply
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 4. Search Button */}
+      <button className="bg-slate-900 px-10 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-slate-800 transition-all active:scale-95">
+        {t('search.button')}
+      </button>
+    </div>
+  );
+};
