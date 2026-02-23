@@ -14,24 +14,24 @@ export const SearchTab = () => {
   const [dates, setDates] = useState({ checkIn: '', checkOut: '' });
 
   return (
-    <div className="mx-auto flex w-full flex-col divide-y divide-gray-100 rounded-xl bg-white p-2 shadow-2xl md:flex-row md:divide-x md:divide-y-0 relative">
+    <div className="relative mx-auto flex w-full flex-col divide-y divide-gray-100 rounded-xl bg-white p-2 shadow-2xl md:flex-row md:divide-x md:divide-y-0">
       
       {/* 1. Location Dropdown */}
       <div className="relative flex-1">
         <div 
           onClick={() => { setCityOpen(!cityOpen); setGuestOpen(false); }}
-          className="flex h-full flex-col items-start px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+          className="flex h-full cursor-pointer flex-col items-start px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4"
         >
           <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.location')}</label>
-          <span className={`mt-1 font-medium ${selectedCity ? 'text-slate-900' : 'text-slate-400'}`}>
+          <span className={`mt-1 text-sm font-medium sm:text-base ${selectedCity ? 'text-slate-900' : 'text-slate-400'}`}>
             {selectedCity || t('search.placeholder_location')}
           </span>
         </div>
         {cityOpen && (
-          <div className="absolute top-full left-0 mt-2 w-full min-w-[200px] rounded-lg bg-white shadow-xl ring-1 ring-black/5 z-30">
+          <div className="absolute top-full left-0 z-30 mt-2 w-full min-w-0 rounded-lg bg-white shadow-xl ring-1 ring-black/5 md:min-w-[200px]">
             {AVAILABLE_CITIES.map((city) => (
               <button key={city} onClick={() => { setSelectedCity(city); setCityOpen(false); }}
-                className="w-full px-6 py-3 text-left text-sm text-slate-700 hover:bg-slate-50 hover:text-brand-gold transition-colors">
+                className="w-full px-4 py-3 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-brand-gold sm:px-6">
                 {city}
               </button>
             ))}
@@ -40,18 +40,18 @@ export const SearchTab = () => {
       </div>
 
       {/* 2. Date Picker (Simplified for MVP) */}
-      <div className="flex flex-1 flex-col items-start px-6 py-4 hover:bg-gray-50 transition-colors">
+      <div className="flex flex-1 flex-col items-start px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4">
         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.dates')}</label>
-        <div className="flex gap-2 mt-1">
+        <div className="mt-1 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
           <input 
             type="date" 
-            className="bg-transparent text-sm font-medium text-slate-900 outline-none"
+            className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-900 outline-none"
             onChange={(e) => setDates({...dates, checkIn: e.target.value})}
           />
-          <span className="text-slate-300">-</span>
+          <span className="hidden text-slate-300 sm:inline">-</span>
           <input 
             type="date" 
-            className="bg-transparent text-sm font-medium text-slate-900 outline-none"
+            className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-900 outline-none"
             onChange={(e) => setDates({...dates, checkOut: e.target.value})}
           />
         </div>
@@ -61,13 +61,13 @@ export const SearchTab = () => {
       <div className="relative flex-1">
         <div 
           onClick={() => { setGuestOpen(!guestOpen); setCityOpen(false); }}
-          className="flex h-full flex-col items-start px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+          className="flex h-full cursor-pointer flex-col items-start px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4"
         >
           <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.guests')}</label>
-          <span className="mt-1 font-medium text-slate-900">{guests} {guests === 1 ? t('search.guest') : t('search.guests_plural')}</span>
+          <span className="mt-1 text-sm font-medium text-slate-900 sm:text-base">{guests} {guests === 1 ? t('search.guest') : t('search.guests_plural')}</span>
         </div>
         {guestOpen && (
-          <div className="absolute top-full right-0 mt-2 w-56 rounded-xl border border-black/10 bg-white p-4 shadow-2xl ring-1 ring-black/5 z-30">
+          <div className="absolute top-full left-0 z-30 mt-2 w-full rounded-xl border border-black/10 bg-white p-4 shadow-2xl ring-1 ring-black/5 sm:w-56 md:left-auto md:right-0">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">
                 {t('search.how_many')}
@@ -99,7 +99,7 @@ export const SearchTab = () => {
       </div>
 
       {/* 4. Search Button */}
-      <button className="bg-slate-900 px-10 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-slate-800 transition-all active:scale-95">
+      <button className="w-full bg-slate-900 px-6 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-800 active:scale-95 md:w-auto md:px-10">
         {t('search.button')}
       </button>
     </div>

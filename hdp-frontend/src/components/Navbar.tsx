@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 export const Navbar = () => {
   const { t, i18n } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Change navbar background on scroll
   useEffect(() => {
@@ -14,6 +15,17 @@ export const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const toggleLanguage = () => {
     const newLang = i18n.language.startsWith('en') ? 'es' : 'en';
     i18n.changeLanguage(newLang);
@@ -21,7 +33,7 @@ export const Navbar = () => {
 
   return (
     <nav 
-      className={`fixed top-0 z-50 w-full transition-all duration-500 px-6 py-4 ${
+      className={`fixed top-0 z-50 w-full px-4 py-3 transition-all duration-500 sm:px-6 sm:py-4 ${
         isScrolled 
           ? 'bg-white/80 backdrop-blur-md shadow-sm py-3' 
           : 'bg-transparent'
@@ -30,10 +42,10 @@ export const Navbar = () => {
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         
         {/* Brand Logo */}
-        <div className={`text-2xl font-bold tracking-tighter transition-colors duration-500 ${
+        <div className={`text-base font-bold tracking-tight transition-colors duration-500 sm:text-xl md:text-2xl ${
           isScrolled ? 'text-slate-900' : 'text-white'
         }`}>
-          HOSPEDAJE <span className="font-light opacity-70">POR DIAS</span>
+          HOSPEDAJE <span className="hidden font-light opacity-70 sm:inline">POR DIAS</span>
         </div>
 
         {/* Desktop Menu */}
@@ -56,8 +68,34 @@ export const Navbar = () => {
           </button>
         </div>
 
+        {/* Mobile Controls */}
+        <div className="flex items-center gap-2 md:hidden">
+          <button
+            onClick={toggleLanguage}
+            className={`cursor-pointer rounded-sm border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] transition-all ${
+              isScrolled
+                ? 'border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white'
+                : 'border-white text-white hover:bg-white hover:text-slate-900'
+            }`}
+          >
+            {i18n.language.toUpperCase().substring(0, 2)}
+          </button>
+
+          <button
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+            className={`rounded-sm border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] transition-all ${
+              isScrolled
+                ? 'border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white'
+                : 'border-white text-white hover:bg-white hover:text-slate-900'
+            }`}
+          >
+            {isMenuOpen ? 'Close' : 'Menu'}
+          </button>
+        </div>
+
         {/* Action Button */}
-        <button className={`px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all ${
+        <button className={`hidden px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all sm:inline-flex md:px-6 md:text-xs ${
           isScrolled 
             ? 'bg-slate-900 text-white hover:bg-slate-700' 
             : 'bg-white text-slate-900 hover:bg-gray-200'
@@ -65,6 +103,32 @@ export const Navbar = () => {
           {t('nav.book_now')}
         </button>
       </div>
+
+      {isMenuOpen && (
+        <div className="mx-auto mt-3 max-w-7xl rounded-md border border-black/10 bg-white/95 p-4 shadow-lg backdrop-blur md:hidden">
+          <div className="flex flex-col gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">
+            <a
+              href="#properties"
+              onClick={() => setIsMenuOpen(false)}
+              className="py-1 transition-colors hover:text-brand-gold"
+            >
+              {t('nav.properties')}
+            </a>
+            <a
+              href="#about"
+              onClick={() => setIsMenuOpen(false)}
+              className="py-1 transition-colors hover:text-brand-gold"
+            >
+              {t('nav.about')}
+            </a>
+            <button
+              className="mt-1 bg-slate-900 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-800"
+            >
+              {t('nav.book_now')}
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

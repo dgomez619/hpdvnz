@@ -13,7 +13,7 @@ const MOCK_PROPERTIES: Property[] = [
     location: 'Valencia, Carabobo',
     pricePerNight: 550,
     rating: 4.98,
-    images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=800'],
+    images: ['https://res.cloudinary.com/dwrinmdz0/image/upload/v1771810059/val-91/Screenshot_2026-02-22_at_7.26.04_PM_qyfixk.jpg'],
     beds: 1,
     baths: 1,
     sqft: 850,
@@ -25,7 +25,7 @@ const MOCK_PROPERTIES: Property[] = [
     location: 'Lecheria, Anzoátegui',
     pricePerNight: 820,
     rating: 4.95,
-    images: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800'],
+    images: ['https://res.cloudinary.com/dwrinmdz0/image/upload/v1754434851/vistamar10c/sala2_k9a33z.png'],
     beds: 4,
     baths: 3,
     sqft: 2400,
@@ -37,7 +37,7 @@ const MOCK_PROPERTIES: Property[] = [
     location: 'Chiciriviche, Falcón',
     pricePerNight: 410,
     rating: 4.89,
-    images: ['https://images.unsplash.com/photo-1432303492674-642e9d0944b2?auto=format&fit=crop&q=80&w=800'],
+    images: ['https://res.cloudinary.com/dwrinmdz0/image/upload/v1771810534/chichiriviche/Screenshot_2026-02-22_at_7.34.14_PM_nyt7dq.jpg'],
     beds: 2,
     baths: 2,
     sqft: 1100,
@@ -65,27 +65,27 @@ function App() {
         </div>
 
        {/* 6. Quality Guarantee Section */}
-<section className="bg-slate-50 py-24 px-6 text-center">
+<section id="about" className="bg-slate-50 px-4 py-16 text-center sm:px-6 sm:py-20 md:py-24">
   <div className="mx-auto max-w-3xl">
-    <h2 className="font-display text-3xl mb-6 text-slate-900">
+    <h2 className="mb-4 font-display text-2xl text-slate-900 sm:mb-6 sm:text-3xl">
       {t('guarantee.title')}
     </h2>
-    <p className="text-slate-500 font-light leading-relaxed text-lg">
+    <p className="text-base leading-relaxed text-slate-500 font-light sm:text-lg">
       {t('guarantee.description')}
     </p>
     
     {/* Optional: Add a subtle 'signature' or icon to reinforce the premium feel */}
-    <div className="mt-8 flex justify-center opacity-20">
-      <div className="h-px w-12 bg-slate-900 self-center"></div>
-      <span className="mx-4 text-xs tracking-[0.3em] uppercase">Authentic Hospitality</span>
-      <div className="h-px w-12 bg-slate-900 self-center"></div>
+    <div className="mt-8 flex items-center justify-center opacity-20">
+      <div className="h-px w-8 bg-slate-900 sm:w-12"></div>
+      <span className="mx-3 text-[10px] uppercase tracking-[0.22em] sm:mx-4 sm:text-xs sm:tracking-[0.3em]">Authentic Hospitality</span>
+      <div className="h-px w-8 bg-slate-900 sm:w-12"></div>
     </div>
   </div>
 </section>
       </main>
 
       {/* 7. Basic Footer Placeholder */}
-      <footer className="border-t border-gray-100 py-12 px-6 text-center text-xs uppercase tracking-widest text-slate-400">
+      <footer className="border-t border-gray-100 px-4 py-10 text-center text-[10px] uppercase tracking-[0.18em] text-slate-400 sm:px-6 sm:py-12 sm:text-xs sm:tracking-widest">
         © 2026 Hospedaje por Dias. All rights reserved.
       </footer>
     </div>

@@ -11,22 +11,22 @@ export const PropertyGrid = ({ properties }: PropertyGridProps) => {
   const { t } = useTranslation();
 
   return (
-    <section id="properties" className="mx-auto max-w-7xl px-6 py-24">
-      <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <section id="properties" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 md:py-24">
+      <div className="mb-10 flex flex-col justify-between gap-4 md:mb-12 md:flex-row md:items-end">
         <div>
-          <h2 className="font-display text-4xl text-slate-900 md:text-5xl">
+          <h2 className="font-display text-3xl text-slate-900 sm:text-4xl md:text-5xl">
             {t('properties.title')}
           </h2>
-          <p className="mt-4 max-w-md text-slate-500 font-light">
+          <p className="mt-3 max-w-md text-sm font-light text-slate-500 sm:mt-4 sm:text-base">
             {t('properties.subtitle')}
           </p>
         </div>
-        <button className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">
+        <button className="self-start text-[10px] font-bold uppercase tracking-widest text-slate-400 transition-colors hover:text-slate-900 sm:text-xs md:self-auto">
           {t('properties.view_all')} →
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
         {properties.map((property) => (
           <PropertyCard key={property.id} property={property} />
         ))}
