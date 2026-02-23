@@ -28,7 +28,7 @@ export const SearchTab = () => {
           </span>
         </div>
         {cityOpen && (
-          <div className="absolute top-full left-0 z-30 mt-2 w-full min-w-0 rounded-lg bg-white shadow-xl ring-1 ring-black/5 md:min-w-[200px]">
+          <div className="absolute top-full left-0 z-30 mt-2 w-full min-w-0 rounded-lg bg-white shadow-xl ring-1 ring-black/5 md:min-w-50">
             {AVAILABLE_CITIES.map((city) => (
               <button key={city} onClick={() => { setSelectedCity(city); setCityOpen(false); }}
                 className="w-full px-4 py-3 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-brand-gold sm:px-6">
@@ -42,18 +42,26 @@ export const SearchTab = () => {
       {/* 2. Date Picker (Simplified for MVP) */}
       <div className="flex flex-1 flex-col items-start px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4">
         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.dates')}</label>
-        <div className="mt-1 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
-          <input 
-            type="date" 
-            className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-900 outline-none"
-            onChange={(e) => setDates({...dates, checkIn: e.target.value})}
-          />
+        <div className="mt-2 flex w-full flex-col gap-2 sm:mt-1 sm:flex-row sm:items-center sm:gap-2">
+          <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
+            <input 
+              type="date"
+              aria-label="Check-in date"
+              value={dates.checkIn}
+              className="date-input h-5 w-full min-w-0 appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none scheme-light"
+              onChange={(e) => setDates({...dates, checkIn: e.target.value})}
+            />
+          </div>
           <span className="hidden text-slate-300 sm:inline">-</span>
-          <input 
-            type="date" 
-            className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-900 outline-none"
-            onChange={(e) => setDates({...dates, checkOut: e.target.value})}
-          />
+          <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
+            <input 
+              type="date"
+              aria-label="Check-out date"
+              value={dates.checkOut}
+              className="date-input h-5 w-full min-w-0 appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none scheme-light"
+              onChange={(e) => setDates({...dates, checkOut: e.target.value})}
+            />
+          </div>
         </div>
       </div>
 

@@ -1,13 +1,15 @@
 // src/components/PropertyCard.tsx
 import type { Property } from '../types/property';
 
+import {Link} from 'react-router-dom';
+
 interface PropertyCardProps {
   property: Property;
 }
 
 export const PropertyCard = ({ property }: PropertyCardProps) => {
   return (
-    <div className="group cursor-pointer">
+    <Link to={`/property/${property.id}`} className="group cursor-pointer">
       {/* Image Container */}
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-gray-100">
         <img 
@@ -42,6 +44,6 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           </p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };

@@ -10,3 +10,13 @@
   --font-display: "Playfair Display", serif;
   --font-sans: "Inter", sans-serif;
 }
+
+.date-input::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  filter: contrast(1.05) brightness(0.65);
+  cursor: pointer;
+}
+
+.date-input::-webkit-date-and-time-value {
+  text-align: left;
+}

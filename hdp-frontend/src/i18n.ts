@@ -45,6 +45,12 @@ i18n
                     guarantee: {
                         title: "The Hospedaje por Dias Standard",
                         description: "Unlike massive platforms, we personally manage every property in our collection. We guarantee professional cleaning, 24/7 concierge support, and the highest standards of comfort for every guest."
+                    },
+                    detail: {
+                        about_space: "About this space",
+                        reserve_button: "Check Availability",
+                        no_charge_yet: "You won't be charged yet",
+                        amenities: "What this place offers"
                     }
                 }
             },
@@ -82,6 +88,12 @@ i18n
                     guarantee: {
                         title: "El Estándar de Hospedaje por Dias",
                         description: "A diferencia de las grandes plataformas, gestionamos personalmente cada propiedad de nuestra colección. Garantizamos limpieza profesional, soporte de conserjería 24/7 y los más altos estándares de confort para cada huésped."
+                    },
+                    detail: {
+                        about_space: "Sobre este espacio",
+                        reserve_button: "Consultar Disponibilidad",
+                        no_charge_yet: "No se te cobrará nada aún",
+                        amenities: "Lo que este lugar ofrece"
                     }
 
                 }

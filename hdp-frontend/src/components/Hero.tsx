@@ -14,7 +14,7 @@ export const Hero = () => {
         }}
       >
         {/* Dark Overlay for contrast */}
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       {/* Content Container */}
