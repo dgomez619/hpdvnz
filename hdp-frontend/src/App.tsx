@@ -1,16 +1,20 @@
-// src/App.tsx
-import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PropertyGrid } from './components/PropertyGrid';
-import { PropertyDetail } from './components/PropertyDetail';
-import { MOCK_PROPERTIES } from './data/mockData'; // Move mock data to its own file 
+import { PropertyDetailWrapper } from './components/PropertyDetailWrapper'; // Assuming you named it this
+import { PropertyCatalog } from './components/PropertyCatalog';
+import { AdditionalServices } from './components/AdditionalServices'; // New Import
 import { ScrollToTop } from './components/ScrollToTop';
+import { MOCK_PROPERTIES } from './data/mockData';
+import { useTranslation } from 'react-i18next';
 
 function App() {
+  const { t } = useTranslation();
+
   return (
     <Router>
-      <ScrollToTop /> {/* Ensure we scroll to top on route change */}
+      <ScrollToTop /> {/* Essential for UX when switching pages */}
       <div className="relative min-h-screen bg-white font-sans text-slate-900">
         <Navbar />
         
@@ -19,12 +23,31 @@ function App() {
           <Route path="/" element={
             <main>
               <Hero />
-              <PropertyGrid properties={MOCK_PROPERTIES} />
-              {/* Your Guarantee Section here */}
+              <div id="properties">
+                <PropertyGrid properties={MOCK_PROPERTIES} />
+              </div>
+              
+              {/* Quality Guarantee Section */}
+              <section id="about" className="bg-slate-50 py-24 px-6 text-center">
+                <div className="mx-auto max-w-3xl">
+                  <h2 className="font-display text-3xl mb-6 text-slate-900">
+                    {t('guarantee.title')}
+                  </h2>
+                  <p className="text-slate-500 font-light leading-relaxed text-lg">
+                    {t('guarantee.description')}
+                  </p>
+                </div>
+              </section>
             </main>
           } />
 
-          {/* DETAIL PAGE */}
+          {/* CATALOG PAGE */}
+          <Route path="/catalog" element={<PropertyCatalog />} />
+
+          {/* ADDITIONAL SERVICES PAGE */}
+          <Route path="/services" element={<AdditionalServices />} />
+
+          {/* PROPERTY DETAIL PAGE */}
           <Route path="/property/:id" element={<PropertyDetailWrapper />} />
         </Routes>
 
@@ -35,15 +58,5 @@ function App() {
     </Router>
   );
 }
-
-// A small wrapper to find the correct property based on the URL ID
-const PropertyDetailWrapper = () => {
-  const { id } = useParams();
-  const property = MOCK_PROPERTIES.find(p => p.id === id);
-  
-  if (!property) return <div className="pt-40 text-center">Property not found</div>;
-  
-  return <PropertyDetail property={property} />;
-};
 
 export default App;

@@ -46,6 +46,7 @@ export const SearchTab = () => {
           <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
             <input 
               type="date"
+              placeholder='Check-in'
               aria-label="Check-in date"
               value={dates.checkIn}
               className="date-input h-5 w-full min-w-0 appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none scheme-light"
@@ -56,6 +57,7 @@ export const SearchTab = () => {
           <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
             <input 
               type="date"
+              placeholder='Check-out'
               aria-label="Check-out date"
               value={dates.checkOut}
               className="date-input h-5 w-full min-w-0 appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none scheme-light"

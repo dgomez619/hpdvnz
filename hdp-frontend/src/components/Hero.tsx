@@ -1,33 +1,34 @@
 import { useTranslation } from 'react-i18next';
 import { SearchTab } from './SearchTab';
-import cromointfrnc from '../assets/cromointfrnc.png';
+
 export const Hero = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative min-h-[88vh] w-full overflow-hidden md:h-[90vh]">
-      {/* Background Image - Using a high-end architectural placeholder */}
+    <section className="relative min-h-screen w-full overflow-hidden bg-slate-900">
+      {/* Background Image Layer */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10000ms] hover:scale-105"
         style={{ 
-          backgroundImage: `url(${cromointfrnc})` 
+          backgroundImage: `url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=2000')` 
         }}
       >
-        {/* Dark Overlay for contrast */}
-        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Content Container */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 pt-20 pb-10 text-center text-white sm:px-6 md:pt-24 md:pb-12">
-        <h1 className="max-w-4xl font-display text-3xl leading-tight tracking-tight sm:text-5xl md:text-7xl lg:text-8xl">
+      {/* Content Container - FIXED VERSION */}
+      {/* 1. Changed h-full to min-h-screen to ensure it fills the viewport */}
+      {/* 2. Added pt-24 to push the content down exactly where the Navbar ends */}
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-24 text-center text-white">
+        <h1 className="max-w-4xl font-display text-5xl md:text-7xl lg:text-8xl leading-tight tracking-tight">
           {t('hero.title')}
         </h1>
-        <p className="mt-4 max-w-xl text-base font-light text-gray-200 sm:mt-6 sm:text-lg md:text-xl">
+        <p className="mt-6 max-w-xl text-lg md:text-xl font-light text-gray-200">
           {t('hero.subtitle')}
         </p>
 
         {/* The Search Tab Container */}
-        <div className="mt-8 w-full max-w-5xl sm:mt-12">
+        <div className="mt-12 w-full max-w-5xl">
           <SearchTab />
         </div>
       </div>

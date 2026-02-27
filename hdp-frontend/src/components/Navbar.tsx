@@ -1,134 +1,100 @@
 import { useState, useEffect } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 export const Navbar = () => {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // Mobile menu state
 
-  // Change navbar background on scroll
+  const isHomePage = location.pathname === "/";
+  const isNavbarActive = isScrolled || !isHomePage || menuOpen;
+
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMenuOpen(false);
-      }
-    };
+  // Close menu when route changes
+  useEffect(() => setMenuOpen(false), [location]);
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const toggleLanguage = () => {
-    const newLang = i18n.language.startsWith('en') ? 'es' : 'en';
-    i18n.changeLanguage(newLang);
-  };
+  const navLinks = [
+    { name: t('nav.home'), path: "/" },
+    { name: t('nav.about'), path: "/about" },
+    { name: t('nav.properties'), path: "/#properties" },
+    { name: t('nav.services'), path: "/services" },
+  ];
 
   return (
-    <nav 
-      className={`fixed top-0 z-50 w-full px-4 py-3 transition-all duration-500 sm:px-6 sm:py-4 ${
-        isScrolled 
-          ? 'bg-white/80 backdrop-blur-md shadow-sm py-3' 
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="mx-auto flex max-w-7xl items-center justify-between">
-        
-        {/* Brand Logo */}
-        <div className={`text-base font-bold tracking-tight transition-colors duration-500 sm:text-xl md:text-2xl ${
-          isScrolled ? 'text-slate-900' : 'text-white'
-        }`}>
-          HOSPEDAJE <span className="hidden font-light opacity-70 sm:inline">POR DIAS</span>
-        </div>
-
-        {/* Desktop Menu */}
-        <div className={`hidden md:flex items-center space-x-10 text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 ${
-          isScrolled ? 'text-slate-600' : 'text-white/90'
-        }`}>
-          <a href="#properties" className="hover:text-brand-gold transition-colors">
-            {t('nav.properties')}
-          </a>
-          <a href="#about" className="hover:text-brand-gold transition-colors">
-            {t('nav.about')}
-          </a>
+    <>
+      <nav className={`fixed top-0 z-50 w-full transition-all duration-500 px-6 py-4 ${
+        isNavbarActive ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' : 'bg-transparent'
+      }`}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
           
-          {/* Language Toggle */}
-          <button 
-            onClick={toggleLanguage}
-            className="cursor-pointer border border-current px-2 py-1 rounded-sm hover:bg-current hover:text-white transition-all"
-          >
-            {i18n.language.toUpperCase().substring(0, 2)}
-          </button>
-        </div>
+          {/* Logo */}
+          <Link to="/" className={`z-50 text-xl font-bold tracking-[0.2em] transition-colors duration-500 ${
+            (isNavbarActive && !menuOpen) ? 'text-slate-900' : (menuOpen ? 'text-slate-900' : 'text-white')
+          }`}>
+            HOSPEDAJE<span className="font-light opacity-60">PORDIAS</span>
+          </Link>
 
-        {/* Mobile Controls */}
-        <div className="flex items-center gap-2 md:hidden">
-          <button
-            onClick={toggleLanguage}
-            className={`cursor-pointer rounded-sm border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] transition-all ${
-              isScrolled
-                ? 'border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white'
-                : 'border-white text-white hover:bg-white hover:text-slate-900'
-            }`}
-          >
-            {i18n.language.toUpperCase().substring(0, 2)}
-          </button>
-
-          <button
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            aria-label="Toggle menu"
-            className={`rounded-sm border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] transition-all ${
-              isScrolled
-                ? 'border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white'
-                : 'border-white text-white hover:bg-white hover:text-slate-900'
-            }`}
-          >
-            {isMenuOpen ? 'Close' : 'Menu'}
-          </button>
-        </div>
-
-        {/* Action Button */}
-        <button className={`hidden px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all sm:inline-flex md:px-6 md:text-xs ${
-          isScrolled 
-            ? 'bg-slate-900 text-white hover:bg-slate-700' 
-            : 'bg-white text-slate-900 hover:bg-gray-200'
-        }`}>
-          {t('nav.book_now')}
-        </button>
-      </div>
-
-      {isMenuOpen && (
-        <div className="mx-auto mt-3 max-w-7xl rounded-md border border-black/10 bg-white/95 p-4 shadow-lg backdrop-blur md:hidden">
-          <div className="flex flex-col gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">
-            <a
-              href="#properties"
-              onClick={() => setIsMenuOpen(false)}
-              className="py-1 transition-colors hover:text-brand-gold"
-            >
-              {t('nav.properties')}
-            </a>
-            <a
-              href="#about"
-              onClick={() => setIsMenuOpen(false)}
-              className="py-1 transition-colors hover:text-brand-gold"
-            >
-              {t('nav.about')}
-            </a>
-            <button
-              className="mt-1 bg-slate-900 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-800"
-            >
-              {t('nav.book_now')}
+          {/* DESKTOP TABS (Hidden on Mobile) */}
+          <div className="hidden lg:flex items-center space-x-10">
+            {navLinks.map((link) => (
+              <Link key={link.name} to={link.path} className={`text-[10px] font-bold uppercase tracking-[0.25em] transition-all hover:opacity-60 ${
+                isNavbarActive ? 'text-slate-600' : 'text-white'
+              }`}>
+                {link.name}
+              </Link>
+            ))}
+            <button onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en')}
+              className={`text-[10px] font-bold border border-current px-2 py-0.5 rounded-sm ${
+                isNavbarActive ? 'text-slate-900' : 'text-white'
+              }`}>
+              {i18n.language.toUpperCase().substring(0, 2)}
             </button>
           </div>
+
+          {/* MOBILE MENU BUTTON (Visible on Mobile) */}
+          <button 
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="z-50 lg:hidden p-2"
+          >
+            <div className={`w-6 h-0.5 mb-1.5 transition-all ${isNavbarActive ? 'bg-slate-900' : 'bg-white'} ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <div className={`w-6 h-0.5 mb-1.5 transition-all ${isNavbarActive ? 'bg-slate-900' : 'bg-white'} ${menuOpen ? 'opacity-0' : ''}`} />
+            <div className={`w-6 h-0.5 transition-all ${isNavbarActive ? 'bg-slate-900' : 'bg-white'} ${menuOpen ? '-rotate-45 -translate-y-1' : ''}`} />
+          </button>
+
+          {/* DESKTOP CTA (Hidden on Mobile) */}
+          <button className={`hidden lg:block px-7 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${
+            isNavbarActive ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'
+          }`}>
+            {t('nav.book_now')}
+          </button>
         </div>
-      )}
-    </nav>
+      </nav>
+
+      {/* MOBILE OVERLAY MENU */}
+      <div className={`fixed inset-0 z-40 bg-white transition-transform duration-500 lg:hidden ${
+        menuOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
+        <div className="flex flex-col items-center justify-center h-full space-y-8">
+          {navLinks.map((link) => (
+            <Link key={link.name} to={link.path} className="text-xl font-display text-slate-900 tracking-widest">
+              {link.name}
+            </Link>
+          ))}
+          <button 
+            onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en')}
+            className="text-sm font-bold border border-slate-900 px-4 py-2"
+          >
+            {i18n.language === 'en' ? 'ESPAÑOL' : 'ENGLISH'}
+          </button>
+        </div>
+      </div>
+    </>
   );
 };

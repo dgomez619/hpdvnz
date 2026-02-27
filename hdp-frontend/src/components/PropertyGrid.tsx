@@ -3,6 +3,8 @@ import { PropertyCard } from './PropertyCard';
 import type { Property } from '../types/property';
 import { useTranslation } from 'react-i18next';
 
+import {Link} from 'react-router-dom';
+
 interface PropertyGridProps {
   properties: Property[];
 }
@@ -21,9 +23,9 @@ export const PropertyGrid = ({ properties }: PropertyGridProps) => {
             {t('properties.subtitle')}
           </p>
         </div>
-        <button className="self-start text-[10px] font-bold uppercase tracking-widest text-slate-400 transition-colors hover:text-slate-900 sm:text-xs md:self-auto">
+        <Link to="/catalog" className="self-start text-[10px] font-bold uppercase tracking-widest text-slate-400 transition-colors hover:text-slate-900 sm:text-xs md:self-auto">
           {t('properties.view_all')} →
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
