@@ -1,3 +1,5 @@
+import type { Property } from '../../types/property';
+
 export const PropertyInfo = ({ property }: { property: Property }) => (
   <div className="space-y-4">
     <div className="flex items-center justify-between">

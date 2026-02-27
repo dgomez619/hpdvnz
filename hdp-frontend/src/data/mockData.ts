@@ -12,7 +12,9 @@ const MOCK_PROPERTIES: Property[] = [
     beds: 1,
     baths: 1,
     sqft: 850,
-    category: 'Apartment'
+    category: 'Apartment',
+    description: 'A stunning penthouse featuring floor-to-ceiling windows with panoramic views of the Avila mountain. Experience the height of luxury in the heart of Caracas.',
+    amenities: ['wifi', 'ac', 'kitchen', 'parking', 'pool'],
   },
   {
     id: '2',
@@ -24,7 +26,9 @@ const MOCK_PROPERTIES: Property[] = [
     beds: 4,
     baths: 3,
     sqft: 2400,
-    category: 'Apartment'
+    category: 'Apartment',
+    description: 'A stunning penthouse featuring floor-to-ceiling windows with panoramic views of the Avila mountain. Experience the height of luxury in the heart of Caracas.',
+    amenities: ['wifi', 'ac', 'kitchen', 'parking', 'pool'],
   },
   {
     id: '3',
@@ -36,7 +40,9 @@ const MOCK_PROPERTIES: Property[] = [
     beds: 2,
     baths: 2,
     sqft: 1100,
-    category: 'Apartment'
+    category: 'Apartment',
+    description: 'A stunning penthouse featuring floor-to-ceiling windows with panoramic views of the Avila mountain. Experience the height of luxury in the heart of Caracas.',
+    amenities: ['wifi', 'ac', 'kitchen', 'parking', 'pool'],
   }
 ];
 
