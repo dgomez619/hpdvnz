@@ -19,7 +19,7 @@ i18n
                         about: "About Us",
                         properties: "The Collection",
                         services: "Additional Services",
-                        book_now: "Reserve Now"
+                        book_now: "Reserve Now",
                     },
                     hero: {
                         title: "Premium Stays, Personalized for You",
@@ -115,7 +115,7 @@ i18n
                         about: "Sobre Nosotros",
                         properties: "La Colección",
                         services: "Servicios Adicionales",
-                        book_now: "Reservar Ahora"
+                        book_now: "Reservar Ahora",
                     },
                     hero: {
                         title: "Estancias Premium, Personalizadas para Ti",

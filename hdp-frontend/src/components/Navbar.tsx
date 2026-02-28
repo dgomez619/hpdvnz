@@ -18,12 +18,15 @@ export const Navbar = () => {
   }, []);
 
   // Close menu when route changes
-  useEffect(() => setMenuOpen(false), [location]);
+  useEffect(() => {
+    const timer = setTimeout(() => setMenuOpen(false), 0);
+    return () => clearTimeout(timer);
+  }, [location]);
 
   const navLinks = [
     { name: t('nav.home'), path: "/" },
     { name: t('nav.about'), path: "/about" },
-    { name: t('nav.properties'), path: "/#properties" },
+    { name: t('nav.properties'), path: "/catalog" },
     { name: t('nav.services'), path: "/services" },
   ];
 
