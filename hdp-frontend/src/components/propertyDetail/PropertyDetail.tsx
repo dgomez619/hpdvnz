@@ -3,14 +3,34 @@ import type { Property } from '../../types/property';
 import { PropertyGallery } from './PropertyGallery';
 import { BookingWidget } from './BookingWidget';
 import { PropertyInfo } from './PropertyInfo';
+import { PhotoModal } from './PhotoModal';
 
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export const PropertyDetail = ({ property }: { property: Property }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  // 3. State for Lightbox logic
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const openModal = (index: number) => {
+    setCurrentImageIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+  };
+
   return (
+
     <div className="min-h-screen bg-white pb-20 pt-20 md:pt-24">
 
      {/* --- BACK BUTTON --- */}
@@ -38,8 +58,22 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
         </div>
       </header>
 
-      {/* 2. Gallery Component (Fully Responsive) */}
-      <PropertyGallery images={property.images} />
+   {/* 4. Update Gallery to accept the openModal function */}
+      <PropertyGallery 
+        images={property.images} 
+        onImageClick={openModal} 
+      />
+
+      {/* 5. Render Modal at the bottom level */}
+      {isModalOpen && (
+        <PhotoModal 
+          images={property.images}
+          currentIndex={currentImageIndex}
+          onClose={() => setIsModalOpen(false)}
+          onNext={nextImage}
+          onPrev={prevImage}
+        />
+      )}
 
       {/* 3. Main Content Grid */}
       <div className="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-3">

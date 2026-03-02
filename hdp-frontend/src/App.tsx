@@ -8,6 +8,7 @@ import { AdditionalServices } from './components/AdditionalServices'; // New Imp
 import { ScrollToTop } from './components/ScrollToTop';
 import { MOCK_PROPERTIES } from './data/mockData';
 import { useTranslation } from 'react-i18next';
+import { AboutUs } from './components/AboutUs';
 
 function App() {
   const { t } = useTranslation();
@@ -46,7 +47,8 @@ function App() {
 
           {/* ADDITIONAL SERVICES PAGE */}
           <Route path="/services" element={<AdditionalServices />} />
-
+          {/* ABOUT US PAGE */}
+          <Route path="/about" element={<AboutUs />} />
           {/* PROPERTY DETAIL PAGE */}
           <Route path="/property/:id" element={<PropertyDetailWrapper />} />
         </Routes>
