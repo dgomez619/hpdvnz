@@ -104,6 +104,21 @@ i18n
                         beaches_title: "Coastal Escapes",
                         beaches_desc: "Private day trips to Venezuela's most pristine beaches and crystal-clear keys.",
                         inquire_now: "Inquire for Details"
+                    },
+                    about: {
+                        subtitle: "Our Philosophy",
+                        title_main: "Redefining the art of",
+                        title_italic: "Venezuelan hospitality.",
+                        vision_title: "A Curated Approach",
+                        vision_quote: "Luxury is not about price; it's about the peace of mind that comes from perfect management.",
+                        vision_desc: "Hospedaje por Dias was born from the need to bridge the gap between high-end real estate and boutique hotel services. We don't just list properties; we curate experiences.",
+                        value_1_title: "Exclusivity",
+                        value_1_desc: "We only manage a limited collection of properties to ensure each receives our full attention.",
+                        value_2_title: "Trust",
+                        value_2_desc: "Verified properties, professional cleaning, and 24/7 support for every single guest.",
+                        value_3_title: "Local Heritage",
+                        value_3_desc: "Deeply rooted in Venezuela, we showcase the best of our culture through sophisticated living.",
+                        footer_text: "Welcome to your home away from home."
                     }
                 }
             },
@@ -200,6 +215,21 @@ i18n
                         beaches_title: "Escapadas Costeras",
                         beaches_desc: "Excursiones de un día a las playas más prístinas y cayos de aguas cristalinas de Venezuela.",
                         inquire_now: "Solicitar Información"
+                    },
+                    about: {
+                        subtitle: "Nuestra Filosofía",
+                        title_main: "Redefiniendo el arte de la",
+                        title_italic: "hospitalidad venezolana.",
+                        vision_title: "Un Enfoque Curado",
+                        vision_quote: "El lujo no se trata de precio; se trata de la tranquilidad que brinda una gestión perfecta.",
+                        vision_desc: "Hospedaje por Dias nació de la necesidad de cerrar la brecha entre el sector inmobiliario de alta gama y los servicios de hoteles boutique.",
+                        value_1_title: "Exclusividad",
+                        value_1_desc: "Solo gestionamos una colección limitada de propiedades para asegurar nuestra total atención.",
+                        value_2_title: "Confianza",
+                        value_2_desc: "Propiedades verificadas, limpieza profesional y soporte 24/7 para cada huésped.",
+                        value_3_title: "Herencia Local",
+                        value_3_desc: "Profundamente arraigados en Venezuela, mostramos lo mejor de nuestra cultura.",
+                        footer_text: "Bienvenidos a su hogar lejos de casa."
                     }
 
 
