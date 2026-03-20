@@ -119,9 +119,11 @@ i18n
                         value_3_title: "Local Heritage",
                         value_3_desc: "Deeply rooted in Venezuela, we showcase the best of our culture through sophisticated living.",
                         footer_text: "Welcome to your home away from home."
+                    },
+                    common: {
+                        loading_collection: "Loading collection..."
                     }
-                }
-            },
+            }},
             es: {
                 // Spanish
                 translation: {
@@ -230,12 +232,13 @@ i18n
                         value_3_title: "Herencia Local",
                         value_3_desc: "Profundamente arraigados en Venezuela, mostramos lo mejor de nuestra cultura.",
                         footer_text: "Bienvenidos a su hogar lejos de casa."
+                    },
+                    common: {
+                        loading_collection: "Cargando colección..." 
                     }
-
-
-                }
+                 
             }
         }
-    });
+    }});
 
 export default i18n;

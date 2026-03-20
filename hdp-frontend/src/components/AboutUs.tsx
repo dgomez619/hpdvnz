@@ -39,7 +39,7 @@ export const AboutUs = () => {
             <img 
               src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200" 
               alt="Our Vision"
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-[3000ms]"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-3000ms"
             />
           </div>
           <div className="lg:col-span-5 space-y-6">

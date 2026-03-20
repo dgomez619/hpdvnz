@@ -41,6 +41,23 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
   return (
     <div className="min-h-screen bg-white pb-20 pt-20 md:pt-24">
       {/* ... (Back button and Header logic remains the same) */}
+      {/* --- ADD THIS BACK BUTTON --- */}
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
+        <button 
+          onClick={() => navigate(-1)} // <--- Now 'navigate' is being used!
+          className="group flex items-center gap-2 text-[15px] font-bold uppercase tracking-[0.2em] text-slate-400 transition-all hover:text-slate-900"
+        >
+          <span className="transition-transform group-hover:-translate-x-1">←</span>
+          {t('detail.back_to_previous')}
+        </button>
+      </div>
+
+      <header className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <h1 className="font-display text-3xl font-medium text-slate-900 md:text-4xl">
+          {property.title}
+        </h1>
+        {/* ... the rest of your header */}
+      </header>
 
       {/* 4. Update Gallery: Ensure images array exists */}
       <PropertyGallery 
