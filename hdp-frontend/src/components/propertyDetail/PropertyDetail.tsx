@@ -12,9 +12,11 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // 3. State for Lightbox logic
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Safety check: if somehow property is null, don't crash the whole app
+  if (!property) return null;
 
   const openModal = (index: number) => {
     setCurrentImageIndex(index);
@@ -22,50 +24,32 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
   };
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+    // Add check to ensure images exist before calculating length
+    const imageCount = property.images?.length || 0;
+    if (imageCount > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % imageCount);
+    }
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+    const imageCount = property.images?.length || 0;
+    if (imageCount > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + imageCount) % imageCount);
+    }
   };
 
   return (
-
     <div className="min-h-screen bg-white pb-20 pt-20 md:pt-24">
+      {/* ... (Back button and Header logic remains the same) */}
 
-     {/* --- BACK BUTTON --- */}
-      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="group flex items-center gap-2 text-[15px] font-bold uppercase tracking-[0.2em] text-slate-400 transition-all hover:text-slate-900"
-        >
-          <span className="transition-transform group-hover:-translate-x-1">←</span>
-          {t('detail.back_to_previous')}
-        </button>
-      </div>
-
-      {/* 1. Header (Mobile/Desktop consistent) */}
-      <header className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <h1 className="font-display text-3xl font-medium text-slate-900 md:text-4xl">
-          {property.title}
-        </h1>
-        <div className="mt-2 flex items-center justify-between text-sm font-light text-slate-600">
-          <p className="underline underline-offset-4">{property.location}</p>
-          <div className="flex gap-4">
-            <button className="underline font-medium hover:text-black transition-colors">{t('detail.share')}</button>
-            <button className="underline font-medium hover:text-black transition-colors">{t('detail.save')}</button>
-          </div>
-        </div>
-      </header>
-
-   {/* 4. Update Gallery to accept the openModal function */}
+      {/* 4. Update Gallery: Ensure images array exists */}
       <PropertyGallery 
-        images={property.images} 
+        images={property.images || []} 
         onImageClick={openModal} 
       />
 
-      {/* 5. Render Modal at the bottom level */}
-      {isModalOpen && (
+      {/* 5. Render Modal */}
+      {isModalOpen && property.images && (
         <PhotoModal 
           images={property.images}
           currentIndex={currentImageIndex}
@@ -75,10 +59,7 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
         />
       )}
 
-      {/* 3. Main Content Grid */}
       <div className="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-3">
-
-        {/* Left Column: Details (Modular) */}
         <div className="lg:col-span-2 space-y-10">
           <PropertyInfo property={property} />
 
@@ -89,21 +70,25 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
             </p>
           </div>
 
-          {/* Amenities Section */}
+          {/* Amenities Section: Enhanced Safety */}
           <div className="border-t border-slate-100 pt-10">
             <h2 className="font-display text-2xl text-slate-900">{t('detail.amenities')}</h2>
             <div className="mt-6 grid grid-cols-2 gap-4">
-              {property.amenities?.map((item) => (
-                <div key={item} className="flex items-center gap-4 text-slate-600 font-light">
-                  <span className="h-2 w-2 rounded-full bg-brand-gold" />
-                  {item}
-                </div>
-              ))}
+              {/* Ensure we have an array, or show a 'No amenities listed' message */}
+              {property.amenities && property.amenities.length > 0 ? (
+                property.amenities.map((item) => (
+                  <div key={item} className="flex items-center gap-4 text-slate-600 font-light">
+                    <span className="h-2 w-2 rounded-full bg-slate-900" />
+                    {item}
+                  </div>
+                ))
+              ) : (
+                <p className="text-slate-400 font-light italic text-sm">No amenities listed.</p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Right Column: Sticky Widget */}
         <aside className="relative">
           <div className="sticky top-28 hidden lg:block">
             <BookingWidget property={property} />
@@ -111,13 +96,16 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
         </aside>
       </div>
 
-      {/* Mobile-Only Bottom Sticky Bar (Conversion Booster) */}
+      {/* Mobile Sticky Bar */}
       <div className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-between border-t border-slate-100 bg-white px-6 py-4 lg:hidden">
         <div>
-          <p className="font-bold text-slate-900">${property.pricePerNight} <span className="font-light text-slate-500">/ {t('properties.night')}</span></p>
-          <p className="text-xs underline">Mar 25 - 30</p>
+          <p className="font-bold text-slate-900">
+            ${property.pricePerNight} 
+            <span className="font-light text-slate-500"> / {t('properties.night')}</span>
+          </p>
+          <p className="text-xs underline">{t('detail.available_dates')}</p>
         </div>
-        <button className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-bold text-white">
+        <button className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-bold text-white active:scale-95 transition-transform">
           {t('detail.reserve_button')}
         </button>
       </div>

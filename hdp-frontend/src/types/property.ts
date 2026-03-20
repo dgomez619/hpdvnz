@@ -1,16 +1,16 @@
 // src/types/property.ts
 export interface Property {
-  id: string;
+  _id: string;
   title: string;
   location: string;
+  description: string;
   pricePerNight: number;
-  images: string[];
   beds: number;
   baths: number;
-  sqft: number;
-  rating: number;
-  // The missing fields:
-  description: string; 
-  amenities: string[]; // This fixes the "implicit any" in your map
-  category: string;
+  images: string[];
+  amenities: string[];
+  // Add '?' to make these optional so the compiler stops complaining
+  sqft?: number; 
+  rating?: number;
+  category?: string;
 }

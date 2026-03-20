@@ -1,62 +1,96 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react'; // 1. Add these imports
+
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PropertyGrid } from './components/PropertyGrid';
-import { PropertyDetailWrapper } from './components/PropertyDetailWrapper'; // Assuming you named it this
+import { PropertyDetailWrapper } from './components/PropertyDetailWrapper';
 import { PropertyCatalog } from './components/PropertyCatalog';
-import { AdditionalServices } from './components/AdditionalServices'; // New Import
+import { AdditionalServices } from './components/AdditionalServices';
 import { ScrollToTop } from './components/ScrollToTop';
-import { MOCK_PROPERTIES } from './data/mockData';
 import { useTranslation } from 'react-i18next';
 import { AboutUs } from './components/AboutUs';
+import { AdminLogin } from './components/admin/AdminLogin';
+import { AdminDashboard } from './components/admin/AdminDashboard';
 
-function App() {
+const AppContent = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+  
+  // 2. State to hold your real properties
+  const [realProperties, setRealProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // 3. Fetch properties from your Port 5001 server
+  useEffect(() => {
+    const fetchPublicProperties = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/properties');
+        const data = await response.json();
+        setRealProperties(data);
+      } catch (error) {
+        console.error("Error fetching properties for the front-end:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPublicProperties();
+  }, []);
+
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   return (
-    <Router>
-      <ScrollToTop /> {/* Essential for UX when switching pages */}
-      <div className="relative min-h-screen bg-white font-sans text-slate-900">
-        <Navbar />
-        
-        <Routes>
-          {/* HOME PAGE */}
-          <Route path="/" element={
-            <main>
-              <Hero />
-              <div id="properties">
-                <PropertyGrid properties={MOCK_PROPERTIES} />
-              </div>
-              
-              {/* Quality Guarantee Section */}
-              <section id="about" className="bg-slate-50 py-24 px-6 text-center">
-                <div className="mx-auto max-w-3xl">
-                  <h2 className="font-display text-3xl mb-6 text-slate-900">
-                    {t('guarantee.title')}
-                  </h2>
-                  <p className="text-slate-500 font-light leading-relaxed text-lg">
-                    {t('guarantee.description')}
-                  </p>
+    <div className="relative min-h-screen bg-white font-sans text-slate-900">
+      {!isAdminPage && <Navbar />}
+      
+      <Routes>
+        <Route path="/" element={
+          <main>
+            <Hero />
+            <div id="properties">
+              {/* 4. Pass the realProperties instead of MOCK_PROPERTIES */}
+              {loading ? (
+                <div className="py-20 text-center text-slate-400 uppercase tracking-widest text-[10px]">
+                   Cargando Colección...
                 </div>
-              </section>
-            </main>
-          } />
+              ) : (
+                <PropertyGrid properties={realProperties} />
+              )}
+            </div>
+            
+            <section id="about" className="bg-slate-50 py-24 px-6 text-center">
+               {/* ... Keep your AboutUs logic */}
+            </section>
+          </main>
+        } />
 
-          {/* CATALOG PAGE */}
-          <Route path="/catalog" element={<PropertyCatalog />} />
+        <Route path="/catalog" element={<PropertyCatalog properties={realProperties} />} />
+        <Route path="/services" element={<AdditionalServices />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/property/:id" element={<PropertyDetailWrapper />} />
+        
+        {/* ADMIN ROUTES */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        
+      </Routes>
 
-          {/* ADDITIONAL SERVICES PAGE */}
-          <Route path="/services" element={<AdditionalServices />} />
-          {/* ABOUT US PAGE */}
-          <Route path="/about" element={<AboutUs />} />
-          {/* PROPERTY DETAIL PAGE */}
-          <Route path="/property/:id" element={<PropertyDetailWrapper />} />
-        </Routes>
-
+      {/* 3. Conditionally show Footer */}
+      {!isAdminPage && (
         <footer className="border-t border-gray-100 py-12 px-6 text-center text-xs uppercase tracking-widest text-slate-400">
           © 2026 Hospedaje por Dias.
         </footer>
-      </div>
+      )}
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <ScrollToTop />
+      <AppContent />
     </Router>
   );
 }

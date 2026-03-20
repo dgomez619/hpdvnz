@@ -9,7 +9,7 @@ interface PropertyCardProps {
 
 export const PropertyCard = ({ property }: PropertyCardProps) => {
   return (
-    <Link to={`/property/${property.id}`} className="group cursor-pointer">
+    <Link to={`/property/${property._id}`} className="group cursor-pointer">
       {/* Image Container */}
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-gray-100">
         <img 

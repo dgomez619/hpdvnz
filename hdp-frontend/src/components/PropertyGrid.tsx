@@ -30,7 +30,7 @@ export const PropertyGrid = ({ properties }: PropertyGridProps) => {
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
         {properties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
+          <PropertyCard key={property._id} property={property} />
         ))}
       </div>
     </section>
