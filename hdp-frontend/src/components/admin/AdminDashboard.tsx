@@ -34,10 +34,14 @@ export const AdminDashboard = () => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // 1. DYNAMIC API URL
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
   const fetchProperties = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5001/api/properties');
+      // 2. UPDATED FETCH URL
+      const response = await fetch(`${API_BASE}/api/properties`);
       const data = await response.json();
       setProperties(data);
     } catch (error) {
@@ -66,12 +70,21 @@ export const AdminDashboard = () => {
 
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`http://localhost:5001/api/properties/${id}`, {
+      // 3. UPDATED DELETE URL
+      const response = await fetch(`${API_BASE}/api/properties/${id}`, {
         method: 'DELETE',
-        headers: { 'x-auth-token': token || '' }
+        headers: { 
+            'x-auth-token': token || '',
+            'Content-Type': 'application/json'
+        }
       });
 
-      if (response.ok) fetchProperties();
+      if (response.ok) {
+          fetchProperties();
+      } else {
+          const errorData = await response.json();
+          alert(`Error: ${errorData.msg || 'No se pudo eliminar'}`);
+      }
     } catch (error) {
       console.error("Error deleting:", error);
     }
@@ -80,7 +93,7 @@ export const AdminDashboard = () => {
   return (
     <div className="flex min-h-screen bg-[#0a0a0b] text-slate-300">
       
-      {/* 1. SIDEBAR RESTORED */}
+      {/* SIDEBAR */}
       <aside className="w-64 border-r border-white/5 bg-[#111114] hidden lg:flex flex-col">
         <div className="p-8">
           <h2 className="text-sm font-bold tracking-[0.3em] text-white uppercase">
@@ -100,10 +113,9 @@ export const AdminDashboard = () => {
         </div>
       </aside>
 
-      {/* 2. MAIN CONTENT */}
+      {/* MAIN CONTENT */}
       <main className="flex-1 p-8">
         
-        {/* Header */}
         <header className="flex justify-between items-end mb-10">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Vista General</p>
@@ -117,14 +129,12 @@ export const AdminDashboard = () => {
           </button>
         </header>
 
-        {/* 3. STATS GRID RESTORED */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <StatCard label="Propiedades Activas" value={properties.length.toString()} />
           <StatCard label="Sincronización iCal" value="Activa" subValue="Hace 12 min" />
           <StatCard label="Mensajes Pendientes" value="3" />
         </div>
 
-        {/* 4. TABLE SECTION WITH SEARCH RESTORED */}
         <div className="bg-[#111114] rounded-2xl border border-white/5 overflow-hidden">
           <div className="p-6 border-b border-white/5 flex justify-between items-center">
             <h3 className="font-bold text-sm uppercase tracking-widest text-white">Tu Colección</h3>
@@ -199,9 +209,9 @@ export const AdminDashboard = () => {
   );
 };
 
-// --- RESTORED HELPER COMPONENTS ---
+// --- HELPER COMPONENTS (TYPES UPDATED) ---
 
-const SidebarLink = ({ icon, label, active = false }: { icon: any, label: string, active?: boolean }) => (
+const SidebarLink = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
   <div className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all ${
     active ? 'bg-white text-black' : 'text-slate-500 hover:text-white hover:bg-white/5'
   }`}>

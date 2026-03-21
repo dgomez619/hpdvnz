@@ -8,7 +8,10 @@ import type { Property } from '../types/property';
 
 export const PropertyDetailWrapper = () => {
   const { id } = useParams<{ id: string }>();
-  console.log("ID capture from URL:", id); // Check your console for this!
+  
+  // 1. ADD THIS: Define the API base URL
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -17,8 +20,8 @@ export const PropertyDetailWrapper = () => {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        // We fetch the specific property from our Port 5001 server
-        const response = await fetch(`http://localhost:5001/api/properties/${id}`);
+        // 2. UPDATE THIS: Use the backticks with the API_BASE variable
+        const response = await fetch(`${API_BASE}/api/properties/${id}`);
         
         if (!response.ok) {
           throw new Error('Property not found');
@@ -35,7 +38,7 @@ export const PropertyDetailWrapper = () => {
     };
 
     if (id) fetchProperty();
-  }, [id]);
+  }, [id, API_BASE]); // Added API_BASE to dependency array for safety
 
   // 1. LOADING STATE
   if (loading) {

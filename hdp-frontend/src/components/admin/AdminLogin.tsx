@@ -7,8 +7,11 @@ export const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(''); // New state for error messages
+  const [error, setError] = useState(''); 
   const navigate = useNavigate();
+
+  // Environment variable for deployment
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,8 +19,7 @@ export const AdminLogin = () => {
     setError('');
 
     try {
-      // 1. Send the data to your Node.js server
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,23 +29,27 @@ export const AdminLogin = () => {
 
       const data = await response.json();
 
-      // 2. Check if the server rejected the login
       if (!response.ok) {
         throw new Error(data.msg || 'Error al iniciar sesión');
       }
 
-      // 3. SUCCESS: Save the token and redirect
+      // Save token and user info
       localStorage.setItem('adminToken', data.token);
       localStorage.setItem('adminUser', JSON.stringify(data.admin));
       
       navigate('/admin/dashboard');
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      // Type-safe error handling to avoid "any"
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+      }
     } finally {
       setIsLoading(false);
-    }
-  };
+    } // FIXED: Closed the 'finally' block correctly
+  }; // FIXED: Closed the 'handleLogin' function correctly
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b] px-6">

@@ -17,15 +17,17 @@ const AppContent = () => {
   const { t } = useTranslation();
   const location = useLocation();
 
-  // 2. State to hold your real properties
+  // 1. ADD THIS: Define the API base URL for deployment
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+  
   const [realProperties, setRealProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 3. Fetch properties from your Port 5001 server
   useEffect(() => {
     const fetchPublicProperties = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/properties');
+        // 2. UPDATE THIS: Use backticks and the API_BASE variable
+        const response = await fetch(`${API_BASE}/api/properties`);
         const data = await response.json();
         setRealProperties(data);
       } catch (error) {
@@ -36,7 +38,7 @@ const AppContent = () => {
     };
 
     fetchPublicProperties();
-  }, []);
+  }, [API_BASE]); // Added API_BASE to dependencies
 
   const isAdminPage = location.pathname.startsWith('/admin');
 
