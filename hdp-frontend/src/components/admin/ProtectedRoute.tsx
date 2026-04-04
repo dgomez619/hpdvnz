@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLoaderData, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 export const ProtectedRoute = () => {
   const token = localStorage.getItem('adminToken');

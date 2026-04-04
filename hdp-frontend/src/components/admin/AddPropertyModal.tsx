@@ -11,7 +11,7 @@ interface Property {
     baths: number;
     amenities: string[];
     images: string[];
-    category: string;
+    category?: string;
     externalSyncLinks?: { platform: string; url: string; _id?: string }[];
 }
 
@@ -133,52 +133,65 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
         setFormData(prev => ({ ...prev, images: prev.images.filter((_, index) => index !== indexToRemove) }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-        const isEditing = !!propertyToEdit;
-        const url = isEditing
-            ? `${API_BASE_URL}/api/properties/${propertyToEdit?._id}`
-            : `${API_BASE_URL}/api/properties`;
-        const method = isEditing ? 'PUT' : 'POST';
+    const isEditing = !!propertyToEdit;
+    const url = isEditing
+        ? `${API_BASE_URL}/api/properties/${propertyToEdit?._id}`
+        : `${API_BASE_URL}/api/properties`;
+    const method = isEditing ? 'PUT' : 'POST';
 
-        try {
-            const token = localStorage.getItem('adminToken');
-            const sanitizedAmenities = formData.amenities
-                .split(',')
-                .map(item => item.trim())
-                .filter(item => item !== "");
+    try {
+        const token = localStorage.getItem('adminToken');
 
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token || ''
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    pricePerNight: Number(formData.pricePerNight),
-                    beds: Number(formData.beds),
-                    baths: Number(formData.baths),
-                    amenities: sanitizedAmenities,
-                }),
-            });
+        // 1. IMPROVED AMENITIES LOGIC
+        // Only split if it's a string; if it's already an array, just trim the items
+        const sanitizedAmenities = typeof formData.amenities === 'string'
+            ? formData.amenities.split(',').map(item => item.trim()).filter(i => i !== "")
+            : formData.amenities;
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.msg || 'Error al guardar la propiedad');
-            }
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': token || ''
+            },
+            body: JSON.stringify({
+                ...formData,
+                // Ensure numbers are truly numbers
+                pricePerNight: parseFloat(formData.pricePerNight.toString()),
+                beds: parseInt(formData.beds.toString(), 10),
+                baths: parseInt(formData.baths.toString(), 10),
+                amenities: sanitizedAmenities,
+                // Explicitly ensure category is sent
+                category: formData.category 
+            }),
+        });
 
-            onSuccess();
-            onClose();
-        } catch (error: any) {
-            console.error("Error saving property:", error);
-            alert(error.message || "No se pudo conectar con el servidor");
-        } finally {
-            setLoading(false);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.msg || 'Error al guardar la propiedad');
         }
-    };
+
+        // Success handling
+        onSuccess();
+        onClose();
+        
+    } catch (error: unknown) {
+        console.error("Error saving property:", error);
+        
+        // This resolves your "Unexpected any" error correctly
+        const errorMessage = error instanceof Error 
+            ? error.message 
+            : "No se pudo conectar con el servidor";
+            
+        alert(errorMessage);
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-2 sm:p-4">
