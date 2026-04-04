@@ -1,0 +1,99 @@
+/* Custom CSS for React Day Picker - Dark Luxury Theme */
+
+.rdp {
+  --rdp-cell-size: 45px;
+  --rdp-accent-color: #ffffff; /* Selection color */
+  --rdp-background-color: #1c1c1e; /* Hover color */
+  margin: 0;
+}
+
+/* Calendar Container */
+.rdp-months {
+  justify-content: center;
+}
+
+/* Month Headers (May, June, etc.) */
+.rdp-caption_label {
+  font-family: 'serif'; /* Match your display font if possible */
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  color: #ffffff;
+  font-style: italic;
+}
+
+/* Day Names (L, M, M, J...) */
+.rdp-head_cell {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #475569; /* slate-500 */
+  padding-bottom: 1rem;
+}
+
+/* Day Numbers */
+.rdp-day {
+  border-radius: 12px; /* Matching your UI's rounded corners */
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.rdp-day:hover:not(.rdp-day_selected) {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff;
+}
+
+/* The Selected Range */
+.rdp-day_selected {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 800;
+}
+
+/* Navigation Buttons (Arrows) */
+.rdp-nav_button {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px border rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  border-radius: 8px;
+}
+
+.rdp-nav_button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Airbnb Blocked Dates */
+.rdp-day_airbnb {
+  background-color: #FF5A5F !important;
+  color: white !important;
+  opacity: 0.9;
+  border-radius: 0px !important; /* Square for range look */
+}
+
+/* Booking.com Blocked Dates */
+.rdp-day_booking {
+  background-color: #003580 !important;
+  color: white !important;
+  border-radius: 0px !important;
+}
+
+/* Manual/Maintenance Blocks */
+.rdp-day_manual {
+  background-color: #334155 !important;
+  color: #94a3b8 !important;
+  text-decoration: line-through;
+  border-radius: 0px !important;
+}
+
+/* Fixing rounded corners for the start and end of blocks */
+.rdp-day_airbnb:first-of-type, .rdp-day_booking:first-of-type {
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+
+.rdp-day_airbnb:last-of-type, .rdp-day_booking:last-of-type {
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}

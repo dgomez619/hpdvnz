@@ -20,3 +20,37 @@
 .date-input::-webkit-date-and-time-value {
   text-align: left;
 }
+
+/* Airbnb Blocked Dates */
+.rdp-day_airbnb {
+  background-color: #FF5A5F !important;
+  color: white !important;
+  opacity: 0.9;
+  border-radius: 0px !important; /* Square for range look */
+}
+
+/* Booking.com Blocked Dates */
+.rdp-day_booking {
+  background-color: #003580 !important;
+  color: white !important;
+  border-radius: 0px !important;
+}
+
+/* Manual/Maintenance Blocks */
+.rdp-day_manual {
+  background-color: #334155 !important;
+  color: #94a3b8 !important;
+  text-decoration: line-through;
+  border-radius: 0px !important;
+}
+
+/* Fixing rounded corners for the start and end of blocks */
+.rdp-day_airbnb:first-of-type, .rdp-day_booking:first-of-type {
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+
+.rdp-day_airbnb:last-of-type, .rdp-day_booking:last-of-type {
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}

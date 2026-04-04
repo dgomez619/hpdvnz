@@ -12,6 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { AboutUs } from './components/AboutUs';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { PropertyCalendarPage } from './components/admin/PropertyCalendarPage';
+import { ProtectedRoute } from './components/admin/ProtectedRoute';
 
 const AppContent = () => {
   const { t } = useTranslation();
@@ -47,6 +49,7 @@ const AppContent = () => {
       {!isAdminPage && <Navbar />}
 
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={
           <main>
             <Hero />
@@ -74,7 +77,12 @@ const AppContent = () => {
 
         {/* ADMIN ROUTES */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+        {/* Protected admin routes */}
+     <Route element={<ProtectedRoute />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/calendar/:id" element={<PropertyCalendarPage />} />
+        </Route>
 
       </Routes>
 

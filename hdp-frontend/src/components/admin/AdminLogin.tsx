@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
@@ -12,6 +12,15 @@ export const AdminLogin = () => {
 
   // Environment variable for deployment
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
+  // --- NEW: AUTO-REDIRECT LOGIC ---
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      // If a token exists, don't show the login page, just go to dashboard
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
