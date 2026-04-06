@@ -1,13 +1,21 @@
 // src/components/PropertyCard.tsx
 import type { Property } from '../types/property';
-
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // 1. Import the hook
 
 interface PropertyCardProps {
   property: Property;
 }
 
 export const PropertyCard = ({ property }: PropertyCardProps) => {
+  const { i18n } = useTranslation(); // 2. Access the i18n instance
+
+  // 3. Logic to select the correct description based on active language
+  // If the language is 'en', use description_en; otherwise, use description_es
+  const currentDescription = i18n.language === 'en' 
+    ? property.description_en 
+    : property.description_es;
+
   return (
     <Link to={`/property/${property._id}`} className="group cursor-pointer">
       {/* Image Container */}
@@ -34,6 +42,11 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         </div>
         
         <p className="text-sm text-slate-500 font-light">{property.location}</p>
+
+        {/* 4. Display the localized description if you want it on the card */}
+        <p className="line-clamp-2 text-xs text-slate-400 font-light leading-relaxed">
+          {currentDescription}
+        </p>
         
         <div className="flex flex-col gap-2 border-t border-gray-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-slate-400 sm:text-sm">

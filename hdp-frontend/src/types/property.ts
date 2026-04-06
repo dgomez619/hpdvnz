@@ -3,7 +3,8 @@ export interface Property {
   _id: string;
   title: string;
   location: string;
-  description: string;
+  description_es: string; // Spanish description
+  description_en: string; // English description
   pricePerNight: number;
   beds: number;
   baths: number;

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Search, Trash2, Link as LinkIcon, Copy, Check } from 'lucide-react';
 
+// 1. BASE INTERFACE
 interface Property {
     _id: string;
     title: string;
     location: string;
-    description: string;
+    description_es: string;
+    description_en: string;
     pricePerNight: number;
     beds: number;
     baths: number;
@@ -13,6 +15,21 @@ interface Property {
     images: string[];
     category?: string;
     externalSyncLinks?: { platform: string; url: string; _id?: string }[];
+}
+
+// 2. FORM STATE INTERFACE
+interface PropertyFormData {
+    title: string;
+    location: string;
+    description_es: string;
+    description_en: string;
+    pricePerNight: string | number;
+    beds: string | number;
+    baths: string | number;
+    amenities: string; 
+    images: string[];
+    category: string;
+    externalSyncLinks: { platform: string; url: string; _id?: string }[];
 }
 
 interface ModalProps {
@@ -23,52 +40,57 @@ interface ModalProps {
 }
 
 export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }: ModalProps) => {
-    const [formData, setFormData] = useState({
+    // RESTORED CONSTANTS
+    const CLOUD_NAME = 'dwrinmdz0';
+    const API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY;
+    const UPLOAD_PRESET = 'ml_default';
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
+    const [formData, setFormData] = useState<PropertyFormData>({
         title: '',
         location: '',
-        description: '',
+        description_es: '',
+        description_en: '',
         pricePerNight: '',
         beds: '',
         baths: '',
+        category: 'Apartamento',
         amenities: '',
-        images: [] as string[],
-        externalSyncLinks: [] as { platform: string; url: string }[],
-        category: propertyToEdit?.category || 'Apartamento' // Default category
+        images: [],
+        externalSyncLinks: []
     });
 
     const [newSyncLink, setNewSyncLink] = useState({ platform: 'Airbnb', url: '' });
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    // CONFIGURATION
-    const CLOUD_NAME = 'dwrinmdz0';
-    const API_KEY = '184389541388686';
-    const UPLOAD_PRESET = 'ml_default';
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-
     useEffect(() => {
-        if (propertyToEdit) {
-            setFormData({
-                title: propertyToEdit.title,
-                location: propertyToEdit.location,
-                description: propertyToEdit.description,
-                pricePerNight: propertyToEdit.pricePerNight.toString(),
-                beds: propertyToEdit.beds.toString(),
-                baths: propertyToEdit.baths.toString(),
-                amenities: propertyToEdit.amenities.join(', '),
-                images: propertyToEdit.images || [],
-                externalSyncLinks: propertyToEdit.externalSyncLinks || [],
-                category: propertyToEdit.category || 'Apartamento'
-            });
-        } else {
-            setFormData({
-                title: '', location: '', description: '', pricePerNight: '',
-                beds: '', baths: '', amenities: '', images: [],
-                externalSyncLinks: [], category: 'Apartamento'
-            });
+        if (isOpen) {
+            if (propertyToEdit) {
+                setFormData({
+                    title: propertyToEdit.title,
+                    location: propertyToEdit.location,
+                    description_es: propertyToEdit.description_es || '',
+                    description_en: propertyToEdit.description_en || '',
+                    pricePerNight: propertyToEdit.pricePerNight,
+                    beds: propertyToEdit.beds,
+                    baths: propertyToEdit.baths,
+                    amenities: propertyToEdit.amenities.join(', '),
+                    images: propertyToEdit.images || [],
+                    externalSyncLinks: propertyToEdit.externalSyncLinks || [],
+                    category: propertyToEdit.category || 'Apartamento'
+                });
+            } else {
+                setFormData({
+                    title: '', location: '', description_es: '', description_en: '',
+                    pricePerNight: '', beds: '', baths: '', amenities: '', 
+                    images: [], externalSyncLinks: [], category: 'Apartamento'
+                });
+            }
         }
     }, [propertyToEdit, isOpen]);
 
+    // RESTORED COPY FUNCTION
     const handleCopyExportUrl = () => {
         if (!propertyToEdit?._id) return;
         const url = `${API_BASE_URL}/api/export/${propertyToEdit._id}.ics`;
@@ -78,10 +100,15 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
     };
 
     const addExternalLink = () => {
-        if (newSyncLink.url.trim() === '') return;
+        const trimmed = newSyncLink.url.trim();
+        if (trimmed === '') return;
+        if (!trimmed.startsWith('https://') || !trimmed.endsWith('.ics')) {
+            alert('Por favor ingresa una URL válida que comience con https:// y termine en .ics');
+            return;
+        }
         setFormData(prev => ({
             ...prev,
-            externalSyncLinks: [...prev.externalSyncLinks, { ...newSyncLink }]
+            externalSyncLinks: [...prev.externalSyncLinks, { ...newSyncLink, url: trimmed }]
         }));
         setNewSyncLink({ platform: 'Airbnb', url: '' });
     };
@@ -93,9 +120,11 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
         }));
     };
 
-    if (!isOpen) return null;
+    const removeImage = (indexToRemove: number) => {
+        setFormData(prev => ({ ...prev, images: prev.images.filter((_, index) => index !== indexToRemove) }));
+    };
 
-    // --- CLOUDINARY LOGIC ---
+    // CLOUDINARY LOGIC
     const openUploadWidget = () => {
         // @ts-expect-error cloudinary
         const widget = window.cloudinary.createUploadWidget(
@@ -129,74 +158,57 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
         );
     };
 
-    const removeImage = (indexToRemove: number) => {
-        setFormData(prev => ({ ...prev, images: prev.images.filter((_, index) => index !== indexToRemove) }));
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        const isEditing = !!propertyToEdit;
+        const url = isEditing
+            ? `${API_BASE_URL}/api/properties/${propertyToEdit?._id}`
+            : `${API_BASE_URL}/api/properties`;
+        const method = isEditing ? 'PUT' : 'POST';
+
+        try {
+            const token = localStorage.getItem('adminToken');
+            const sanitizedAmenities = formData.amenities
+                .split(',')
+                .map(item => item.trim())
+                .filter(i => i !== "");
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token || ''
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    pricePerNight: parseFloat(formData.pricePerNight.toString()) || 0,
+                    beds: parseInt(formData.beds.toString(), 10) || 0,
+                    baths: parseInt(formData.baths.toString(), 10) || 0,
+                    amenities: sanitizedAmenities,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.msg || 'Error al guardar');
+            }
+
+            onSuccess();
+            onClose();
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Error desconocido";
+            alert(msg);
+        } finally {
+            setLoading(false);
+        }
     };
 
-   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const isEditing = !!propertyToEdit;
-    const url = isEditing
-        ? `${API_BASE_URL}/api/properties/${propertyToEdit?._id}`
-        : `${API_BASE_URL}/api/properties`;
-    const method = isEditing ? 'PUT' : 'POST';
-
-    try {
-        const token = localStorage.getItem('adminToken');
-
-        // 1. IMPROVED AMENITIES LOGIC
-        // Only split if it's a string; if it's already an array, just trim the items
-        const sanitizedAmenities = typeof formData.amenities === 'string'
-            ? formData.amenities.split(',').map(item => item.trim()).filter(i => i !== "")
-            : formData.amenities;
-
-        const response = await fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'x-auth-token': token || ''
-            },
-            body: JSON.stringify({
-                ...formData,
-                // Ensure numbers are truly numbers
-                pricePerNight: parseFloat(formData.pricePerNight.toString()),
-                beds: parseInt(formData.beds.toString(), 10),
-                baths: parseInt(formData.baths.toString(), 10),
-                amenities: sanitizedAmenities,
-                // Explicitly ensure category is sent
-                category: formData.category 
-            }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.msg || 'Error al guardar la propiedad');
-        }
-
-        // Success handling
-        onSuccess();
-        onClose();
-        
-    } catch (error: unknown) {
-        console.error("Error saving property:", error);
-        
-        // This resolves your "Unexpected any" error correctly
-        const errorMessage = error instanceof Error 
-            ? error.message 
-            : "No se pudo conectar con el servidor";
-            
-        alert(errorMessage);
-    } finally {
-        setLoading(false);
-    }
-};
-
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-2 sm:p-4">
+    return isOpen ? (
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-2 sm:p-4">
             <div className="bg-[#111114] w-full max-w-2xl max-h-[95vh] rounded-2xl sm:rounded-3xl border border-white/5 overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
-
+                
                 {/* Header */}
                 <div className="flex justify-between items-center p-5 sm:p-6 border-b border-white/5 bg-[#161618]">
                     <h2 className="text-white font-display text-sm sm:text-lg tracking-widest uppercase italic">
@@ -209,7 +221,7 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
 
                 {/* Form Body */}
                 <form onSubmit={handleSubmit} className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 overflow-y-auto custom-scrollbar flex-1">
-
+                    
                     {/* Images */}
                     <div className="space-y-4 md:col-span-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Gestión de Imágenes</label>
@@ -231,17 +243,13 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                         </div>
                     </div>
 
-                    {/* Basic Info */}
                     <div className="space-y-2 md:col-span-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Título</label>
                         <input required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20" />
                     </div>
 
-                    {/* Category Selection */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                            Categoría (Badge)
-                        </label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Categoría (Badge)</label>
                         <select
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -277,11 +285,30 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Descripción</label>
-                        <textarea required value={formData.description} rows={3} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20 resize-none" />
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Descripción (Español)</label>
+                        <textarea
+                            required
+                            value={formData.description_es}
+                            rows={3}
+                            onChange={(e) => setFormData({ ...formData, description_es: e.target.value })}
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20 resize-none"
+                            placeholder="Ej: Hermoso apartamento con vista al mar..."
+                        />
                     </div>
 
-                    {/* NEW SECTION: iCAL SYNC */}
+                    <div className="space-y-2 md:col-span-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Description (English)</label>
+                        <textarea
+                            required
+                            value={formData.description_en}
+                            rows={3}
+                            onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20 resize-none"
+                            placeholder="Ex: Beautiful apartment with ocean view..."
+                        />
+                    </div>
+
+                    {/* iCAL SYNC SECTION */}
                     <div className="space-y-4 md:col-span-2 border-t border-white/5 pt-6 mt-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
                             <LinkIcon size={12} /> Sincronización de Calendarios (.ics)
@@ -292,9 +319,9 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                                 <p className="text-[9px] text-slate-400 uppercase font-bold">Enlace de Exportación para Airbnb/Booking</p>
                                 <div className="flex gap-2">
                                     <input readOnly value={`${API_BASE_URL}/api/export/${propertyToEdit._id}.ics`} className="flex-1 bg-black/20 border-none rounded-lg p-2 text-[10px] text-slate-400 outline-none" />
-                                    <button type="button" onClick={handleCopyExportUrl} className="px-3 bg-white/10 rounded-lg flex items-center gap-2 hover:bg-white/20 transition-all">
+                                    <button type="button" onClick={handleCopyExportUrl} className="px-3 bg-white/10 rounded-lg flex items-center gap-2 hover:bg-white/20 transition-all text-white">
                                         {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
-                                        <span className="text-[9px] font-bold uppercase">{copied ? 'Copiado' : 'Copiar'}</span>
+                                        <span className="text-[9px] font-bold uppercase ml-2">{copied ? 'Copiado' : 'Copiar'}</span>
                                     </button>
                                 </div>
                             </div>
@@ -306,7 +333,7 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                                 <div key={idx} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-bold text-white uppercase tracking-tighter">{link.platform}</span>
-                                        <span className="text-[10px] text-slate-500 truncate max-w-[200px]">{link.url}</span>
+                                        <span className="text-[10px] text-slate-500 truncate max-w-50">{link.url}</span>
                                     </div>
                                     <button type="button" onClick={() => removeExternalLink(idx)} className="text-red-500/50 hover:text-red-500 transition-colors p-2"><Trash2 size={14} /></button>
                                 </div>
@@ -331,12 +358,12 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
 
                     <div className="flex gap-4 md:col-span-2 pt-6 mt-4 border-t border-white/5 sticky bottom-0 bg-[#111114]">
                         <button type="button" onClick={onClose} className="flex-1 py-4 text-[10px] font-bold text-slate-500 uppercase">Cancelar</button>
-                        <button type="submit" disabled={loading} className="flex-[2] bg-white text-black py-4 rounded-xl font-bold text-[10px] uppercase tracking-widest">
+                        <button type="submit" disabled={loading} className="flex-2 bg-white text-black py-4 rounded-xl font-bold text-[10px] uppercase tracking-widest">
                             {loading ? 'Procesando...' : propertyToEdit ? 'Guardar Cambios' : 'Publicar'}
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-    );
+    ) : null;
 };
