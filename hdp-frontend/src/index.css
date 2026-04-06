@@ -21,36 +21,53 @@
   text-align: left;
 }
 
-/* Airbnb Blocked Dates */
+/* In your global.css or app.css */
+/* Airbnb */
 .rdp-day_airbnb {
-  background-color: #FF5A5F !important;
+  background-color: #ff5a5f !important;
   color: white !important;
-  opacity: 0.9;
-  border-radius: 0px !important; /* Square for range look */
+  border-radius: 0;
 }
-
-/* Booking.com Blocked Dates */
+/* Booking.com */
 .rdp-day_booking {
   background-color: #003580 !important;
   color: white !important;
-  border-radius: 0px !important;
+  border-radius: 0;
 }
-
-/* Manual/Maintenance Blocks */
+/* Esteiapp */
+.rdp-day_esteiapp {
+  background-color: #eb982c !important;
+  color: white !important;
+  border-radius: 0;
+}
+/* Manual/Maintenance */
 .rdp-day_manual {
-  background-color: #334155 !important;
-  color: #94a3b8 !important;
-  text-decoration: line-through;
-  border-radius: 0px !important;
+  background-color: #475569 !important;
+  color: white !important;
+  border-radius: 0;
+}
+/* Other */
+.rdp-day_other {
+  background-color: #8b5cf6 !important;
+  color: white !important;
+  border-radius: 0;
 }
 
 /* Fixing rounded corners for the start and end of blocks */
-.rdp-day_airbnb:first-of-type, .rdp-day_booking:first-of-type {
+.rdp-day_airbnb:first-of-type,
+.rdp-day_booking:first-of-type,
+.rdp-day_esteiapp:first-of-type,
+.rdp-day_manual:first-of-type,
+.rdp-day_other:first-of-type {
   border-top-left-radius: 10px !important;
   border-bottom-left-radius: 10px !important;
 }
 
-.rdp-day_airbnb:last-of-type, .rdp-day_booking:last-of-type {
+.rdp-day_airbnb:last-of-type,
+.rdp-day_booking:last-of-type,
+.rdp-day_esteiapp:last-of-type,
+.rdp-day_manual:last-of-type,
+.rdp-day_other:last-of-type {
   border-top-right-radius: 10px !important;
   border-bottom-right-radius: 10px !important;
 }

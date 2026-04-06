@@ -20,7 +20,8 @@ interface BlockedDate {
     _id: string;
     startDate: string;
     endDate: string;
-    source: 'Airbnb' | 'Booking.com' | 'Manual' | 'Direct-Booking';
+    // Updated to match your Backend Enum exactly
+    source: 'Airbnb' | 'Booking' | 'Booking.com' | 'Manual' | 'Direct-Booking' | 'Esteiapp' | 'Other';
     lastSynced?: string;
 }
 
@@ -140,11 +141,14 @@ export const PropertyCalendarPage = () => {
         id: b._id
     }));
 
-    const modifiers = {
-        airbnb: bookedDays.filter((d) => d.source === 'Airbnb'),
-        booking: bookedDays.filter((d) => d.source === 'Booking.com'),
-        manual: bookedDays.filter((d) => d.source === 'Manual'),
-    };
+ const modifiers = {
+    airbnb: bookedDays.filter((d) => d.source === 'Airbnb'),
+    // Combine both variations so the blue color applies to both
+    booking: bookedDays.filter((d) => d.source === 'Booking' || d.source === 'Booking.com'),
+    esteiapp: bookedDays.filter((d) => d.source === 'Esteiapp'), // Added
+    manual: bookedDays.filter((d) => d.source === 'Manual' || d.source === 'Direct-Booking'),
+    other: bookedDays.filter((d) => d.source === 'Other'), // Added
+};
 
     const disabledDays = [
         { before: new Date() },
@@ -185,7 +189,9 @@ export const PropertyCalendarPage = () => {
                         modifiersClassNames={{
                             airbnb: 'rdp-day_airbnb',
                             booking: 'rdp-day_booking',
-                            manual: 'rdp-day_manual'
+                            esteiapp: 'rdp-day_esteiapp',
+                            manual: 'rdp-day_manual',
+                            other: 'rdp-day_other'
                         }}
                         numberOfMonths={2}
                         className="bg-transparent custom-calendar"

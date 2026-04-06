@@ -339,7 +339,9 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                                 <select value={newSyncLink.platform} onChange={(e) => setNewSyncLink({ ...newSyncLink, platform: e.target.value })} className="sm:col-span-3 bg-[#1c1c1e] text-white text-[10px] p-3 rounded-xl border-none outline-none focus:ring-1 focus:ring-white/20">
                                     <option value="Airbnb">Airbnb</option>
                                     <option value="Booking.com">Booking.com</option> {/* Use the full name */}
+                                    <option value="Esteiapp">Esteiapp</option>
                                     <option value="Other">Otro</option>
+                                    
                                 </select>
                                 <input placeholder="Pegar URL .ics aquí..." value={newSyncLink.url} onChange={(e) => setNewSyncLink({ ...newSyncLink, url: e.target.value })} className="sm:col-span-7 bg-[#1c1c1e] text-white text-[10px] p-3 rounded-xl border-none outline-none focus:ring-1 focus:ring-white/20" />
                                 <button type="button" onClick={addExternalLink} className="sm:col-span-2 bg-white/10 text-white rounded-xl text-[10px] font-bold uppercase hover:bg-white/20 transition-all">Añadir</button>
