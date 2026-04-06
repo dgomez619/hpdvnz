@@ -102,10 +102,6 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
     const addExternalLink = () => {
         const trimmed = newSyncLink.url.trim();
         if (trimmed === '') return;
-        if (!trimmed.startsWith('https://') || !trimmed.endsWith('.ics')) {
-            alert('Por favor ingresa una URL válida que comience con https:// y termine en .ics');
-            return;
-        }
         setFormData(prev => ({
             ...prev,
             externalSyncLinks: [...prev.externalSyncLinks, { ...newSyncLink, url: trimmed }]
