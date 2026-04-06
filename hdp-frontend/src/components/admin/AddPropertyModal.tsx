@@ -26,7 +26,7 @@ interface PropertyFormData {
     pricePerNight: string | number;
     beds: string | number;
     baths: string | number;
-    amenities: string; 
+    amenities: string;
     images: string[];
     category: string;
     externalSyncLinks: { platform: string; url: string; _id?: string }[];
@@ -83,7 +83,7 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
             } else {
                 setFormData({
                     title: '', location: '', description_es: '', description_en: '',
-                    pricePerNight: '', beds: '', baths: '', amenities: '', 
+                    pricePerNight: '', beds: '', baths: '', amenities: '',
                     images: [], externalSyncLinks: [], category: 'Apartamento'
                 });
             }
@@ -204,7 +204,7 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
     return isOpen ? (
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-2 sm:p-4">
             <div className="bg-[#111114] w-full max-w-2xl max-h-[95vh] rounded-2xl sm:rounded-3xl border border-white/5 overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
-                
+
                 {/* Header */}
                 <div className="flex justify-between items-center p-5 sm:p-6 border-b border-white/5 bg-[#161618]">
                     <h2 className="text-white font-display text-sm sm:text-lg tracking-widest uppercase italic">
@@ -217,7 +217,7 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
 
                 {/* Form Body */}
                 <form onSubmit={handleSubmit} className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 overflow-y-auto custom-scrollbar flex-1">
-                    
+
                     {/* Images */}
                     <div className="space-y-4 md:col-span-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Gestión de Imágenes</label>
@@ -338,7 +338,7 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
                                 <select value={newSyncLink.platform} onChange={(e) => setNewSyncLink({ ...newSyncLink, platform: e.target.value })} className="sm:col-span-3 bg-[#1c1c1e] text-white text-[10px] p-3 rounded-xl border-none outline-none focus:ring-1 focus:ring-white/20">
                                     <option value="Airbnb">Airbnb</option>
-                                    <option value="Booking">Booking.com</option>
+                                    <option value="Booking.com">Booking.com</option> {/* Use the full name */}
                                     <option value="Other">Otro</option>
                                 </select>
                                 <input placeholder="Pegar URL .ics aquí..." value={newSyncLink.url} onChange={(e) => setNewSyncLink({ ...newSyncLink, url: e.target.value })} className="sm:col-span-7 bg-[#1c1c1e] text-white text-[10px] p-3 rounded-xl border-none outline-none focus:ring-1 focus:ring-white/20" />
