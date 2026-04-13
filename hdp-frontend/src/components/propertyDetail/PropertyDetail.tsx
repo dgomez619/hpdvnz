@@ -8,10 +8,17 @@ import { PhotoModal } from './PhotoModal';
 
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { getAmenityById } from '../../utils/amenityIcons';
 
 export const PropertyDetail = ({ property }: { property: Property }) => {
   const { t, i18n } = useTranslation(); // 1. Added i18n to the hook destructuring
   const navigate = useNavigate();
+
+  const displayArea = i18n.language === 'en' 
+    ? Math.round(property.sqm * 10.764) 
+    : property.sqm;
+
+  const areaUnit = i18n.language === 'en' ? 'ft²' : 'm²';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -57,7 +64,9 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
 
       <header className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         <h1 className="font-display text-3xl font-medium text-slate-900 md:text-4xl">
-          {property.title}
+          {property.title_en && property.title_es
+            ? (i18n.language === 'en' ? property.title_en : property.title_es)
+            : property.title_es || property.title_en || ' '}
         </h1>
       </header>
 
@@ -78,8 +87,11 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
 
       <div className="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-10">
-          <PropertyInfo property={property} />
-
+<PropertyInfo 
+    property={property} 
+    displayArea={displayArea} 
+    areaUnit={areaUnit} 
+  />
           <div className="border-t border-slate-100 pt-10">
             <h2 className="font-display text-2xl text-slate-900">{t('detail.about_space')}</h2>
             {/* 3. Render the localized description here */}
@@ -91,17 +103,21 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
           {/* Amenities Section */}
           <div className="border-t border-slate-100 pt-10">
             <h2 className="font-display text-2xl text-slate-900">{t('detail.amenities')}</h2>
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              {property.amenities && property.amenities.length > 0 ? (
-                property.amenities.map((item) => (
-                  <div key={item} className="flex items-center gap-4 text-slate-600 font-light text-sm uppercase tracking-wider">
-                    <span className="h-1.5 w-1.5 rounded-full bg-slate-900" />
-                    {item}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-12">
+              {property.amenities?.map((id) => {
+                const amenity = getAmenityById(id);
+                if (!amenity) return null;
+                return (
+                  <div key={id} className="flex items-center gap-4 text-slate-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-900">
+                      {amenity.icon}
+                    </div>
+                    <span className="font-light text-sm tracking-wide">
+                      {i18n.language === 'en' ? amenity.label_en : amenity.label_es}
+                    </span>
                   </div>
-                ))
-              ) : (
-                <p className="text-slate-400 font-light italic text-sm">No amenities listed.</p>
-              )}
+                );
+              })}
             </div>
           </div>
         </div>

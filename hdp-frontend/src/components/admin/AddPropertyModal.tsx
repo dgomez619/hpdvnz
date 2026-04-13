@@ -1,34 +1,23 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Search, Trash2, Link as LinkIcon, Copy, Check } from 'lucide-react';
+import type { Property } from '../../types/property';
+import { AMENITIES_LIST } from '../../utils/amenityIcons';
 
-// 1. BASE INTERFACE
-interface Property {
-    _id: string;
-    title: string;
-    location: string;
-    description_es: string;
-    description_en: string;
-    pricePerNight: number;
-    beds: number;
-    baths: number;
-    amenities: string[];
-    images: string[];
-    category?: string;
-    externalSyncLinks?: { platform: string; url: string; _id?: string }[];
-}
 
-// 2. FORM STATE INTERFACE
 interface PropertyFormData {
-    title: string;
+    title_es: string;      // Update these to match
+    title_en: string;      // Update these to match
     location: string;
     description_es: string;
     description_en: string;
     pricePerNight: string | number;
     beds: string | number;
     baths: string | number;
-    amenities: string;
+    sqm: string | number;  // Ensure this is sqm now
+    category_es: string;   // Added
+    category_en: string;   // Added
+    amenities: string[];
     images: string[];
-    category: string;
     externalSyncLinks: { platform: string; url: string; _id?: string }[];
 }
 
@@ -36,7 +25,7 @@ interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
-    propertyToEdit?: Property | null;
+    propertyToEdit?: Property | null; // This now uses the global Property type
 }
 
 export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }: ModalProps) => {
@@ -47,17 +36,20 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
     const [formData, setFormData] = useState<PropertyFormData>({
-        title: '',
+        title_es: '',
+        title_en: '',
         location: '',
         description_es: '',
         description_en: '',
         pricePerNight: '',
         beds: '',
         baths: '',
-        category: 'Apartamento',
-        amenities: '',
+        category_es: 'Apartamento',
+        category_en: 'Apartment',
+        amenities: [],
         images: [],
-        externalSyncLinks: []
+        externalSyncLinks: [],
+        sqm: ''
     });
 
     const [newSyncLink, setNewSyncLink] = useState({ platform: 'Airbnb', url: '' });
@@ -68,23 +60,26 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
         if (isOpen) {
             if (propertyToEdit) {
                 setFormData({
-                    title: propertyToEdit.title,
+                    title_es: propertyToEdit.title_es || '',
+                    title_en: propertyToEdit.title_en || '',
                     location: propertyToEdit.location,
                     description_es: propertyToEdit.description_es || '',
                     description_en: propertyToEdit.description_en || '',
                     pricePerNight: propertyToEdit.pricePerNight,
                     beds: propertyToEdit.beds,
                     baths: propertyToEdit.baths,
-                    amenities: propertyToEdit.amenities.join(', '),
+                    amenities: propertyToEdit.amenities || [],
                     images: propertyToEdit.images || [],
                     externalSyncLinks: propertyToEdit.externalSyncLinks || [],
-                    category: propertyToEdit.category || 'Apartamento'
+                    category_es: propertyToEdit.category_es || 'Apartamento',
+                    category_en: propertyToEdit.category_en || 'Apartment',
+                    sqm: propertyToEdit.sqm || ''
                 });
             } else {
                 setFormData({
-                    title: '', location: '', description_es: '', description_en: '',
-                    pricePerNight: '', beds: '', baths: '', amenities: '',
-                    images: [], externalSyncLinks: [], category: 'Apartamento'
+                    title_es: '', title_en: '', location: '', description_es: '', description_en: '',
+                    pricePerNight: '', beds: '', baths: '', amenities: [],
+                    images: [], externalSyncLinks: [], category_es: 'Apartamento', category_en: 'Apartment', sqm: ''
                 });
             }
         }
@@ -166,10 +161,6 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
 
         try {
             const token = localStorage.getItem('adminToken');
-            const sanitizedAmenities = formData.amenities
-                .split(',')
-                .map(item => item.trim())
-                .filter(i => i !== "");
 
             const response = await fetch(url, {
                 method: method,
@@ -182,7 +173,7 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                     pricePerNight: parseFloat(formData.pricePerNight.toString()) || 0,
                     beds: parseInt(formData.beds.toString(), 10) || 0,
                     baths: parseInt(formData.baths.toString(), 10) || 0,
-                    amenities: sanitizedAmenities,
+                    sqm: parseFloat(formData.sqm.toString()) || 0
                 }),
             });
 
@@ -239,30 +230,70 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                         </div>
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Título</label>
-                        <input required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20" />
+                    {/* --- TITLES (Side by Side) --- */}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-sans">Título (ES)</label>
+                        <input
+                            required
+                            value={formData.title_es}
+                            onChange={(e) => setFormData({ ...formData, title_es: e.target.value })}
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20"
+                            placeholder="Ej: Villa del Mar"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-sans">Title (EN)</label>
+                        <input
+                            required
+                            value={formData.title_en}
+                            onChange={(e) => setFormData({ ...formData, title_en: e.target.value })}
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20"
+                            placeholder="Ex: Ocean Villa"
+                        />
                     </div>
 
+                    {/* --- CATEGORY / BADGE (Side by Side) --- */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Categoría (Badge)</label>
-                        <select
-                            value={formData.category}
-                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20 appearance-none cursor-pointer"
-                        >
-                            <option value="Apartamento">Apartamento</option>
-                            <option value="Casa">Casa</option>
-                            <option value="Villa">Villa</option>
-                            <option value="Estudio">Estudio</option>
-                            <option value="Luxury">Luxury</option>
-                            <option value="Posada">Posada</option>
-                        </select>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-sans">Categoría (ES)</label>
+                        <input
+                            required
+                            value={formData.category_es}
+                            onChange={(e) => setFormData({ ...formData, category_es: e.target.value })}
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20"
+                            placeholder="Ej: Apartamento"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-sans">Category (EN)</label>
+                        <input
+                            required
+                            value={formData.category_en}
+                            onChange={(e) => setFormData({ ...formData, category_en: e.target.value })}
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20"
+                            placeholder="Ex: Apartment"
+                        />
                     </div>
 
+                    {/* --- LOCATION & SIZE (The sqm Base Unit) --- */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Ubicación</label>
-                        <input required value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20" />
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-sans">Ubicación</label>
+                        <input
+                            required
+                            value={formData.location}
+                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-sans">Tamaño (m²)</label>
+                        <input
+                            required
+                            type="number"
+                            value={formData.sqm}
+                            onChange={(e) => setFormData({ ...formData, sqm: e.target.value })}
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20"
+                            placeholder="Ej: 85"
+                        />
                     </div>
 
                     <div className="space-y-2">
@@ -341,7 +372,7 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                                     <option value="Booking.com">Booking.com</option> {/* Use the full name */}
                                     <option value="Esteiapp">Esteiapp</option>
                                     <option value="Other">Otro</option>
-                                    
+
                                 </select>
                                 <input placeholder="Pegar URL .ics aquí..." value={newSyncLink.url} onChange={(e) => setNewSyncLink({ ...newSyncLink, url: e.target.value })} className="sm:col-span-7 bg-[#1c1c1e] text-white text-[10px] p-3 rounded-xl border-none outline-none focus:ring-1 focus:ring-white/20" />
                                 <button type="button" onClick={addExternalLink} className="sm:col-span-2 bg-white/10 text-white rounded-xl text-[10px] font-bold uppercase hover:bg-white/20 transition-all">Añadir</button>
@@ -349,9 +380,37 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                         </div>
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Comodidades</label>
-                        <input value={formData.amenities} onChange={(e) => setFormData({ ...formData, amenities: e.target.value })} className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20" placeholder="Piscina, Wifi, A/C..." />
+                    {/* --- AMENITIES SELECTION --- */}
+                    <div className="space-y-4 md:col-span-2 border-t border-white/5 pt-6">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Amenidades / Comodidades</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {AMENITIES_LIST.map((amenity) => {
+                                const isSelected = formData.amenities.includes(amenity.id);
+                                return (
+                                    <button
+                                        key={amenity.id}
+                                        type="button"
+                                        onClick={() => {
+                                            const newAmenities = isSelected
+                                                ? formData.amenities.filter(id => id !== amenity.id)
+                                                : [...formData.amenities, amenity.id];
+                                            setFormData({ ...formData, amenities: newAmenities });
+                                        }}
+                                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${isSelected
+                                                ? 'bg-white border-white text-black'
+                                                : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/20'
+                                            }`}
+                                    >
+                                        <span className={isSelected ? 'text-black' : 'text-slate-500'}>
+                                            {amenity.icon}
+                                        </span>
+                                        <span className="text-[10px] font-bold uppercase tracking-tight">
+                                            {amenity.label_es}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
 
                     <div className="flex gap-4 md:col-span-2 pt-6 mt-4 border-t border-white/5 sticky bottom-0 bg-[#111114]">
