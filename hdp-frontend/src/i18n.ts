@@ -29,6 +29,8 @@ i18n
                         location: "Where",
                         placeholder_location: "Select City",
                         dates: "When",
+                        check_in: "Check-in",
+                        check_out: "Check-out",
                         guests: "Guests",
                         guest: "Guest",
                         guests_plural: "Guests",
@@ -43,6 +45,7 @@ i18n
                         baths: "ba",
                         sqft: "ft²",
                         night: "night",
+                        night_plural: "nights",
                         managed: "Managed by Lumina"
                     },
                     guarantee: {
@@ -73,7 +76,22 @@ i18n
                         no_charge: "You won't be charged yet",
                         cleaning_fee: "Cleaning fee",
                         service_fee: "Service fee",
-                        taxes: "Taxes"
+                        taxes: "Taxes",
+                        request_title: "Booking Request",
+                        request_sent: "Request sent!",
+                        redirect_whatsapp: "We are redirecting you to WhatsApp to finalize details...",
+                        summary_title: "Booking summary",
+                        summary_check_in: "Check-in",
+                        summary_check_out: "Check-out",
+                        summary_guests: "Guests",
+                        full_name: "Full name",
+                        full_name_placeholder: "Ex: Dan Smith",
+                        contact_label: "Email or WhatsApp",
+                        contact_placeholder: "email@example.com or +1...",
+                        processing: "Processing...",
+                        confirm_and_contact: "Confirm and contact",
+                        whatsapp_intro: "Hello! I'm interested in booking {{title}}.",
+                        whatsapp_details: "Details:"
                     },
                     amenities: {
                         title: "What this place offers",
@@ -142,6 +160,8 @@ i18n
                         location: "Dónde",
                         placeholder_location: "Elegir Ciudad",
                         dates: "Cuándo",
+                        check_in: "Llegada",
+                        check_out: "Salida",
                         guests: "Huéspedes",
                         guest: "Huésped",
                         guests_plural: "Huéspedes",
@@ -156,6 +176,7 @@ i18n
                         baths: "baños",
                         sqft: "m²",
                         night: "noche",
+                        night_plural: "noches",
                         managed: "Gestionado por Lumina"
                     },
                     guarantee: {
@@ -186,7 +207,22 @@ i18n
                         no_charge: "No se te cobrará nada aún",
                         cleaning_fee: "Gastos de limpieza",
                         service_fee: "Comisión por servicio",
-                        taxes: "Impuestos"
+                        taxes: "Impuestos",
+                        request_title: "Solicitud de reserva",
+                        request_sent: "¡Solicitud enviada!",
+                        redirect_whatsapp: "Te estamos redirigiendo a WhatsApp para finalizar los detalles...",
+                        summary_title: "Resumen de reserva",
+                        summary_check_in: "Llegada",
+                        summary_check_out: "Salida",
+                        summary_guests: "Huéspedes",
+                        full_name: "Nombre completo",
+                        full_name_placeholder: "Ej: Dan Smith",
+                        contact_label: "Email o WhatsApp",
+                        contact_placeholder: "email@ejemplo.com o +58...",
+                        processing: "Procesando...",
+                        confirm_and_contact: "Confirmar y contactar",
+                        whatsapp_intro: "¡Hola! Me interesa reservar {{title}}.",
+                        whatsapp_details: "Detalles:"
                     },
                     amenities: {
                         title: "Lo que este lugar ofrece",

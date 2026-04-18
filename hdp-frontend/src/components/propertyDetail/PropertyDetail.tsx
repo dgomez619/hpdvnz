@@ -9,27 +9,36 @@ import { PhotoModal } from './PhotoModal';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getAmenityById } from '../../utils/amenityIcons';
-
+import { BookingModal } from '../BookingModal';
 export const PropertyDetail = ({ property }: { property: Property }) => {
-  const { t, i18n } = useTranslation(); // 1. Added i18n to the hook destructuring
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
+  // --- LOGIC: Area Conversion & Localization ---
   const displayArea = i18n.language === 'en' 
     ? Math.round(property.sqm * 10.764) 
     : property.sqm;
 
   const areaUnit = i18n.language === 'en' ? 'ft²' : 'm²';
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  if (!property) return null;
-
-  // 2. Logic to pick the correct description based on active language
   const currentDescription = i18n.language === 'en' 
     ? property.description_en 
     : property.description_es;
 
+  // --- STATE: Modals ---
+  const [isModalOpen, setIsModalOpen] = useState(false); // Photo Gallery Modal
+  const [isBookingOpen, setIsBookingOpen] = useState(false); // New Booking Request Modal
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [bookingDates, setBookingDates] = useState({
+    startDate: '',
+    endDate: '',
+    guests: 1,
+  });
+  const [bookingValidationError, setBookingValidationError] = useState('');
+
+  if (!property) return null;
+
+  // --- HANDLERS: Gallery ---
   const openModal = (index: number) => {
     setCurrentImageIndex(index);
     setIsModalOpen(true);
@@ -47,6 +56,24 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
     if (imageCount > 0) {
       setCurrentImageIndex((prev) => (prev - 1 + imageCount) % imageCount);
     }
+  };
+
+  const handleOpenBookingModal = () => {
+    const { startDate, endDate } = bookingDates;
+    if (!startDate || !endDate) {
+      setBookingValidationError(t('detail.available_dates'));
+      return;
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (end <= start) {
+      setBookingValidationError(t('search.check_out'));
+      return;
+    }
+
+    setBookingValidationError('');
+    setIsBookingOpen(true);
   };
 
   return (
@@ -75,6 +102,7 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
         onImageClick={openModal} 
       />
 
+      {/* Full Screen Photo Modal */}
       {isModalOpen && property.images && (
         <PhotoModal 
           images={property.images}
@@ -86,15 +114,16 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
       )}
 
       <div className="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-3">
+        {/* Left Content */}
         <div className="lg:col-span-2 space-y-10">
-<PropertyInfo 
-    property={property} 
-    displayArea={displayArea} 
-    areaUnit={areaUnit} 
-  />
+          <PropertyInfo 
+            property={property} 
+            displayArea={displayArea} 
+            areaUnit={areaUnit} 
+          />
+          
           <div className="border-t border-slate-100 pt-10">
             <h2 className="font-display text-2xl text-slate-900">{t('detail.about_space')}</h2>
-            {/* 3. Render the localized description here */}
             <p className="mt-4 leading-relaxed text-slate-600 font-light text-lg whitespace-pre-wrap">
               {currentDescription || property.description_es} 
             </p>
@@ -122,9 +151,26 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
           </div>
         </div>
 
+        {/* Right Sidebar (Desktop) */}
         <aside className="relative">
           <div className="sticky top-28 hidden lg:block">
-            <BookingWidget property={property} />
+            <BookingWidget 
+              property={property} 
+              startDate={bookingDates.startDate}
+              endDate={bookingDates.endDate}
+              guests={bookingDates.guests}
+              onStartDateChange={(value) => {
+                setBookingValidationError('');
+                setBookingDates((prev) => ({ ...prev, startDate: value }));
+              }}
+              onEndDateChange={(value) => {
+                setBookingValidationError('');
+                setBookingDates((prev) => ({ ...prev, endDate: value }));
+              }}
+              onGuestsChange={(value) => setBookingDates((prev) => ({ ...prev, guests: value }))}
+              onReserveClick={handleOpenBookingModal}
+              validationError={bookingValidationError}
+            />
           </div>
         </aside>
       </div>
@@ -138,10 +184,23 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
           </p>
           <p className="text-xs underline">{t('detail.available_dates')}</p>
         </div>
-        <button className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-bold text-white active:scale-95 transition-transform">
+        <button 
+          onClick={handleOpenBookingModal}
+          className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-bold text-white active:scale-95 transition-transform"
+        >
           {t('detail.reserve_button')}
         </button>
       </div>
+
+      {/* Inquiry Form Modal */}
+      <BookingModal 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)} 
+        property={property}
+        startDate={bookingDates.startDate}
+        endDate={bookingDates.endDate}
+        guests={bookingDates.guests}
+      />
     </div>
   );
 };
