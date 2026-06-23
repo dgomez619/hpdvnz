@@ -1,6 +1,6 @@
 // src/components/Admin/AddServiceModal.tsx
 import { useState, useEffect } from 'react';
-import { X, Upload, Loader2 } from 'lucide-react';
+import { X,  Loader2 } from 'lucide-react';
 
 interface AddServiceModalProps {
   isOpen: boolean;
