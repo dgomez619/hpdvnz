@@ -9,7 +9,7 @@ import { PhotoModal } from './PhotoModal';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getAmenityById } from '../../utils/amenityIcons';
-import { BookingModal } from '../BookingModal';
+import { BookingModal } from './BookingModal';
 export const PropertyDetail = ({ property }: { property: Property }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();

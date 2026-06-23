@@ -1,7 +1,7 @@
 // src/components/Booking/BookingModal.tsx
 import { useState } from 'react';
 import { X, Users, MessageCircle, Send, CheckCircle2 } from 'lucide-react';
-import type { Property } from '../types/property';
+import type { Property } from '../../types/property';
 import { useTranslation } from 'react-i18next';
 
 interface BookingModalProps {
@@ -26,26 +26,37 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
   if (!isOpen) return null;
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-  const WHATSAPP_NUMBER = "1234567890"; // Reemplaza con tu número de WhatsApp Business (sin el +)
+  const WHATSAPP_NUMBER = "+584121803892"; // Reemplaza con tu número de WhatsApp Business (sin el +)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      // 1. SAVE TO DATABASE
-      const response = await fetch(`${API_BASE}/api/bookings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          propertyId: property._id,
-          ...formData,
-          startDate,
-          endDate,
-          guests,
-          totalPrice: property.pricePerNight * 1 // Placeholder for date calculation logic
-        })
-      });
+  // 1. Calculate nights dynamically
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const msInDay = 1000 * 60 * 60 * 24;
+  const nights = Math.max(0, Math.round((end.getTime() - start.getTime()) / msInDay));
+
+  // 2. Define the same fees used in your widget
+  const cleaningFee = 40;
+  const serviceFee = 25;
+  const calculatedTotal = (property.pricePerNight * nights) + cleaningFee + serviceFee;
+
+  try {
+    // 3. SAVE TO DATABASE with accurate calculation
+    const response = await fetch(`${API_BASE}/api/bookings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        propertyId: property._id,
+        ...formData,
+        startDate,
+        endDate,
+        guests,
+        totalPrice: calculatedTotal // Using the accurate calculation
+      })
+    });
 
       if (response.ok) {
         // 2. TRIGGER WHATSAPP REDIRECT
@@ -100,6 +111,10 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
               <p className="mt-2">{t('booking.summary_check_in')}: {startDate || '-'}</p>
               <p>{t('booking.summary_check_out')}: {endDate || '-'}</p>
               <p>{t('booking.summary_guests')}: {guests}</p>
+              <p className=''>{t('booking.summary_nights')}: {startDate && endDate ? Math.max(0, Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24))) : 0}</p>
+              <p>{t('booking.summary_price_per_night')}: ${property.pricePerNight}</p>
+              <p className=''>{t('booking.summary_fees')}: ${guests > 0 ? 40 + 25 : 0}</p>
+              <p className="mt-4 font-bold">{t('booking.summary_total')}: ${property.pricePerNight * Math.max(0, Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24))) + (guests > 0 ? 40 + 25 : 0)}</p>
             </div>
             
             {/* Guest Name */}

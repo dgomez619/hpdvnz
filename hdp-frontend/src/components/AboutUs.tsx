@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next';
+import araguaneyImage from '../assets/araguaney.jpg';
+import vnzImage from '../assets/vnz1.jpg';
 
 export const AboutUs = () => {
   const { t } = useTranslation();
@@ -37,7 +39,7 @@ export const AboutUs = () => {
         <section className="mt-20 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           <div className="lg:col-span-7 overflow-hidden rounded-2xl aspect-[16/9]">
             <img 
-              src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200" 
+              src={araguaneyImage}
               alt="Our Vision"
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-[3000ms]"
             />
@@ -50,6 +52,26 @@ export const AboutUs = () => {
             <p className="text-slate-600 font-light leading-relaxed">
               {t('about.vision_desc')}
             </p>
+          </div>
+        </section>
+
+          {/* 2. IMAGE & INTRO SPLIT */}
+        <section className="mt-20 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+          <div className="lg:col-span-5 space-y-6">
+            <h2 className="font-display text-3xl text-slate-900">{t('about.vision_title2')}</h2>
+            <p className="text-slate-500 font-light leading-relaxed text-lg">
+              {t('about.vision_quote2')}
+            </p>
+            <p className="text-slate-600 font-light leading-relaxed">
+              {t('about.vision_desc2')}
+            </p>
+          </div>
+          <div className="lg:col-span-7 overflow-hidden rounded-2xl aspect-[16/9]">
+            <img 
+              src={vnzImage}
+              alt="Our Vision"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-[3000ms]"
+            />
           </div>
         </section>
 

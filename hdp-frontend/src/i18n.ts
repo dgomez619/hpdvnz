@@ -56,6 +56,7 @@ i18n
                     detail: {
                         about_space: "About this space",
                         reserve_button: "Check Availability",
+                        available_dates: "Select dates",
                         no_charge_yet: "You won't be charged yet",
                         amenities: "What this place offers",
                         show_all_photos: "Show all photos",
@@ -91,7 +92,11 @@ i18n
                         processing: "Processing...",
                         confirm_and_contact: "Confirm and contact",
                         whatsapp_intro: "Hello! I'm interested in booking {{title}}.",
-                        whatsapp_details: "Details:"
+                        whatsapp_details: "Details:",
+                        summary_price_per_night: "Price per night",
+                        summary_fees: "Cleaning & service fees",
+                        summary_nights: "Nights",
+                        summary_total: "Total"
                     },
                     amenities: {
                         title: "What this place offers",
@@ -127,11 +132,15 @@ i18n
                         subtitle: "Our Philosophy",
                         title_main: "Redefining the art of",
                         title_italic: "Venezuelan hospitality.",
-                        vision_title: "A Curated Approach",
-                        vision_quote: "Luxury is not about price; it's about the peace of mind that comes from perfect management.",
-                        vision_desc: "Hospedaje por Dias was born from the need to bridge the gap between high-end real estate and boutique hotel services. We don't just list properties; we curate experiences.",
+                        vision_title: "Who We Are",
+                        vision_title2: "Our Journey",
+                        vision_quote: "Hospedaje por Dias was born from a real need: to respond to the growing flow of travelers entering and leaving Venezuela. Whether for vacations, medical treatment, work, or family visits, we have seen how traveling to our country requires more than just a simple room.",
+                        vision_quote2: "We have worked in this sector since before the rise of major digital platforms. While we are grateful today for the opportunity to expand our services through them and the connections they provide, our operation has always remained independent and solid.",
+                        vision_desc: "What began as a family initiative has evolved through partnerships with other entrepreneurs in the sector. Today, we have established strategic relationships that allow us to expand our lodging portfolio while always preserving our family essence.",
+                        vision_desc2: "We understand the unique circumstances that arise day by day in the region. That is why our goal is not only to offer a place to sleep, but to provide a warm and human experience. We want you to navigate your journey with safety and peace of mind, knowing we are attentive to every detail so your stay is comfortable and pleasant.",
                         value_1_title: "Exclusivity",
                         value_1_desc: "We only manage a limited collection of properties to ensure each receives our full attention.",
+                        
                         value_2_title: "Trust",
                         value_2_desc: "Verified properties, professional cleaning, and 24/7 support for every single guest.",
                         value_3_title: "Local Heritage",
@@ -187,6 +196,7 @@ i18n
                     detail: {
                         about_space: "Sobre este espacio",
                         reserve_button: "Consultar Disponibilidad",
+                        available_dates: "Seleccionar fechas",
                         no_charge_yet: "No se te cobrará nada aún",
                         amenities: "Lo que este lugar ofrece",
                         show_all_photos: "Mostrar todas las fotos",
@@ -222,7 +232,11 @@ i18n
                         processing: "Procesando...",
                         confirm_and_contact: "Confirmar y contactar",
                         whatsapp_intro: "¡Hola! Me interesa reservar {{title}}.",
-                        whatsapp_details: "Detalles:"
+                        whatsapp_details: "Detalles:",
+                        summary_price_per_night: "Precio por noche",
+                        summary_fees: "Gastos de limpieza y servicio",
+                        summary_nights: "Noches",
+                        summary_total: "Total"
                     },
                     amenities: {
                         title: "Lo que este lugar ofrece",
@@ -258,9 +272,12 @@ i18n
                         subtitle: "Nuestra Filosofía",
                         title_main: "Redefiniendo el arte de la",
                         title_italic: "hospitalidad venezolana.",
-                        vision_title: "Un Enfoque Curado",
-                        vision_quote: "El lujo no se trata de precio; se trata de la tranquilidad que brinda una gestión perfecta.",
-                        vision_desc: "Hospedaje por Dias nació de la necesidad de cerrar la brecha entre el sector inmobiliario de alta gama y los servicios de hoteles boutique.",
+                        vision_title: "Quines somos",
+                        vision_title2: "Nuestra Trayectoria",
+                        vision_quote: "Hospedaje por Dias nació de una necesidad real: responder al creciente movimiento de viajeros que entran y salen de Venezuela. Ya sea por vacaciones, tratamientos médicos, trabajo o visitas familiares, hemos visto cómo la dinámica de los viajes a nuestro país requiere algo más que una simple habitación.",
+                         vision_quote2: " Llevamos trabajando en este sector antes de la llegada de las grandes plataformas digitales. Aunque hoy agradecemos poder expandir nuestros servicios a través de ellas y las conexiones que ofrecen, nuestra operación siempre ha sido independiente y sólida.",
+                        vision_desc: "Lo que comenzó como una iniciativa familiar ha evolucionado gracias a la asociación con otros emprendedores del sector. Hoy, hemos establecido relaciones estratégicas que nos permiten ampliar nuestro catálogo de hospedajes, manteniendo siempre intacta nuestra esencia familiar.",
+                        vision_desc2: "Entendemos las circunstancias únicas que se presentan día a día en la región. Por eso, nuestro objetivo no es solo ofrecer un lugar donde dormir, sino brindar una experiencia cercana y humana. Queremos que navegues tu viaje con seguridad y tranquilidad, sabiendo que estamos atentos a cada detalle para que tu estadía sea cómoda y confortable",
                         value_1_title: "Exclusividad",
                         value_1_desc: "Solo gestionamos una colección limitada de propiedades para asegurar nuestra total atención.",
                         value_2_title: "Confianza",
