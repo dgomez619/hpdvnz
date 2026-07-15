@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { PropertyDetail } from './propertyDetail/PropertyDetail';
 import { Loader2 } from 'lucide-react';
 import type { Property } from '../types/property';
@@ -8,6 +8,7 @@ import type { Property } from '../types/property';
 
 export const PropertyDetailWrapper = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   
   // 1. ADD THIS: Define the API base URL
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
@@ -61,5 +62,14 @@ export const PropertyDetailWrapper = () => {
   }
 
   // 3. SUCCESS STATE
-  return <PropertyDetail property={property} />;
+  return (
+    <PropertyDetail
+      property={property}
+      initialBookingDates={{
+        startDate: searchParams.get('checkIn') || '',
+        endDate: searchParams.get('checkOut') || '',
+        guests: Number(searchParams.get('guests')) || 1,
+      }}
+    />
+  );
 };

@@ -22,8 +22,8 @@ i18n
                         book_now: "Reserve Now",
                     },
                     hero: {
-                        title: "Premium Stays, Personalized for You",
-                        subtitle: "Hand-picked luxury rentals with a human touch."
+                        title: "Comfort you can trust",
+                        subtitle: "Easy check-in. Secure homes. Right where you need to be."
                     },
                     search: {
                         location: "Where",
@@ -35,11 +35,14 @@ i18n
                         guest: "Guest",
                         guests_plural: "Guests",
                         how_many: "How many?",
-                        button: "Search"
+                        button: "Search",
+                        done: "Apply",
+                        complete_fields: "Select a city and both dates.",
+                        invalid_date_range: "Check-out must be after check-in."
                     },
                     properties: {
                         title: "The Collection",
-                        subtitle: "Hand-picked sanctuaries designed for comfort and inspiration.",
+                        subtitle: "Fully equipped accommodation for a pleasant and safe stay.",
                         view_all: "Explore the Collection",
                         beds: "bd",
                         baths: "ba",
@@ -90,6 +93,10 @@ i18n
                         contact_label: "Email or WhatsApp",
                         contact_placeholder: "email@example.com or +1...",
                         processing: "Processing...",
+                        appears_available: "These dates appear available. Submit an inquiry to receive confirmation.",
+                        may_be_unavailable: "These dates may be unavailable based on the current calendar. You can still submit an inquiry.",
+                        availability_error: "We could not check the calendar. You can still submit an inquiry.",
+                        send_inquiry: "Send inquiry",
                         confirm_and_contact: "Confirm and contact",
                         whatsapp_intro: "Hello! I'm interested in booking {{title}}.",
                         whatsapp_details: "Details:",
@@ -109,8 +116,8 @@ i18n
                         workspace: "Dedicated workspace"
                     },
                     catalog: {
-                        title: "The Full Collection",
-                        subtitle: "Browse our entire portfolio of exclusively managed properties across the most iconic locations.",
+                        title: "Currently available properties",
+                        subtitle: "Browse our entire portfolio of exclusively managed properties",
                         filter_location: "Filter by Location",
                         results_found: "Properties found"
                     },
@@ -162,8 +169,8 @@ i18n
                         book_now: "Reservar Ahora",
                     },
                     hero: {
-                        title: "Estancias Premium, Personalizadas para Ti",
-                        subtitle: "Alquileres de lujo seleccionados con un toque humano."
+                        title: "Comodidad en la que puedes confiar",
+                        subtitle: "Check-in fácil. Casas seguras. En el lugar ideal."
                     },
                     search: {
                         location: "Dónde",
@@ -175,11 +182,14 @@ i18n
                         guest: "Huésped",
                         guests_plural: "Huéspedes",
                         how_many: "¿Cuántos?",
-                        button: "Buscar"
+                        button: "Buscar",
+                        done: "Aplicar",
+                        complete_fields: "Selecciona una ciudad y ambas fechas.",
+                        invalid_date_range: "La salida debe ser posterior a la llegada."
                     },
                     properties: {
                         title: "La Colección",
-                        subtitle: "Santuarios seleccionados a mano, diseñados para el confort y la inspiración.",
+                        subtitle: "Alojamiento totalmente equipado para una estancia agradable y segura.",
                         view_all: "Explorar la Colección",
                         beds: "hab",
                         baths: "baños",
@@ -230,6 +240,10 @@ i18n
                         contact_label: "Email o WhatsApp",
                         contact_placeholder: "email@ejemplo.com o +58...",
                         processing: "Procesando...",
+                        appears_available: "Estas fechas parecen estar disponibles. Envía una solicitud para recibir confirmación.",
+                        may_be_unavailable: "Estas fechas podrían no estar disponibles según el calendario actual. Aún puedes enviar una solicitud.",
+                        availability_error: "No pudimos consultar el calendario. Aún puedes enviar una solicitud.",
+                        send_inquiry: "Enviar solicitud",
                         confirm_and_contact: "Confirmar y contactar",
                         whatsapp_intro: "¡Hola! Me interesa reservar {{title}}.",
                         whatsapp_details: "Detalles:",
@@ -249,8 +263,8 @@ i18n
                         workspace: "Zona de trabajo dedicada"
                     },
                     catalog: {
-                        title: "La Colección Completa",
-                        subtitle: "Explore nuestro portafolio completo de propiedades gestionadas exclusivamente en las ubicaciones más icónicas.",
+                        title: "Disponibilidad actual de propiedades",
+                        subtitle: "Explore nuestro portafolio completo de propiedades exclusivamente gestionadas",
                         filter_location: "Filtrar por Ubicación",
                         results_found: "Propiedades encontradas"
                     },

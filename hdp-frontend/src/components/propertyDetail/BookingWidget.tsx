@@ -9,8 +9,11 @@ interface BookingWidgetProps {
     onStartDateChange: (value: string) => void;
     onEndDateChange: (value: string) => void;
     onGuestsChange: (value: number) => void;
+    onCheckAvailability: () => void;
     onReserveClick: () => void;
     validationError?: string;
+    availabilityStatus?: 'available' | 'mayBeUnavailable' | null;
+    isCheckingAvailability?: boolean;
 }
 
 export const BookingWidget = ({
@@ -21,13 +24,22 @@ export const BookingWidget = ({
     onStartDateChange,
     onEndDateChange,
     onGuestsChange,
+    onCheckAvailability,
     onReserveClick,
-    validationError
+    validationError,
+    availabilityStatus = null,
+    isCheckingAvailability = false,
 }: BookingWidgetProps) => {
     const { t } = useTranslation();
 
     const cleaningFee = 40;
     const serviceFee = 25;
+    const today = new Date();
+    const minimumDate = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, '0'),
+        String(today.getDate()).padStart(2, '0'),
+    ].join('-');
 
     const numberOfNights = (() => {
         if (!startDate || !endDate) return 0;
@@ -59,6 +71,7 @@ export const BookingWidget = ({
                         <input
                             type="date"
                             value={startDate}
+                            min={minimumDate}
                             onChange={(e) => onStartDateChange(e.target.value)}
                             className="w-full text-sm bg-transparent outline-none"
                         />
@@ -68,6 +81,7 @@ export const BookingWidget = ({
                         <input
                             type="date"
                             value={endDate}
+                            min={startDate || minimumDate}
                             onChange={(e) => onEndDateChange(e.target.value)}
                             className="w-full text-sm bg-transparent outline-none"
                         />
@@ -93,8 +107,17 @@ export const BookingWidget = ({
                 <p className="mb-4 text-xs font-medium text-red-500">{validationError}</p>
             ) : null}
 
-            <button onClick={onReserveClick} className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold uppercase tracking-widest hover:bg-slate-800 transition-all">
+            {availabilityStatus ? (
+                <p className={`mb-4 rounded-lg px-3 py-2 text-xs font-medium ${availabilityStatus === 'available' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`}>
+                    {availabilityStatus === 'available' ? t('booking.appears_available') : t('booking.may_be_unavailable')}
+                </p>
+            ) : null}
+
+            <button onClick={onCheckAvailability} disabled={isCheckingAvailability} className="w-full rounded-lg bg-slate-900 py-3 font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-800 disabled:cursor-wait disabled:opacity-60">
                 {t('detail.reserve_button')}
+            </button>
+            <button onClick={onReserveClick} className="mt-3 w-full rounded-lg border border-slate-300 py-3 font-bold uppercase tracking-widest text-slate-900 transition-all hover:bg-slate-50">
+                {t('booking.send_inquiry')}
             </button>
 
             <div className="mt-4 space-y-3">

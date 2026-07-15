@@ -10,7 +10,12 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getAmenityById } from '../../utils/amenityIcons';
 import { BookingModal } from './BookingModal';
-export const PropertyDetail = ({ property }: { property: Property }) => {
+interface PropertyDetailProps {
+  property: Property;
+  initialBookingDates?: { startDate: string; endDate: string; guests: number };
+}
+
+export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetailProps) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -30,11 +35,13 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
   const [isBookingOpen, setIsBookingOpen] = useState(false); // New Booking Request Modal
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [bookingDates, setBookingDates] = useState({
-    startDate: '',
-    endDate: '',
-    guests: 1,
+    startDate: initialBookingDates?.startDate || '',
+    endDate: initialBookingDates?.endDate || '',
+    guests: initialBookingDates?.guests || 1,
   });
   const [bookingValidationError, setBookingValidationError] = useState('');
+  const [availabilityStatus, setAvailabilityStatus] = useState<'available' | 'mayBeUnavailable' | null>(null);
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
 
   if (!property) return null;
 
@@ -76,6 +83,36 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
     setIsBookingOpen(true);
   };
 
+  const handleCheckAvailability = async () => {
+    const { startDate, endDate } = bookingDates;
+    if (!startDate || !endDate || endDate <= startDate) {
+      setAvailabilityStatus(null);
+      setBookingValidationError(!startDate || !endDate ? t('detail.available_dates') : t('search.check_out'));
+      return;
+    }
+
+    setBookingValidationError('');
+    setIsCheckingAvailability(true);
+    try {
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${apiBase}/api/properties/${property._id}/availability`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startDate, endDate }),
+      });
+
+      if (!response.ok) throw new Error('Availability check failed');
+      const data: { mayBeUnavailable: boolean } = await response.json();
+      setAvailabilityStatus(data.mayBeUnavailable ? 'mayBeUnavailable' : 'available');
+    } catch (error) {
+      console.error('Error checking availability:', error);
+      setAvailabilityStatus(null);
+      setBookingValidationError(t('booking.availability_error'));
+    } finally {
+      setIsCheckingAvailability(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white pb-20 pt-20 md:pt-24">
       {/* Back Button */}
@@ -99,7 +136,8 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
 
       <PropertyGallery 
         images={property.images || []} 
-        onImageClick={openModal} 
+        onImageClick={openModal}
+        isLoading={false}
       />
 
       {/* Full Screen Photo Modal */}
@@ -161,15 +199,24 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
               guests={bookingDates.guests}
               onStartDateChange={(value) => {
                 setBookingValidationError('');
-                setBookingDates((prev) => ({ ...prev, startDate: value }));
+                setAvailabilityStatus(null);
+                setBookingDates((prev) => ({
+                  ...prev,
+                  startDate: value,
+                  endDate: prev.endDate && prev.endDate <= value ? '' : prev.endDate,
+                }));
               }}
               onEndDateChange={(value) => {
                 setBookingValidationError('');
+                setAvailabilityStatus(null);
                 setBookingDates((prev) => ({ ...prev, endDate: value }));
               }}
               onGuestsChange={(value) => setBookingDates((prev) => ({ ...prev, guests: value }))}
+              onCheckAvailability={handleCheckAvailability}
               onReserveClick={handleOpenBookingModal}
               validationError={bookingValidationError}
+              availabilityStatus={availabilityStatus}
+              isCheckingAvailability={isCheckingAvailability}
             />
           </div>
         </aside>
@@ -182,14 +229,25 @@ export const PropertyDetail = ({ property }: { property: Property }) => {
             ${property.pricePerNight} 
             <span className="font-light text-slate-500"> / {t('properties.night')}</span>
           </p>
-          <p className="text-xs underline">{t('detail.available_dates')}</p>
+          <p className="text-xs underline">
+            {availabilityStatus === 'mayBeUnavailable' ? t('booking.may_be_unavailable') : t('detail.available_dates')}
+          </p>
         </div>
-        <button 
-          onClick={handleOpenBookingModal}
-          className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-bold text-white active:scale-95 transition-transform"
-        >
-          {t('detail.reserve_button')}
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={handleCheckAvailability}
+            disabled={isCheckingAvailability}
+            className="rounded-lg bg-slate-900 px-5 py-2 text-xs font-bold text-white transition-transform active:scale-95 disabled:opacity-60"
+          >
+            {t('detail.reserve_button')}
+          </button>
+          <button
+            onClick={handleOpenBookingModal}
+            className="rounded-lg border border-slate-300 px-5 py-2 text-xs font-bold text-slate-900 transition-transform active:scale-95"
+          >
+            {t('booking.send_inquiry')}
+          </button>
+        </div>
       </div>
 
       {/* Inquiry Form Modal */}

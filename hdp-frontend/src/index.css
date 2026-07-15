@@ -11,6 +11,24 @@
   --font-sans: "Inter", sans-serif;
 }
 
+@keyframes shimmer {
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f8fafc 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+  }
+}
+
 .date-input::-webkit-calendar-picker-indicator {
   opacity: 1;
   filter: contrast(1.05) brightness(0.65);

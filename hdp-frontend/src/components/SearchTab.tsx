@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const AVAILABLE_CITIES = ['Valencia', 'Lecheria', 'Chiciriviche', 'Tinaquillo'];
 
 export const SearchTab = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   // State Management
   const [cityOpen, setCityOpen] = useState(false);
@@ -12,6 +14,34 @@ export const SearchTab = () => {
   const [selectedCity, setSelectedCity] = useState('');
   const [guests, setGuests] = useState(1);
   const [dates, setDates] = useState({ checkIn: '', checkOut: '' });
+  const [searchError, setSearchError] = useState('');
+  const today = new Date();
+  const minimumDate = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-');
+
+  const handleSearch = () => {
+    if (!selectedCity || !dates.checkIn || !dates.checkOut) {
+      setSearchError(t('search.complete_fields'));
+      return;
+    }
+
+    if (dates.checkOut <= dates.checkIn) {
+      setSearchError(t('search.invalid_date_range'));
+      return;
+    }
+
+    const params = new URLSearchParams({
+      city: selectedCity,
+      checkIn: dates.checkIn,
+      checkOut: dates.checkOut,
+      guests: String(guests),
+    });
+
+    navigate(`/catalog?${params.toString()}`);
+  };
 
   return (
     <div className="relative mx-auto flex w-full flex-col divide-y divide-gray-100 rounded-xl bg-white p-2 shadow-2xl md:flex-row md:divide-x md:divide-y-0">
@@ -28,9 +58,9 @@ export const SearchTab = () => {
           </span>
         </div>
         {cityOpen && (
-          <div className="absolute top-full left-0 z-30 mt-2 w-full min-w-0 rounded-lg bg-white shadow-xl ring-1 ring-black/5 md:min-w-50">
+          <div className="absolute top-full left-0 z-30 mt-2 grid max-h-56 w-full min-w-0 grid-cols-2 overflow-y-auto rounded-lg bg-white shadow-xl ring-1 ring-black/5 md:min-w-70">
             {AVAILABLE_CITIES.map((city) => (
-              <button key={city} onClick={() => { setSelectedCity(city); setCityOpen(false); }}
+              <button key={city} onClick={() => { setSelectedCity(city); setCityOpen(false); setSearchError(''); }}
                 className="w-full px-4 py-3 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-brand-gold sm:px-6">
                 {city}
               </button>
@@ -49,8 +79,16 @@ export const SearchTab = () => {
               placeholder='Check-in'
               aria-label="Check-in date"
               value={dates.checkIn}
+              min={minimumDate}
               className="date-input h-5 w-full min-w-0 appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none scheme-light"
-              onChange={(e) => setDates({...dates, checkIn: e.target.value})}
+              onChange={(e) => {
+                const checkIn = e.target.value;
+                setDates((current) => ({
+                  checkIn,
+                  checkOut: current.checkOut && current.checkOut <= checkIn ? '' : current.checkOut,
+                }));
+                setSearchError('');
+              }}
             />
           </div>
           <span className="hidden text-slate-300 sm:inline">-</span>
@@ -60,8 +98,9 @@ export const SearchTab = () => {
               placeholder='Check-out'
               aria-label="Check-out date"
               value={dates.checkOut}
+              min={dates.checkIn || minimumDate}
               className="date-input h-5 w-full min-w-0 appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none scheme-light"
-              onChange={(e) => setDates({...dates, checkOut: e.target.value})}
+              onChange={(e) => { setDates((current) => ({ ...current, checkOut: e.target.value })); setSearchError(''); }}
             />
           </div>
         </div>
@@ -102,16 +141,19 @@ export const SearchTab = () => {
               onClick={() => setGuestOpen(false)}
               className="mt-5 w-full rounded-md bg-slate-900 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white hover:bg-slate-800 active:scale-95"
             >
-              Apply
+              {t('search.done')}
             </button>
           </div>
         )}
       </div>
 
       {/* 4. Search Button */}
-      <button className="w-full bg-slate-900 px-6 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-800 active:scale-95 md:w-auto md:px-10">
-        {t('search.button')}
-      </button>
+      <div className="flex w-full flex-col md:w-auto">
+        <button onClick={handleSearch} className="w-full bg-slate-900 px-6 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-800 active:scale-95 md:px-10">
+          {t('search.button')}
+        </button>
+        {searchError ? <p className="mt-2 text-center text-xs font-medium text-red-600 md:absolute md:top-full md:right-0">{searchError}</p> : null}
+      </div>
     </div>
   );
 };

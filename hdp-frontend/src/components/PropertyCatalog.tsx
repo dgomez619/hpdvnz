@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { PropertyCard } from './PropertyCard';
 import type { Property } from '../types/property';
 
@@ -7,7 +8,13 @@ import type { Property } from '../types/property';
 // 2. Accept properties as a prop from App.tsx
 export const PropertyCatalog = ({ properties = [] }: { properties: Property[] }) => {
   const { t } = useTranslation();
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [searchParams] = useSearchParams();
+  const selectedCity = searchParams.get('city') || 'All';
+  const [activeFilter, setActiveFilter] = useState(selectedCity);
+
+  useEffect(() => {
+    setActiveFilter(selectedCity);
+  }, [selectedCity]);
 
   // 3. Logic to filter based on real MongoDB data
   const filteredProperties = activeFilter === 'All' 
@@ -64,7 +71,7 @@ export const PropertyCatalog = ({ properties = [] }: { properties: Property[] })
             <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2">
               {filteredProperties.map((property) => (
                 // 5. Use property._id for the key!
-                <PropertyCard key={property._id} property={property} />
+                <PropertyCard key={property._id} property={property} searchParams={searchParams} />
               ))}
             </div>
 

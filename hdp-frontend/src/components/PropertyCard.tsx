@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 
 interface PropertyCardProps {
   property: Property;
+  searchParams?: URLSearchParams;
 }
 
-export const PropertyCard = ({ property }: PropertyCardProps) => {
+export const PropertyCard = ({ property, searchParams }: PropertyCardProps) => {
   const { t, i18n } = useTranslation();
   
   // 1. HELPER LOGIC: Determine active language state
@@ -27,7 +28,10 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
   const areaUnit = isEn ? 'ft²' : 'm²';
 
   return (
-    <Link to={`/property/${property._id}`} className="group cursor-pointer block">
+    <Link
+      to={{ pathname: `/property/${property._id}`, search: searchParams?.toString() ? `?${searchParams.toString()}` : '' }}
+      className="group cursor-pointer block"
+    >
       {/* Image Container */}
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-gray-100">
         <img 

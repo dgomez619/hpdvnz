@@ -11,6 +11,8 @@ export const Navbar = () => {
 
   const isHomePage = location.pathname === "/";
   const isNavbarActive = isScrolled || !isHomePage || menuOpen;
+  const isEnglish = i18n.resolvedLanguage?.startsWith('en') ?? i18n.language.startsWith('en');
+  const switchLanguage = () => i18n.changeLanguage(isEnglish ? 'es' : 'en');
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -50,11 +52,11 @@ export const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            <button onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en')}
+            <button onClick={switchLanguage}
               className={`text-[10px] font-bold border border-current px-2 py-0.5 rounded-sm ${
                 isNavbarActive ? 'text-slate-900' : 'text-white'
               }`}>
-              {i18n.language.toUpperCase().substring(0, 2)}
+              {isEnglish ? 'ES' : 'EN'}
             </button>
           </div>
 
@@ -88,10 +90,10 @@ export const Navbar = () => {
           ))}
           
           <button 
-            onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en')}
+            onClick={switchLanguage}
             className="text-xs font-bold border-b-2 border-slate-900 pb-1 tracking-widest"
           >
-            {i18n.language === 'en' ? 'SWITCH TO ESPAÑOL' : 'CAMBIAR A INGLÉS'}
+            {isEnglish ? 'ESPAÑOL' : 'ENGLISH'}
           </button>
 
           {/* MOBILE CTA: Added here so mobile users have a way to book */}
