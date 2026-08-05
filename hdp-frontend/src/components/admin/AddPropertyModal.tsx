@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Plus, Search, Trash2, Link as LinkIcon, Copy, Check } from 'lucide-react';
 import type { Property } from '../../types/property';
 import { AMENITIES_LIST } from '../../utils/amenityIcons';
+import { useModalFocus } from '../../utils/useModalFocus';
 
 
 interface PropertyFormData {
@@ -33,6 +34,9 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
     const CLOUD_NAME = 'dwrinmdz0';
     const API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY;
     const UPLOAD_PRESET = 'ml_default';
+    const dialogRef = useRef<HTMLDivElement>(null);
+
+    useModalFocus(dialogRef, onClose, isOpen);
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
     const [formData, setFormData] = useState<PropertyFormData>({
@@ -193,15 +197,15 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
     };
 
     return isOpen ? (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-2 sm:p-4">
-            <div className="bg-[#111114] w-full max-w-2xl max-h-[95vh] rounded-2xl sm:rounded-3xl border border-white/5 overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-100 grid place-items-center overflow-y-auto bg-black/90 p-2 backdrop-blur-md sm:p-4">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="property-modal-title" tabIndex={-1} className="flex max-h-[calc(100dvh-1rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#111114] shadow-2xl animate-in fade-in zoom-in duration-200 sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl">
 
                 {/* Header */}
                 <div className="flex justify-between items-center p-5 sm:p-6 border-b border-white/5 bg-[#161618]">
-                    <h2 className="text-white font-display text-sm sm:text-lg tracking-widest uppercase italic">
+                    <h2 id="property-modal-title" className="text-white font-display text-sm sm:text-lg tracking-widest uppercase italic">
                         {propertyToEdit ? 'Editar Propiedad' : 'Nueva Propiedad'}
                     </h2>
-                    <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors p-2">
+                    <button type="button" onClick={onClose} aria-label="Close property editor" className="p-2 text-slate-500 transition-colors hover:text-white">
                         <X size={20} />
                     </button>
                 </div>

@@ -36,15 +36,15 @@ export const AboutUs = () => {
         </header>
 
         {/* 2. IMAGE & INTRO SPLIT */}
-        <section className="mt-20 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          <div className="lg:col-span-7 overflow-hidden rounded-2xl aspect-[16/9]">
+        <section className="mt-20 grid grid-cols-1 gap-16 items-center xl:grid-cols-12">
+          <div className="overflow-hidden rounded-2xl aspect-[16/9] xl:col-span-7">
             <img 
               src={araguaneyImage}
               alt="Our Vision"
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-[3000ms]"
             />
           </div>
-          <div className="lg:col-span-5 space-y-6">
+          <div className="space-y-6 xl:col-span-5">
             <h2 className="font-display text-3xl text-slate-900">{t('about.vision_title')}</h2>
             <p className="text-slate-500 font-light leading-relaxed text-lg italic">
               "{t('about.vision_quote')}"
@@ -56,8 +56,8 @@ export const AboutUs = () => {
         </section>
 
           {/* 2. IMAGE & INTRO SPLIT */}
-        <section className="mt-20 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          <div className="lg:col-span-5 space-y-6">
+        <section className="mt-20 grid grid-cols-1 gap-16 items-center xl:grid-cols-12">
+          <div className="space-y-6 xl:col-span-5">
             <h2 className="font-display text-3xl text-slate-900">{t('about.vision_title2')}</h2>
             <p className="text-slate-500 font-light leading-relaxed text-lg">
               {t('about.vision_quote2')}
@@ -66,7 +66,7 @@ export const AboutUs = () => {
               {t('about.vision_desc2')}
             </p>
           </div>
-          <div className="lg:col-span-7 overflow-hidden rounded-2xl aspect-[16/9]">
+          <div className="overflow-hidden rounded-2xl aspect-[16/9] xl:col-span-7">
             <img 
               src={vnzImage}
               alt="Our Vision"

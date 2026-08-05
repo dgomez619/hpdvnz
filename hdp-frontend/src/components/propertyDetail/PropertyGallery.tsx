@@ -20,7 +20,7 @@ export const PropertyGallery = ({ images, onImageClick, isLoading = true }: Gall
           DESKTOP: 5-image Mosaic using 12-column grid 
       */}
       <div
-        className="relative grid h-[350px] grid-cols-1 gap-2 overflow-hidden rounded-xl md:h-[550px] md:grid-cols-4 md:grid-rows-2 md:rounded-2xl"
+        className="relative grid aspect-[4/5] grid-cols-1 gap-2 overflow-hidden rounded-xl sm:aspect-[3/2] md:aspect-[16/7] md:grid-cols-4 md:grid-rows-2 md:rounded-2xl"
         aria-busy={isLoading}
       >
         

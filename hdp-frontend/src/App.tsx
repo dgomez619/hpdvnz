@@ -56,7 +56,7 @@ const AppContent = () => {
             <div id="properties">
               {/* 4. Pass the realProperties instead of MOCK_PROPERTIES */}
               {loading ? (
-                <div className="py-20 text-center text-slate-400 uppercase tracking-widest text-[10px]">
+                <div className="py-20 text-center text-xs text-slate-400 uppercase tracking-widest">
                   {t('common.loading_collection')} {/* <--- Now 't' is being used! */}
                 </div>
               ) : (

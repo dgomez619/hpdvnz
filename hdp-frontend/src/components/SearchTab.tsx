@@ -48,19 +48,22 @@ export const SearchTab = () => {
       
       {/* 1. Location Dropdown */}
       <div className="relative flex-1">
-        <div 
+        <button
+          type="button"
           onClick={() => { setCityOpen(!cityOpen); setGuestOpen(false); }}
-          className="flex h-full cursor-pointer flex-col items-start px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4"
+          aria-expanded={cityOpen}
+          aria-controls="city-options"
+          className="flex h-full w-full cursor-pointer flex-col items-start px-4 py-3 text-left transition-colors hover:bg-gray-50 sm:px-6 sm:py-4"
         >
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.location')}</label>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{t('search.location')}</span>
           <span className={`mt-1 text-sm font-medium sm:text-base ${selectedCity ? 'text-slate-900' : 'text-slate-400'}`}>
             {selectedCity || t('search.placeholder_location')}
           </span>
-        </div>
+        </button>
         {cityOpen && (
-          <div className="absolute top-full left-0 z-30 mt-2 grid max-h-56 w-full min-w-0 grid-cols-2 overflow-y-auto rounded-lg bg-white shadow-xl ring-1 ring-black/5 md:min-w-70">
+          <div id="city-options" role="listbox" className="absolute top-full left-0 z-50 mt-2 grid max-h-[min(14rem,50dvh)] w-full min-w-0 grid-cols-2 overflow-y-auto rounded-lg bg-white shadow-xl ring-1 ring-black/5 md:min-w-70">
             {AVAILABLE_CITIES.map((city) => (
-              <button key={city} onClick={() => { setSelectedCity(city); setCityOpen(false); setSearchError(''); }}
+              <button key={city} type="button" role="option" aria-selected={selectedCity === city} onClick={() => { setSelectedCity(city); setCityOpen(false); setSearchError(''); }}
                 className="w-full px-4 py-3 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-brand-gold sm:px-6">
                 {city}
               </button>
@@ -71,7 +74,7 @@ export const SearchTab = () => {
 
       {/* 2. Date Picker (Simplified for MVP) */}
       <div className="flex flex-1 flex-col items-start px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4">
-        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.dates')}</label>
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">{t('search.dates')}</label>
         <div className="mt-2 flex w-full flex-col gap-2 sm:mt-1 sm:flex-row sm:items-center sm:gap-2">
           <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
             <input 
@@ -108,36 +111,44 @@ export const SearchTab = () => {
 
       {/* 3. Guest Selector */}
       <div className="relative flex-1">
-        <div 
+        <button
+          type="button"
           onClick={() => { setGuestOpen(!guestOpen); setCityOpen(false); }}
-          className="flex h-full cursor-pointer flex-col items-start px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4"
+          aria-expanded={guestOpen}
+          aria-controls="guest-options"
+          className="flex h-full w-full cursor-pointer flex-col items-start px-4 py-3 text-left transition-colors hover:bg-gray-50 sm:px-6 sm:py-4"
         >
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{t('search.guests')}</label>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{t('search.guests')}</span>
           <span className="mt-1 text-sm font-medium text-slate-900 sm:text-base">{guests} {guests === 1 ? t('search.guest') : t('search.guests_plural')}</span>
-        </div>
+        </button>
         {guestOpen && (
-          <div className="absolute top-full left-0 z-30 mt-2 w-full rounded-xl border border-black/10 bg-white p-4 shadow-2xl ring-1 ring-black/5 sm:w-56 md:left-auto md:right-0">
+          <div id="guest-options" className="absolute top-full left-0 z-50 mt-2 w-full rounded-xl border border-black/10 bg-white p-4 shadow-2xl ring-1 ring-black/5 sm:w-56 md:left-auto md:right-0">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">
                 {t('search.how_many')}
               </span>
               <div className="flex items-center gap-3">
                 <button
+                  type="button"
+                  aria-label="Decrease guest count"
                   onClick={() => setGuests(Math.max(1, guests - 1))}
-                  className="h-7 w-7 rounded-full border border-slate-300 text-slate-700 flex items-center justify-center hover:border-slate-400 hover:bg-slate-100"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-100"
                 >
                   -
                 </button>
                 <span className="text-base font-bold text-slate-900">{guests}</span>
                 <button
+                  type="button"
+                  aria-label="Increase guest count"
                   onClick={() => setGuests(guests + 1)}
-                  className="h-7 w-7 rounded-full border border-slate-300 text-slate-700 flex items-center justify-center hover:border-slate-400 hover:bg-slate-100"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-100"
                 >
                   +
                 </button>
               </div>
             </div>
             <button
+              type="button"
               onClick={() => setGuestOpen(false)}
               className="mt-5 w-full rounded-md bg-slate-900 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white hover:bg-slate-800 active:scale-95"
             >

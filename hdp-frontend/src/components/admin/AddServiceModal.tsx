@@ -1,33 +1,47 @@
 // src/components/Admin/AddServiceModal.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X,  Loader2 } from 'lucide-react';
+import { useModalFocus } from '../../utils/useModalFocus';
+
+interface ServiceFormData {
+  title_en: string;
+  title_es: string;
+  description_en: string;
+  description_es: string;
+  category: string;
+  image: string;
+  priceInfo: string;
+  isActive: boolean;
+}
+
+const emptyServiceForm: ServiceFormData = {
+  title_en: '',
+  title_es: '',
+  description_en: '',
+  description_es: '',
+  category: 'experience',
+  image: '',
+  priceInfo: '',
+  isActive: true,
+};
 
 interface AddServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  serviceToEdit?: any;
+  serviceToEdit?: (Partial<ServiceFormData> & { _id: string }) | null;
 }
 
 export const AddServiceModal = ({ isOpen, onClose, onSuccess, serviceToEdit }: AddServiceModalProps) => {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    title_en: '', title_es: '',
-    description_en: '', description_es: '',
-    category: 'experience',
-    image: '',
-    priceInfo: '',
-    isActive: true
-  });
+  const [formData, setFormData] = useState<ServiceFormData>(emptyServiceForm);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useModalFocus(dialogRef, onClose, isOpen);
 
   useEffect(() => {
-    if (serviceToEdit) setFormData(serviceToEdit);
-    else setFormData({ 
-        title_en: '', title_es: '', 
-        description_en: '', description_es: '', 
-        category: 'experience', image: '', 
-        priceInfo: '', isActive: true 
-    });
+    if (serviceToEdit) setFormData({ ...emptyServiceForm, ...serviceToEdit });
+    else setFormData(emptyServiceForm);
   }, [serviceToEdit, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,16 +75,16 @@ export const AddServiceModal = ({ isOpen, onClose, onSuccess, serviceToEdit }: A
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-4xl bg-[#111114] rounded-2xl border border-white/10 overflow-hidden">
+    <div className="fixed inset-0 z-110 grid place-items-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="service-modal-title" tabIndex={-1} className="max-h-[calc(100dvh-2rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-white/10 bg-[#111114]">
         <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
-          <h2 className="text-xl font-display italic text-white">
+          <h2 id="service-modal-title" className="text-xl font-display italic text-white">
             {serviceToEdit ? 'Editar Experiencia' : 'Nueva Experiencia'}
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white"><X size={24} /></button>
+          <button type="button" onClick={onClose} aria-label="Close service editor" className="p-2 text-slate-400 hover:text-white"><X size={24} /></button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 p-8 custom-scrollbar md:grid-cols-2">
           {/* Titles */}
           <div className="space-y-2">
             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Título (ES)</label>

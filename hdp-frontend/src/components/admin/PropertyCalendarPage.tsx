@@ -39,6 +39,7 @@ export const PropertyCalendarPage = () => {
     const [selectedRange, setSelectedRange] = useState<DateRange | undefined>();
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
+    const [showTwoMonths, setShowTwoMonths] = useState(false);
 
     const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
@@ -58,6 +59,15 @@ export const PropertyCalendarPage = () => {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(min-width: 1280px)');
+        const updateMonthCount = () => setShowTwoMonths(mediaQuery.matches);
+
+        updateMonthCount();
+        mediaQuery.addEventListener('change', updateMonthCount);
+        return () => mediaQuery.removeEventListener('change', updateMonthCount);
+    }, []);
 
     const handleManualBlock = async () => {
         const start = selectedRange?.from;
@@ -127,7 +137,7 @@ export const PropertyCalendarPage = () => {
 };
 
     if (loading || !property) return (
-        <div className="h-screen flex flex-col items-center justify-center bg-[#0a0a0b] gap-4">
+        <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-[#0a0a0b]">
             <RefreshCw className="animate-spin text-white" size={32} />
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Cargando Calendario...</p>
         </div>
@@ -156,7 +166,7 @@ export const PropertyCalendarPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0a0a0b] text-slate-300 p-4 lg:p-10">
+        <div className="min-h-screen bg-[#0a0a0b] p-4 text-slate-300 xl:p-10">
             <div className="max-w-6xl mx-auto mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center gap-4">
                     <button onClick={() => navigate(-1)} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-all text-white">
@@ -177,8 +187,8 @@ export const PropertyCalendarPage = () => {
                 </button>
             </div>
 
-            <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8 bg-[#111114] rounded-3xl border border-white/5 p-4 sm:p-8 flex flex-col items-center shadow-2xl overflow-hidden">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 gap-8 xl:grid-cols-12">
+                <div className="flex flex-col items-center overflow-hidden rounded-3xl border border-white/5 bg-[#111114] p-4 shadow-2xl sm:p-8 xl:col-span-8">
                     <DayPicker
                         mode="range"
                         selected={selectedRange}
@@ -193,7 +203,7 @@ export const PropertyCalendarPage = () => {
                             manual: 'rdp-day_manual',
                             other: 'rdp-day_other'
                         }}
-                        numberOfMonths={2}
+                        numberOfMonths={showTwoMonths ? 2 : 1}
                         className="bg-transparent custom-calendar"
                         // FIXED FOR V9 COMPATIBILITY
                         components={{
@@ -202,7 +212,7 @@ export const PropertyCalendarPage = () => {
                     />
                 </div>
 
-                <div className="lg:col-span-4 space-y-6">
+                <div className="space-y-6 xl:col-span-4">
                     <div className="bg-[#111114] p-6 rounded-3xl border border-white/5 space-y-6">
                         <div className="flex items-center gap-3 border-b border-white/5 pb-4">
                             <Lock size={18} className="text-white" />

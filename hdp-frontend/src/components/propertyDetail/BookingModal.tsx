@@ -1,8 +1,9 @@
 // src/components/Booking/BookingModal.tsx
-import { useState } from 'react';
-import { X, Users, MessageCircle, Send, CheckCircle2 } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { X, Users, Mail, MessageCircle, Send, CheckCircle2 } from 'lucide-react';
 import type { Property } from '../../types/property';
 import { useTranslation } from 'react-i18next';
+import { useModalFocus } from '../../utils/useModalFocus';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -17,11 +18,15 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
   const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     guestName: '',
-    contactInfo: '',
+    email: '',
+    whatsapp: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const displayTitle = i18n.language === 'en' ? (property.title_en || property.title_es) : (property.title_es || property.title_en);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useModalFocus(dialogRef, onClose, isOpen);
 
   if (!isOpen) return null;
 
@@ -67,7 +72,8 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
           `- ${t('booking.summary_check_in')}: ${startDate}\n` +
           `- ${t('booking.summary_check_out')}: ${endDate}\n` +
           `- ${t('booking.summary_guests')}: ${guests}\n` +
-          `- ${t('booking.contact_label')}: ${formData.contactInfo}`
+          `- ${t('booking.email_label')}: ${formData.email}` +
+          (formData.whatsapp ? `\n- ${t('booking.whatsapp_label')}: ${formData.whatsapp}` : '')
         );
         
         const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
@@ -86,16 +92,16 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl animate-in fade-in zoom-in duration-300">
+    <div className="fixed inset-0 z-100 grid place-items-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-md">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="booking-modal-title" tabIndex={-1} className="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-3xl bg-white shadow-2xl animate-in fade-in zoom-in duration-300">
         
         {/* Header */}
         <div className="bg-slate-900 p-6 text-white">
-          <button onClick={onClose} className="absolute right-6 top-6 text-slate-400 hover:text-white transition-colors">
+          <button type="button" onClick={onClose} aria-label="Close booking request" className="absolute right-6 top-6 p-2 text-slate-400 transition-colors hover:text-white">
             <X size={24} />
           </button>
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-2">{t('booking.request_title')}</p>
-          <h2 className="font-display text-2xl italic">{displayTitle}</h2>
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-slate-400">{t('booking.request_title')}</p>
+          <h2 id="booking-modal-title" className="font-display text-2xl italic">{displayTitle}</h2>
         </div>
 
         {isSuccess ? (
@@ -119,7 +125,7 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
             
             {/* Guest Name */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('booking.full_name')}</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('booking.full_name')}</label>
               <div className="relative">
                 <input 
                   required
@@ -133,16 +139,33 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
               </div>
             </div>
 
-            {/* Contact Info */}
+            {/* Email */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('booking.contact_label')}</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('booking.email_label')}</label>
               <div className="relative">
                 <input 
                   required
-                  type="text"
-                  placeholder={t('booking.contact_placeholder')}
-                  value={formData.contactInfo}
-                  onChange={(e) => setFormData({...formData, contactInfo: e.target.value})}
+                  type="email"
+                  autoComplete="email"
+                  placeholder={t('booking.email_placeholder')}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full rounded-xl border border-slate-100 bg-slate-50 p-4 pl-12 text-sm outline-none focus:border-slate-900 transition-colors"
+                />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+              </div>
+            </div>
+
+            {/* WhatsApp Number (Optional) */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('booking.whatsapp_label')}</label>
+              <div className="relative">
+                <input
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder={t('booking.whatsapp_placeholder')}
+                  value={formData.whatsapp}
+                  onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                   className="w-full rounded-xl border border-slate-100 bg-slate-50 p-4 pl-12 text-sm outline-none focus:border-slate-900 transition-colors"
                 />
                 <MessageCircle className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
@@ -152,7 +175,7 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
             <button
               disabled={isSubmitting}
               type="submit"
-              className="flex w-full items-center justify-center gap-3 rounded-2xl bg-slate-900 py-5 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-3 rounded-2xl bg-slate-900 py-5 text-xs font-bold uppercase tracking-[0.15em] text-white transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-50"
             >
               {isSubmitting ? t('booking.processing') : (
                 <>

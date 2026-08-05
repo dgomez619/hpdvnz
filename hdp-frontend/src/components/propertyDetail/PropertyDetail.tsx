@@ -151,9 +151,39 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
         />
       )}
 
-      <div className="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-3">
+      <div className="mx-auto mt-8 grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 xl:grid-cols-3">
+        {/* Booking form stays in normal flow at compact widths so it is never clipped by a short viewport. */}
+        <aside className="order-first self-start xl:col-start-3 xl:row-start-1 xl:order-0">
+          <BookingWidget 
+            property={property} 
+            startDate={bookingDates.startDate}
+            endDate={bookingDates.endDate}
+            guests={bookingDates.guests}
+            onStartDateChange={(value) => {
+              setBookingValidationError('');
+              setAvailabilityStatus(null);
+              setBookingDates((prev) => ({
+                ...prev,
+                startDate: value,
+                endDate: prev.endDate && prev.endDate <= value ? '' : prev.endDate,
+              }));
+            }}
+            onEndDateChange={(value) => {
+              setBookingValidationError('');
+              setAvailabilityStatus(null);
+              setBookingDates((prev) => ({ ...prev, endDate: value }));
+            }}
+            onGuestsChange={(value) => setBookingDates((prev) => ({ ...prev, guests: value }))}
+            onCheckAvailability={handleCheckAvailability}
+            onReserveClick={handleOpenBookingModal}
+            validationError={bookingValidationError}
+            availabilityStatus={availabilityStatus}
+            isCheckingAvailability={isCheckingAvailability}
+          />
+        </aside>
+
         {/* Left Content */}
-        <div className="lg:col-span-2 space-y-10">
+        <div className="xl:col-span-2 space-y-10">
           <PropertyInfo 
             property={property} 
             displayArea={displayArea} 
@@ -189,65 +219,6 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
           </div>
         </div>
 
-        {/* Right Sidebar (Desktop) */}
-        <aside className="relative">
-          <div className="sticky top-28 hidden lg:block">
-            <BookingWidget 
-              property={property} 
-              startDate={bookingDates.startDate}
-              endDate={bookingDates.endDate}
-              guests={bookingDates.guests}
-              onStartDateChange={(value) => {
-                setBookingValidationError('');
-                setAvailabilityStatus(null);
-                setBookingDates((prev) => ({
-                  ...prev,
-                  startDate: value,
-                  endDate: prev.endDate && prev.endDate <= value ? '' : prev.endDate,
-                }));
-              }}
-              onEndDateChange={(value) => {
-                setBookingValidationError('');
-                setAvailabilityStatus(null);
-                setBookingDates((prev) => ({ ...prev, endDate: value }));
-              }}
-              onGuestsChange={(value) => setBookingDates((prev) => ({ ...prev, guests: value }))}
-              onCheckAvailability={handleCheckAvailability}
-              onReserveClick={handleOpenBookingModal}
-              validationError={bookingValidationError}
-              availabilityStatus={availabilityStatus}
-              isCheckingAvailability={isCheckingAvailability}
-            />
-          </div>
-        </aside>
-      </div>
-
-      {/* Mobile Sticky Bar */}
-      <div className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-between border-t border-slate-100 bg-white px-6 py-4 lg:hidden">
-        <div>
-          <p className="font-bold text-slate-900">
-            ${property.pricePerNight} 
-            <span className="font-light text-slate-500"> / {t('properties.night')}</span>
-          </p>
-          <p className="text-xs underline">
-            {availabilityStatus === 'mayBeUnavailable' ? t('booking.may_be_unavailable') : t('detail.available_dates')}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2">
-          <button
-            onClick={handleCheckAvailability}
-            disabled={isCheckingAvailability}
-            className="rounded-lg bg-slate-900 px-5 py-2 text-xs font-bold text-white transition-transform active:scale-95 disabled:opacity-60"
-          >
-            {t('detail.reserve_button')}
-          </button>
-          <button
-            onClick={handleOpenBookingModal}
-            className="rounded-lg border border-slate-300 px-5 py-2 text-xs font-bold text-slate-900 transition-transform active:scale-95"
-          >
-            {t('booking.send_inquiry')}
-          </button>
-        </div>
       </div>
 
       {/* Inquiry Form Modal */}

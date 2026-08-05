@@ -71,7 +71,7 @@ export const AdditionalServices = () => {
         </header>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 xl:grid-cols-3">
           {services.map((service) => {
             const title = i18n.language === 'en' ? service.title_en : service.title_es;
             const description = i18n.language === 'en' ? service.description_en : service.description_es;
@@ -79,7 +79,7 @@ export const AdditionalServices = () => {
             return (
               <div key={service._id} className="group cursor-pointer">
                 <div 
-                  className="relative aspect-[16/10] overflow-hidden rounded-2xl mb-6 shadow-sm"
+                  className="relative aspect-16/10 mb-6 overflow-hidden rounded-2xl shadow-sm"
                   onClick={() => handleInquireClick(service)}
                 >
                   <img 

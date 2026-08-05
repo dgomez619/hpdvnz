@@ -22,27 +22,29 @@ export const Hero = () => {
   });
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-slate-900">
+    <section className="relative z-10 min-h-dvh w-full overflow-visible bg-slate-900">
       {/* Background Image Layer */}
       {bgImage && (
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10000ms] animate-in fade-in zoom-in-105"
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10000ms] animate-in fade-in zoom-in-105"
           style={{ backgroundImage: `url(${bgImage})` }}
-        >
-          <div className="absolute inset-0 bg-black/30" />
+          >
+            <div className="absolute inset-0 bg-black/30" />
+          </div>
         </div>
       )}
 
       {/* Content Container */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-24 text-center text-white">
-        <h1 className="max-w-4xl font-display text-5xl md:text-7xl lg:text-8xl leading-tight tracking-tight">
+      <div className="relative z-20 flex min-h-dvh flex-col items-center justify-center px-4 py-16 text-center text-white sm:px-6 md:py-20">
+        <h1 className="max-w-4xl font-display text-[clamp(2.5rem,7vw,6rem)] leading-[1.05] tracking-tight">
           {t('hero.title')}
         </h1>
-        <p className="mt-6 max-w-xl text-lg md:text-xl font-light text-gray-200">
+        <p className="mt-5 max-w-xl text-[clamp(1rem,2vw,1.25rem)] font-light text-gray-200 md:mt-6">
           {t('hero.subtitle')}
         </p>
 
-        <div className="mt-12 w-full max-w-5xl">
+        <div className="mt-8 w-full max-w-5xl md:mt-12">
           <SearchTab />
         </div>
       </div>

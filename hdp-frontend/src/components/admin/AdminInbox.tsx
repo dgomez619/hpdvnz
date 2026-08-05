@@ -13,7 +13,8 @@ type BookingStatus = 'pending' | 'approved' | 'denied' | 'cancelled';
 interface BookingRequest {
   _id: string;
   guestName: string;
-  contactInfo: string;
+  email: string;
+  whatsapp?: string;
   startDate: string;
   endDate: string;
   guests: number;
@@ -53,12 +54,8 @@ const formatDate = (value: string) => {
   return dateFormatter.format(parsedDate);
 };
 
-const getContactHref = (contactInfo: string) => {
-  if (contactInfo.includes('@')) {
-    return `mailto:${contactInfo}`;
-  }
-
-  const sanitizedPhone = contactInfo.replace(/[^\d]/g, '');
+const getWhatsAppHref = (whatsapp: string) => {
+  const sanitizedPhone = whatsapp.replace(/[^\d]/g, '');
   return `https://wa.me/${sanitizedPhone}`;
 };
 
@@ -164,7 +161,8 @@ export const AdminInbox = () => {
                     <div className="rounded-2xl border border-white/10 bg-white/3 p-5">
                       <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-slate-500">Huésped</p>
                       <p className="mt-3 text-xl font-semibold text-white">{req.guestName}</p>
-                      <p className="mt-2 break-all text-sm text-slate-400">{req.contactInfo}</p>
+                      <p className="mt-2 break-all text-sm text-slate-400">{req.email}</p>
+                      {req.whatsapp ? <p className="mt-1 text-sm text-slate-400">WhatsApp: {req.whatsapp}</p> : null}
                       <p className="mt-4 text-xs uppercase tracking-[0.2em] text-slate-500">
                         {req.guests} huésped{req.guests === 1 ? '' : 'es'}
                       </p>
@@ -185,11 +183,19 @@ export const AdminInbox = () => {
                   <div className="mt-auto flex flex-col gap-3 pt-2 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
                     <div className="flex flex-wrap gap-2">
                       <button
-                        onClick={() => window.open(getContactHref(req.contactInfo), '_blank', 'noopener,noreferrer')}
+                        onClick={() => window.open(`mailto:${req.email}`, '_blank', 'noopener,noreferrer')}
                         className="rounded-full border border-sky-400/20 bg-sky-500/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-sky-200 transition-colors hover:bg-sky-500/20"
                       >
-                        Contactar
+                        Enviar correo
                       </button>
+                      {req.whatsapp ? (
+                        <button
+                          onClick={() => window.open(getWhatsAppHref(req.whatsapp || ''), '_blank', 'noopener,noreferrer')}
+                          className="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-300 transition-colors hover:bg-emerald-500/20"
+                        >
+                          WhatsApp
+                        </button>
+                      ) : null}
                       <button
                         onClick={() => handleStatusChange(req._id, 'approved')}
                         className="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-300 transition-colors hover:bg-emerald-500/20"

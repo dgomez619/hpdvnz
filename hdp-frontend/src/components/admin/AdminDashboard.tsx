@@ -148,7 +148,7 @@ export const AdminDashboard = () => {
   return (
     <div className="flex min-h-screen bg-[#0a0a0b] text-slate-300">
       {/* SIDEBAR */}
-      <aside className="w-64 border-r border-white/5 bg-[#111114] hidden lg:flex flex-col sticky top-0 h-screen">
+      <aside className="sticky top-0 hidden h-dvh w-64 flex-col border-r border-white/5 bg-[#111114] xl:flex">
         <div className="p-8">
           <h2 className="text-sm font-bold tracking-[0.3em] text-white uppercase">HOSPEDAJE<span className="opacity-40">PD</span></h2>
         </div>
@@ -166,7 +166,21 @@ export const AdminDashboard = () => {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-hidden">
+      <main className="min-w-0 flex-1 overflow-x-clip p-4 sm:p-6 xl:p-8">
+        <nav aria-label="Admin sections" className="mb-6 flex flex-wrap gap-2 xl:hidden">
+          <button type="button" onClick={() => setActiveTab('dashboard')} className={`min-h-11 rounded-xl px-4 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'dashboard' ? 'bg-white text-black' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}>
+            Dashboard
+          </button>
+          <button type="button" onClick={() => setActiveTab('inbox')} className={`min-h-11 rounded-xl px-4 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'inbox' ? 'bg-white text-black' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}>
+            Mensajes
+          </button>
+          <button type="button" onClick={() => setActiveTab('experiences')} className={`min-h-11 rounded-xl px-4 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'experiences' ? 'bg-white text-black' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}>
+            Experiencias
+          </button>
+          <button type="button" onClick={handleLogout} className="min-h-11 rounded-xl px-4 text-xs font-bold uppercase tracking-wider text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300">
+            Cerrar sesión
+          </button>
+        </nav>
         {activeTab === 'dashboard' && (
           <>
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-10">
@@ -200,8 +214,8 @@ export const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="overflow-x-auto custom-scrollbar">
-                <table className="w-full text-left min-w-[600px]">
+              <div className="overflow-x-auto custom-scrollbar" role="region" aria-label="Property collection table" tabIndex={0}>
+                <table className="min-w-full text-left">
                   <thead className="text-[10px] uppercase tracking-[0.2em] text-slate-500 bg-white/5">
                     <tr>
                       <th className="px-6 py-4">Propiedad</th>
@@ -228,9 +242,9 @@ export const AdminDashboard = () => {
                             <td className="px-6 py-4 text-sm font-bold text-white">${prop.pricePerNight}</td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex justify-end gap-2">
-                                <button onClick={() => { setSelectedProperty(prop); setIsModalOpen(true); }} className="p-2 text-slate-400 hover:text-white"><Edit3 size={16} /></button>
-                                <button onClick={() => handleDeleteProperty(prop._id, getLocalizedTitle(prop))} className="p-2 text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
-                                <button onClick={() => navigate(`/admin/calendar/${prop._id}`)} className="p-2 text-slate-400 hover:text-white"><Calendar size={16} /></button>
+                                <button type="button" onClick={() => { setSelectedProperty(prop); setIsModalOpen(true); }} aria-label={`Edit ${getLocalizedTitle(prop)}`} className="min-h-11 min-w-11 p-2 text-slate-400 hover:text-white"><Edit3 size={16} /></button>
+                                <button type="button" onClick={() => handleDeleteProperty(prop._id, getLocalizedTitle(prop))} aria-label={`Delete ${getLocalizedTitle(prop)}`} className="min-h-11 min-w-11 p-2 text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
+                                <button type="button" onClick={() => navigate(`/admin/calendar/${prop._id}`)} aria-label={`Manage calendar for ${getLocalizedTitle(prop)}`} className="min-h-11 min-w-11 p-2 text-slate-400 hover:text-white"><Calendar size={16} /></button>
                               </div>
                             </td>
                           </tr>
@@ -259,7 +273,7 @@ export const AdminDashboard = () => {
               </button>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {services.map((service) => (
                 <div key={service._id} className="bg-[#111114] border border-white/5 rounded-2xl overflow-hidden group">
                   <div className="aspect-video relative">
@@ -283,16 +297,20 @@ export const AdminDashboard = () => {
                           {service.isActive ? 'Activo' : 'Pausado'}
                         </span>
                         <button
+                          type="button"
                           onClick={() => handleToggleService(service._id)}
-                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
-                            service.isActive ? 'bg-green-500' : 'bg-slate-700'
-                          }`}
+                          role="switch"
+                          aria-checked={service.isActive}
+                          aria-label={`${service.isActive ? 'Deactivate' : 'Activate'} ${service.title_es}`}
+                          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                         >
-                          <span
-                            className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                              service.isActive ? 'translate-x-5' : 'translate-x-1'
-                            }`}
-                          />
+                          <span className={`relative h-5 w-9 rounded-full transition-colors ${service.isActive ? 'bg-green-500' : 'bg-slate-700'}`}>
+                            <span
+                              className={`absolute top-1 inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                                service.isActive ? 'left-5' : 'left-1'
+                              }`}
+                            />
+                          </span>
                         </button>
                       </div>
                     </div>

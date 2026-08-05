@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { pl } from 'date-fns/locale';
 
 i18n
     .use(LanguageDetector) // Automatically detects user language
@@ -38,7 +39,8 @@ i18n
                         button: "Search",
                         done: "Apply",
                         complete_fields: "Select a city and both dates.",
-                        invalid_date_range: "Check-out must be after check-in."
+                        invalid_date_range: "Check-out must be after check-in.",
+                        placeholder_all_locations: "All Locations"
                     },
                     properties: {
                         title: "The Collection",
@@ -90,8 +92,10 @@ i18n
                         summary_guests: "Guests",
                         full_name: "Full name",
                         full_name_placeholder: "Ex: Dan Smith",
-                        contact_label: "Email or WhatsApp",
-                        contact_placeholder: "email@example.com or +1...",
+                        email_label: "Email address",
+                        email_placeholder: "email@example.com",
+                        whatsapp_label: "WhatsApp number (optional)",
+                        whatsapp_placeholder: "+1 555 123 4567",
                         processing: "Processing...",
                         appears_available: "These dates appear available. Submit an inquiry to receive confirmation.",
                         may_be_unavailable: "These dates may be unavailable based on the current calendar. You can still submit an inquiry.",
@@ -119,7 +123,8 @@ i18n
                         title: "Currently available properties",
                         subtitle: "Browse our entire portfolio of exclusively managed properties",
                         filter_location: "Filter by Location",
-                        results_found: "Properties found"
+                        results_found: "Properties found",
+                        no_results: "No properties found"
                     },
                     services: {
                         page_title: "Elevated Experiences",
@@ -185,7 +190,8 @@ i18n
                         button: "Buscar",
                         done: "Aplicar",
                         complete_fields: "Selecciona una ciudad y ambas fechas.",
-                        invalid_date_range: "La salida debe ser posterior a la llegada."
+                        invalid_date_range: "La salida debe ser posterior a la llegada.",
+                        placeholder_all_locations: "Todas las Ubicaciones"
                     },
                     properties: {
                         title: "La Colección",
@@ -237,8 +243,10 @@ i18n
                         summary_guests: "Huéspedes",
                         full_name: "Nombre completo",
                         full_name_placeholder: "Ej: Dan Smith",
-                        contact_label: "Email o WhatsApp",
-                        contact_placeholder: "email@ejemplo.com o +58...",
+                        email_label: "Correo electrónico",
+                        email_placeholder: "email@ejemplo.com",
+                        whatsapp_label: "Número de WhatsApp (opcional)",
+                        whatsapp_placeholder: "+58 412 123 4567",
                         processing: "Procesando...",
                         appears_available: "Estas fechas parecen estar disponibles. Envía una solicitud para recibir confirmación.",
                         may_be_unavailable: "Estas fechas podrían no estar disponibles según el calendario actual. Aún puedes enviar una solicitud.",
@@ -266,7 +274,8 @@ i18n
                         title: "Disponibilidad actual de propiedades",
                         subtitle: "Explore nuestro portafolio completo de propiedades exclusivamente gestionadas",
                         filter_location: "Filtrar por Ubicación",
-                        results_found: "Propiedades encontradas"
+                        results_found: "Propiedades encontradas",
+                        no_results: "No se encontraron propiedades"
                     },
                     services: {
                         page_title: "Experiencias Elevadas",

@@ -9,7 +9,7 @@ import type { Property } from '../types/property';
 export const PropertyCatalog = ({ properties = [] }: { properties: Property[] }) => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const selectedCity = searchParams.get('city') || 'All';
+  const selectedCity = searchParams.get('city') || t('search.placeholder_all_locations');
   const [activeFilter, setActiveFilter] = useState(selectedCity);
 
   useEffect(() => {
@@ -17,13 +17,13 @@ export const PropertyCatalog = ({ properties = [] }: { properties: Property[] })
   }, [selectedCity]);
 
   // 3. Logic to filter based on real MongoDB data
-  const filteredProperties = activeFilter === 'All' 
+  const filteredProperties = activeFilter === t('search.placeholder_all_locations')
     ? properties 
     : properties.filter(p => p.location.includes(activeFilter));
 
   // 4. Generate dynamic filters based on what's actually in your DB
   // This takes your property locations, removes duplicates, and adds 'All'
-  const dynamicFilters = ['All', ...new Set(properties.map(p => p.location))];
+  const dynamicFilters = [t('search.placeholder_all_locations'), ...new Set(properties.map(p => p.location))];
 
   return (
     <div className="min-h-screen bg-white pt-32 pb-20">
@@ -38,14 +38,14 @@ export const PropertyCatalog = ({ properties = [] }: { properties: Property[] })
           </p>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-12">
+        <div className="flex flex-col gap-12 xl:flex-row">
           
-          <aside className="w-full lg:w-64 space-y-8">
+          <aside className="w-full space-y-8 xl:w-64">
             <div>
               <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-4">
                 {t('catalog.filter_location')}
               </h3>
-              <div className="flex flex-wrap lg:flex-col gap-2">
+              <div className="flex flex-wrap gap-2 xl:flex-col">
                 {dynamicFilters.map((city) => (
                   <button
                     key={city}
@@ -77,7 +77,7 @@ export const PropertyCatalog = ({ properties = [] }: { properties: Property[] })
 
             {filteredProperties.length === 0 && (
               <div className="py-20 text-center border border-dashed border-slate-100 rounded-3xl">
-                <p className="text-slate-400 font-light italic">No se encontraron propiedades en esta ubicación.</p>
+                <p className="text-slate-400 font-light italic">{t('catalog.no_results')}</p>
               </div>
             )}
           </main>

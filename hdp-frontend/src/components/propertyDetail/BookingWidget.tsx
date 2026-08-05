@@ -54,7 +54,8 @@ export const BookingWidget = ({
     const grandTotal = nightlyTotal + (numberOfNights > 0 ? cleaningFee + serviceFee : 0);
 
     return (
-        <div className="rounded-2xl border border-slate-200 p-6 shadow-xl bg-white">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:p-6">
+            {/* Price and Rating Section */}
             <div className="flex justify-between items-baseline mb-6">
                 <div>
                     <span className="text-2xl font-bold text-slate-900">${property.pricePerNight}</span>
@@ -64,10 +65,10 @@ export const BookingWidget = ({
             </div>
 
             {/* Date & Guest Inputs */}
-            <div className="rounded-lg border border-slate-300 overflow-hidden mb-4">
+            <div className="mb-4 overflow-hidden rounded-lg border border-slate-300">
                 <div className="grid grid-cols-2 border-b border-slate-300">
-                    <div className="p-3 border-r border-slate-300 cursor-pointer hover:bg-slate-50">
-                        <label className="block text-[10px] font-bold uppercase">{t('search.check_in')}</label>
+                    <div className="border-r border-slate-300 p-3 hover:bg-slate-50">
+                        <label className="block text-xs font-bold uppercase tracking-wider">{t('search.check_in')}</label>
                         <input
                             type="date"
                             value={startDate}
@@ -76,8 +77,8 @@ export const BookingWidget = ({
                             className="w-full text-sm bg-transparent outline-none"
                         />
                     </div>
-                    <div className="p-3 cursor-pointer hover:bg-slate-50">
-                        <label className="block text-[10px] font-bold uppercase">{t('search.check_out')}</label>
+                    <div className="p-3 hover:bg-slate-50">
+                        <label className="block text-xs font-bold uppercase tracking-wider">{t('search.check_out')}</label>
                         <input
                             type="date"
                             value={endDate}
@@ -87,8 +88,8 @@ export const BookingWidget = ({
                         />
                     </div>
                 </div>
-                <div className="p-3 cursor-pointer hover:bg-slate-50">
-                    <label className="block text-[10px] font-bold uppercase">{t('search.guests')}</label>
+                <div className="p-3 hover:bg-slate-50">
+                    <label className="block text-xs font-bold uppercase tracking-wider">{t('search.guests')}</label>
                     <select
                         value={guests}
                         onChange={(e) => onGuestsChange(Number(e.target.value))}
@@ -113,10 +114,10 @@ export const BookingWidget = ({
                 </p>
             ) : null}
 
-            <button onClick={onCheckAvailability} disabled={isCheckingAvailability} className="w-full rounded-lg bg-slate-900 py-3 font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-800 disabled:cursor-wait disabled:opacity-60">
+            <button type="button" onClick={onCheckAvailability} disabled={isCheckingAvailability} className="w-full rounded-lg bg-slate-900 py-3 text-sm font-bold uppercase tracking-wider text-white transition-all hover:bg-slate-800 disabled:cursor-wait disabled:opacity-60">
                 {t('detail.reserve_button')}
             </button>
-            <button onClick={onReserveClick} className="mt-3 w-full rounded-lg border border-slate-300 py-3 font-bold uppercase tracking-widest text-slate-900 transition-all hover:bg-slate-50">
+            <button type="button" onClick={onReserveClick} className="mt-3 w-full rounded-lg border border-slate-300 py-3 text-sm font-bold uppercase tracking-wider text-slate-900 transition-all hover:bg-slate-50">
                 {t('booking.send_inquiry')}
             </button>
 
