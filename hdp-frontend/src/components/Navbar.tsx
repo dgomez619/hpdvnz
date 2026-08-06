@@ -37,7 +37,7 @@ export const Navbar = () => {
           <Link to="/" className={`z-50 text-xl font-bold tracking-[0.2em] transition-colors duration-500 ${
             (isNavbarActive && !menuOpen) ? 'text-slate-900' : (menuOpen ? 'text-slate-900' : 'text-white')
           }`}>
-            HOSPEDAJE<span className="font-light opacity-60">PORDIAS</span>
+            HOSPEDAJE<span className="font-light opacity-60"> POR  DIAS</span>
           </Link>
 
           <div className="hidden xl:flex items-center space-x-10">

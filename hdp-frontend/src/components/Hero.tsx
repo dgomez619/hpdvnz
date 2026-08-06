@@ -1,39 +1,86 @@
-import { useState} from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchTab } from './SearchTab';
-// Import your local asset correctly
-import cromoBg from '../assets/cromointfrnc.png';
-import avilaBg from '../assets/avila.jpg'
+import CaribeBG from '../assets/bgimg1sm.jpg';
+import CineticBg from '../assets/bgimg2sm.png';
+import AvilaBG from '../assets/bgimg3sm.jpg';
+
+type HeroVariant = {
+  lowRes: string;
+  highRes: string;
+};
+
+const HERO_VARIANTS: HeroVariant[] = [
+  {
+    lowRes: CaribeBG,
+    highRes:
+      'https://res.cloudinary.com/dwrinmdz0/image/upload/v1786043023/WebAssets/bgimg1_qbk1tc.jpg',
+  },
+  {
+    lowRes: CineticBg,
+    highRes:
+      'https://res.cloudinary.com/dwrinmdz0/image/upload/v1786043019/WebAssets/bgimg2_hs7nyt.png',
+  },
+  {
+    lowRes: AvilaBG,
+    highRes:
+      'https://res.cloudinary.com/dwrinmdz0/image/upload/v1786043377/WebAssets/bgimg3_1_myttlj.jpg',
+  },
+];
 
 export const Hero = () => {
   const { t } = useTranslation();
-  const [bgImage] = useState<string>(() => {
-    const images = [
-      // Caribbean beach with turquoise waters
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2000",
-      // High-end architectural shot of El Avila
-      avilaBg, // Your local import
-      cromoBg // Your local import
-    ];
-
-    // Pick a random index
-    const randomIndex = Math.floor(Math.random() * images.length);
-    return images[randomIndex];
+  const [selectedVariant] = useState<HeroVariant>(() => {
+    const randomIndex = Math.floor(Math.random() * HERO_VARIANTS.length);
+    return HERO_VARIANTS[randomIndex];
   });
+  const [isHighResLoaded, setIsHighResLoaded] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = selectedVariant.highRes;
+
+    const handleLoad = () => {
+      setIsHighResLoaded(true);
+    };
+
+    const handleError = () => {
+      setIsHighResLoaded(false);
+    };
+
+    img.addEventListener('load', handleLoad);
+    img.addEventListener('error', handleError);
+
+    return () => {
+      img.removeEventListener('load', handleLoad);
+      img.removeEventListener('error', handleError);
+    };
+  }, [selectedVariant]);
 
   return (
     <section className="relative z-10 min-h-dvh w-full overflow-visible bg-slate-900">
       {/* Background Image Layer */}
-      {bgImage && (
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10000ms] animate-in fade-in zoom-in-105"
-          style={{ backgroundImage: `url(${bgImage})` }}
-          >
-            <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-10000 animate-in fade-in zoom-in-105"
+          style={{ backgroundImage: `url(${selectedVariant.lowRes})` }}
+        />
+
+        <div
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700 ease-out ${
+            isHighResLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ backgroundImage: `url(${selectedVariant.highRes})` }}
+        />
+
+        <div className="absolute inset-0 bg-black/30" />
+
+        {!isHighResLoaded && (
+          <div className="sr-only" aria-live="polite">
+            Loading background image
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Content Container */}
       <div className="relative z-20 flex min-h-dvh flex-col items-center justify-center px-4 py-16 text-center text-white sm:px-6 md:py-20">

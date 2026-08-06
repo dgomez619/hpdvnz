@@ -1,6 +1,68 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import araguaneyImage from '../assets/araguaney.jpg';
-import vnzImage from '../assets/vnz1.jpg';
+import abimg1sm from '../assets/abimg1sm.jpg';
+import abimg2sm from '../assets/abimg2sm.jpg';
+
+type LazyImageProps = {
+  lowResSrc: string;
+  highResSrc: string;
+  alt: string;
+  className?: string;
+};
+
+const LazyImage = ({ lowResSrc, highResSrc, alt, className }: LazyImageProps) => {
+  const [isHighResLoaded, setIsHighResLoaded] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const img = new Image();
+    img.src = highResSrc;
+
+    const handleLoad = () => {
+      if (isMounted) {
+        setIsHighResLoaded(true);
+      }
+    };
+
+    const handleError = () => {
+      if (isMounted) {
+        setIsHighResLoaded(false);
+      }
+    };
+
+    img.addEventListener('load', handleLoad);
+    img.addEventListener('error', handleError);
+
+    return () => {
+      isMounted = false;
+      img.removeEventListener('load', handleLoad);
+      img.removeEventListener('error', handleError);
+    };
+  }, [highResSrc]);
+
+  return (
+    <div className={`relative ${className ?? ''}`}>
+      <img
+        src={lowResSrc}
+        alt={alt}
+        loading="eager"
+        decoding="async"
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out hover:scale-105 ${
+          isHighResLoaded ? 'opacity-0' : 'opacity-100'
+        }`}
+      />
+      <img
+        src={highResSrc}
+        alt={alt}
+        loading="eager"
+        decoding="async"
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out hover:scale-105 ${
+          isHighResLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+    </div>
+  );
+};
 
 export const AboutUs = () => {
   const { t } = useTranslation();
@@ -35,44 +97,37 @@ export const AboutUs = () => {
           </h1>
         </header>
 
-        {/* 2. IMAGE & INTRO SPLIT */}
-        <section className="mt-20 grid grid-cols-1 gap-16 items-center xl:grid-cols-12">
-          <div className="overflow-hidden rounded-2xl aspect-[16/9] xl:col-span-7">
-            <img 
-              src={araguaneyImage}
-              alt="Our Vision"
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-[3000ms]"
-            />
-          </div>
-          <div className="space-y-6 xl:col-span-5">
-            <h2 className="font-display text-3xl text-slate-900">{t('about.vision_title')}</h2>
-            <p className="text-slate-500 font-light leading-relaxed text-lg italic">
-              "{t('about.vision_quote')}"
-            </p>
-            <p className="text-slate-600 font-light leading-relaxed">
-              {t('about.vision_desc')}
-            </p>
-          </div>
+        {/* 2. IMAGE & INTRO CONTENT */}
+        <section className="flow-root mt-20 max-w-5xl">
+          <h2 className="mb-6 font-display text-3xl text-slate-900">{t('about.vision_title')}</h2>
+          <LazyImage
+            lowResSrc={abimg1sm}
+            highResSrc="https://res.cloudinary.com/dwrinmdz0/image/upload/v1786046791/WebAssets/araguaney_yqlauv.jpg"
+            alt="Our Vision"
+            className="mb-5 w-full overflow-hidden rounded-2xl aspect-video sm:float-left sm:mr-8 sm:mb-4 sm:w-56"
+          />
+          <p className="mb-6 text-lg font-light leading-relaxed text-slate-500 italic">
+            "{t('about.vision_quote')}"
+          </p>
+          <p className="font-light leading-relaxed text-slate-600">
+            {t('about.vision_desc')}
+          </p>
         </section>
 
-          {/* 2. IMAGE & INTRO SPLIT */}
-        <section className="mt-20 grid grid-cols-1 gap-16 items-center xl:grid-cols-12">
-          <div className="space-y-6 xl:col-span-5">
-            <h2 className="font-display text-3xl text-slate-900">{t('about.vision_title2')}</h2>
-            <p className="text-slate-500 font-light leading-relaxed text-lg">
-              {t('about.vision_quote2')}
-            </p>
-            <p className="text-slate-600 font-light leading-relaxed">
-              {t('about.vision_desc2')}
-            </p>
-          </div>
-          <div className="overflow-hidden rounded-2xl aspect-[16/9] xl:col-span-7">
-            <img 
-              src={vnzImage}
-              alt="Our Vision"
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-[3000ms]"
-            />
-          </div>
+        <section className="flow-root mt-20 max-w-5xl">
+          <h2 className="mb-6 font-display text-3xl text-slate-900">{t('about.vision_title2')}</h2>
+          <LazyImage
+            lowResSrc={abimg2sm}
+            highResSrc="https://res.cloudinary.com/dwrinmdz0/image/upload/v1786046790/WebAssets/vnz1_t9avt7.jpg"
+            alt="Our Vision"
+            className="mb-5 w-full overflow-hidden rounded-2xl aspect-video sm:float-right sm:mb-4 sm:ml-8 sm:w-56"
+          />
+          <p className="mb-6 text-lg font-light leading-relaxed text-slate-500">
+            {t('about.vision_quote2')}
+          </p>
+          <p className="font-light leading-relaxed text-slate-600">
+            {t('about.vision_desc2')}
+          </p>
         </section>
 
         {/* 3. CORE VALUES GRID */}
