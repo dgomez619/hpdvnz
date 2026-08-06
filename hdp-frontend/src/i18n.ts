@@ -214,7 +214,7 @@ i18n
                         reserve_button: "Consultar Disponibilidad",
                         available_dates: "Seleccionar fechas",
                         no_charge_yet: "No se te cobrará nada aún",
-                        amenities: "Lo que este lugar ofrece",
+                        amenities: "Lo que ofrece este lugar",
                         show_all_photos: "Mostrar todas las fotos",
                         share: "Compartir",
                         save: "Guardar",

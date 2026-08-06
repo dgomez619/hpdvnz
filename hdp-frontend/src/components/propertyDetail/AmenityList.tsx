@@ -30,7 +30,7 @@ export const AmenityList = ({ items }: { items: string[] }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-10">
       {items.map((item) => (
         <div key={item} className="flex items-center gap-4 text-slate-700">
           {/* Icon wrapper with a soft color */}
