@@ -44,7 +44,7 @@ export const SearchTab = () => {
   };
 
   return (
-    <div className="relative mx-auto flex w-full flex-col divide-y divide-gray-100 rounded-xl bg-white p-2 shadow-2xl md:flex-row md:divide-x md:divide-y-0">
+    <div className="relative mx-auto flex items-center w-full flex-col divide-y divide-gray-100 rounded-xl bg-white p-2 shadow-2xl md:flex-row md:divide-x md:divide-y-0">
       
       {/* 1. Location Dropdown */}
       <div className="relative flex-1">

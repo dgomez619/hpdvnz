@@ -5,6 +5,7 @@ import { PropertyGallery } from './PropertyGallery';
 import { BookingWidget } from './BookingWidget';
 import { PropertyInfo } from './PropertyInfo';
 import { PhotoModal } from './PhotoModal';
+import { Check, Share2 } from 'lucide-react';
 
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -42,8 +43,15 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
   const [bookingValidationError, setBookingValidationError] = useState('');
   const [availabilityStatus, setAvailabilityStatus] = useState<'available' | 'mayBeUnavailable' | null>(null);
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  const [shareStatus, setShareStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   if (!property) return null;
+
+  const apiBase = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
+  const displayTitle = property.title_en && property.title_es
+    ? (i18n.language === 'en' ? property.title_en : property.title_es)
+    : property.title_es || property.title_en || ' ';
+  const shareUrl = `${apiBase}/share/property/${property._id}`;
 
   // --- HANDLERS: Gallery ---
   const openModal = (index: number) => {
@@ -94,7 +102,6 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
     setBookingValidationError('');
     setIsCheckingAvailability(true);
     try {
-      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001';
       const response = await fetch(`${apiBase}/api/properties/${property._id}/availability`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -113,6 +120,31 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
     }
   };
 
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: displayTitle,
+          text: currentDescription || property.description_es || property.description_en || '',
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+      }
+
+      setShareStatus('success');
+      window.setTimeout(() => setShareStatus('idle'), 2500);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
+      console.error('Error sharing property:', error);
+      setShareStatus('error');
+      window.setTimeout(() => setShareStatus('idle'), 3000);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white pb-20 pt-20 md:pt-24">
       {/* Back Button */}
@@ -127,11 +159,24 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
       </div>
 
       <header className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <h1 className="font-display text-3xl font-medium text-slate-900 md:text-4xl">
-          {property.title_en && property.title_es
-            ? (i18n.language === 'en' ? property.title_en : property.title_es)
-            : property.title_es || property.title_en || ' '}
-        </h1>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <h1 className="font-display text-3xl font-medium text-slate-900 md:text-4xl">
+            {displayTitle}
+          </h1>
+
+          <div className="flex items-center gap-3 self-start">
+            <button
+              type="button"
+              onClick={handleShare}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-200 px-4 text-xs font-bold uppercase tracking-[0.2em] text-slate-600 transition-colors hover:border-slate-900 hover:text-slate-900"
+            >
+              {shareStatus === 'success' ? <Check size={16} /> : <Share2 size={16} />}
+              {t('detail.share')}
+            </button>
+            {shareStatus === 'success' ? <span className="text-xs font-medium text-slate-500">{t('detail.share_success')}</span> : null}
+            {shareStatus === 'error' ? <span className="text-xs font-medium text-red-500">{t('detail.share_error')}</span> : null}
+          </div>
+        </div>
       </header>
 
       <PropertyGallery 

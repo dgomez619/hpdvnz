@@ -20,6 +20,7 @@ export interface Property {
 
   images: string[];
   amenities: string[]; // IDs like 'wifi', 'gym'
+  displayOrder?: number | null;
   
   rating?: number; // Optional/Virtual
   externalSyncLinks?: { platform: string; url: string; _id?: string }[];

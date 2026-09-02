@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Plus,
   Edit3,
+  GripVertical,
   RefreshCw,
   Lock,
   Search,
@@ -40,6 +41,9 @@ export const AdminDashboard = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [searchTerm, setSearchTerm] = useState(''); // Restored
   const [activeTab, setActiveTab] = useState<'dashboard' | 'inbox' | 'experiences'>('dashboard');
+  const [draggedPropertyId, setDraggedPropertyId] = useState<string | null>(null);
+  const [dragOverPropertyId, setDragOverPropertyId] = useState<string | null>(null);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
@@ -145,6 +149,70 @@ export const AdminDashboard = () => {
     }
   };
 
+  const persistPropertyOrder = async (orderedIds: string[], rollbackState: Property[]) => {
+    try {
+      setIsSavingOrder(true);
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${API_BASE}/api/properties/reorder`, {
+        method: 'PATCH',
+        headers: {
+          'x-auth-token': token || '',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ orderedIds })
+      });
+
+      if (!response.ok) {
+        throw new Error('No se pudo guardar el nuevo orden');
+      }
+
+      const data = await response.json();
+      setProperties(data);
+    } catch (error) {
+      console.error('Error saving property order:', error);
+      setProperties(rollbackState);
+      alert('No se pudo guardar el orden. Se revirtieron los cambios.');
+    } finally {
+      setIsSavingOrder(false);
+    }
+  };
+
+  const moveProperty = (list: Property[], draggedId: string, targetId: string) => {
+    if (draggedId === targetId) return list;
+    const fromIndex = list.findIndex((p) => p._id === draggedId);
+    const toIndex = list.findIndex((p) => p._id === targetId);
+    if (fromIndex < 0 || toIndex < 0) return list;
+
+    const next = [...list];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    return next;
+  };
+
+  const handleRowDragStart = (propertyId: string) => {
+    if (searchTerm.trim().length > 0 || isSavingOrder) return;
+    setDraggedPropertyId(propertyId);
+  };
+
+  const handleRowDrop = (targetPropertyId: string) => {
+    if (!draggedPropertyId || draggedPropertyId === targetPropertyId || searchTerm.trim().length > 0) {
+      setDraggedPropertyId(null);
+      setDragOverPropertyId(null);
+      return;
+    }
+
+    const previous = properties;
+    const reordered = moveProperty(properties, draggedPropertyId, targetPropertyId);
+    setProperties(reordered);
+    setDraggedPropertyId(null);
+    setDragOverPropertyId(null);
+
+    const orderedIds = reordered.map((p) => p._id);
+    persistPropertyOrder(orderedIds, previous);
+  };
+
+  const isReorderDisabled = searchTerm.trim().length > 0 || isSavingOrder;
+
   return (
     <div className="flex min-h-screen bg-[#0a0a0b] text-slate-300">
       {/* SIDEBAR */}
@@ -198,13 +266,13 @@ export const AdminDashboard = () => {
                 </button>
               </div>
             </header>
-
+          {/* STAT CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
               <StatCard label="Propiedades Activas" value={properties.length.toString()} />
               <StatCard label="Sincronización iCal" value="Activa" subValue="Todo al día" />
               <StatCard label="Mensajes Pendientes" value="3" />
             </div>
-
+          {/* PROPERTY TABLE */}
             <div className="bg-[#111114] rounded-2xl border border-white/5 overflow-hidden">
               <div className="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <h3 className="font-bold text-sm uppercase tracking-widest text-white">Tu Colección</h3>
@@ -214,10 +282,19 @@ export const AdminDashboard = () => {
                 </div>
               </div>
 
+              <div className="px-6 pt-4 text-[10px] uppercase tracking-widest text-slate-500">
+                {isSavingOrder
+                  ? 'Guardando orden...'
+                  : isReorderDisabled
+                    ? 'Limpia la búsqueda para reordenar con drag & drop'
+                    : 'Arrastra y suelta filas para definir el orden público'}
+              </div>
+
               <div className="overflow-x-auto custom-scrollbar" role="region" aria-label="Property collection table" tabIndex={0}>
                 <table className="min-w-full text-left">
                   <thead className="text-[10px] uppercase tracking-[0.2em] text-slate-500 bg-white/5">
                     <tr>
+                      <th className="w-12 px-4 py-4" aria-label="Arrastrar" />
                       <th className="px-6 py-4">Propiedad</th>
                       <th className="px-6 py-4">Ubicación</th>
                       <th className="px-6 py-4">Precio</th>
@@ -226,12 +303,45 @@ export const AdminDashboard = () => {
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {isLoading ? (
-                      <tr><td colSpan={4} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-slate-500" /></td></tr>
+                      <tr><td colSpan={5} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-slate-500" /></td></tr>
                     ) : (
                       properties
                         .filter(p => getLocalizedTitle(p).toLowerCase().includes(searchTerm.toLowerCase()))
                         .map((prop) => (
-                          <tr key={prop._id} className="hover:bg-white/5 transition-colors group">
+                          <tr
+                            key={prop._id}
+                            onDragOver={(e) => {
+                              if (isReorderDisabled) return;
+                              e.preventDefault();
+                              if (dragOverPropertyId !== prop._id) setDragOverPropertyId(prop._id);
+                            }}
+                            onDragLeave={() => {
+                              if (dragOverPropertyId === prop._id) setDragOverPropertyId(null);
+                            }}
+                            onDrop={() => handleRowDrop(prop._id)}
+                            onDragEnd={() => {
+                              setDraggedPropertyId(null);
+                              setDragOverPropertyId(null);
+                            }}
+                            className={`group transition-colors ${dragOverPropertyId === prop._id ? 'bg-white/10' : 'hover:bg-white/5'} ${!isReorderDisabled ? 'cursor-move' : ''}`}
+                          >
+                            <td className="px-4 py-4">
+                              <div
+                                role="button"
+                                tabIndex={isReorderDisabled ? -1 : 0}
+                                draggable={!isReorderDisabled}
+                                onDragStart={() => handleRowDragStart(prop._id)}
+                                onDragEnd={() => {
+                                  setDraggedPropertyId(null);
+                                  setDragOverPropertyId(null);
+                                }}
+                                aria-label={`Arrastrar ${getLocalizedTitle(prop)}`}
+                                title={isReorderDisabled ? 'Limpia la búsqueda para reordenar' : 'Arrastrar para reordenar'}
+                                className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-white/10 transition-colors ${isReorderDisabled ? 'cursor-not-allowed text-slate-600' : 'cursor-grab text-slate-400 hover:text-white hover:border-white/20 active:cursor-grabbing'}`}
+                              >
+                                <GripVertical size={16} />
+                              </div>
+                            </td>
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 <img src={prop.images[0]} className="w-10 h-10 rounded-lg object-cover" alt="" />

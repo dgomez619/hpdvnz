@@ -66,6 +66,8 @@ i18n
                         amenities: "What this place offers",
                         show_all_photos: "Show all photos",
                         share: "Share",
+                        share_success: "Link copied",
+                        share_error: "Unable to share right now",
                         save: "Save",
                         back_to_previous: "Previous Page"
                     },
@@ -217,6 +219,8 @@ i18n
                         amenities: "Lo que ofrece este lugar",
                         show_all_photos: "Mostrar todas las fotos",
                         share: "Compartir",
+                        share_success: "Enlace copiado",
+                        share_error: "No se pudo compartir en este momento",
                         save: "Guardar",
                         back_to_previous: "Volver"
                     },
