@@ -34,7 +34,7 @@ export const Navbar = () => {
       }`}>
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           
-          <Link to="/" className={`z-50 text-xl font-bold tracking-[0.2em] transition-colors duration-500 ${
+          <Link to="/" className={`z-50 text-lg font-bold tracking-[0.2em] transition-colors duration-500 ${
             (isNavbarActive && !menuOpen) ? 'text-slate-900' : (menuOpen ? 'text-slate-900' : 'text-white')
           }`}>
             HOSPEDAJE<span className="font-light opacity-60"> POR  DIAS</span>
@@ -65,7 +65,7 @@ export const Navbar = () => {
           {/* UPDATED DESKTOP CTA: Now links to Catalog */}
           <Link 
             to="/catalog" 
-            className={`hidden xl:block px-7 py-3 text-xs font-bold uppercase tracking-[0.2em] transition-all hover:scale-105 active:scale-95 ${
+            className={`hidden xl:block px-3 py-3 text-xs font-bold uppercase tracking-[0.2em] transition-all hover:scale-105 active:scale-95 ${
               isNavbarActive ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-900'
             }`}
           >
