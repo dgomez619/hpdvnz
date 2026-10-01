@@ -109,7 +109,9 @@ i18n
                         summary_price_per_night: "Price per night",
                         summary_fees: "Cleaning & service fees",
                         summary_nights: "Nights",
-                        summary_total: "Total"
+                        summary_total: "Total",
+                        verification_required: "Please complete the verification challenge before submitting.",
+                        submit_error: "We couldn't process your request. Please try again."
                     },
                     amenities: {
                         title: "What this place offers",
@@ -262,7 +264,9 @@ i18n
                         summary_price_per_night: "Precio por noche",
                         summary_fees: "Gastos de limpieza y servicio",
                         summary_nights: "Noches",
-                        summary_total: "Total"
+                        summary_total: "Total",
+                        verification_required: "Completa la verificación antes de enviar la solicitud.",
+                        submit_error: "No pudimos procesar tu solicitud. Inténtalo de nuevo."
                     },
                     amenities: {
                         title: "Lo que este lugar ofrece",

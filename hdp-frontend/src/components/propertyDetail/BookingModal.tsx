@@ -4,6 +4,8 @@ import { X, Users, Mail, MessageCircle, Send, CheckCircle2 } from 'lucide-react'
 import type { Property } from '../../types/property';
 import { useTranslation } from 'react-i18next';
 import { useModalFocus } from '../../utils/useModalFocus';
+import { useBotProtection, HONEYPOT_FIELD_NAME } from '../../utils/useBotProtection';
+import { TurnstileWidget } from '../TurnstileWidget';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -23,18 +25,34 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const displayTitle = i18n.language === 'en' ? (property.title_en || property.title_es) : (property.title_es || property.title_en);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const { honeypotRef, isLikelyBot, getPayload } = useBotProtection();
 
   useModalFocus(dialogRef, onClose, isOpen);
 
   if (!isOpen) return null;
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-  const WHATSAPP_NUMBER = "+584121803892"; // Reemplaza con tu número de WhatsApp Business (sin el +)
+  const WHATSAPP_NUMBER = "+16194322363"; // Reemplaza con tu número de WhatsApp Business (sin el +)
+  const turnstileRequired = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  setFormError('');
+
+  // Silently drop obvious bot submissions (filled honeypot or submitted too fast).
+  if (isLikelyBot()) {
+    return;
+  }
+
+  if (turnstileRequired && !turnstileToken) {
+    setFormError(t('booking.verification_required'));
+    return;
+  }
+
   setIsSubmitting(true);
 
   // 1. Calculate nights dynamically
@@ -59,7 +77,9 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
         startDate,
         endDate,
         guests,
-        totalPrice: calculatedTotal // Using the accurate calculation
+        totalPrice: calculatedTotal, // Using the accurate calculation
+        turnstileToken,
+        ...getPayload()
       })
     });
 
@@ -83,9 +103,12 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
           window.open(waLink, '_blank');
           onClose();
         }, 2000);
+      } else {
+        setFormError(t('booking.submit_error'));
       }
     } catch (error) {
       console.error("Error submitting booking:", error);
+      setFormError(t('booking.submit_error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -172,8 +195,25 @@ export const BookingModal = ({ isOpen, onClose, property, startDate, endDate, gu
               </div>
             </div>
 
+            {/* Honeypot field: hidden from humans, irresistible to bots */}
+            <div aria-hidden="true" className="absolute h-px w-px overflow-hidden -left-2499.75">
+              <label htmlFor="company">Company</label>
+              <input
+                ref={honeypotRef}
+                id="company"
+                name={HONEYPOT_FIELD_NAME}
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
+            {formError ? <p className="text-xs font-medium text-red-500">{formError}</p> : null}
+
+            <TurnstileWidget onVerify={setTurnstileToken} onExpire={() => setTurnstileToken('')} />
+
             <button
-              disabled={isSubmitting}
+              disabled={isSubmitting || (turnstileRequired && !turnstileToken)}
               type="submit"
               className="flex w-full items-center justify-center gap-3 rounded-2xl bg-slate-900 py-5 text-xs font-bold uppercase tracking-[0.15em] text-white transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-50"
             >

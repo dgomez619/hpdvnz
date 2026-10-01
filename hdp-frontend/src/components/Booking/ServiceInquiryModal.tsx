@@ -3,6 +3,8 @@ import { useRef, useState } from 'react';
 import { X, User, Home, Calendar, MessageCircle, Send, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useModalFocus } from '../../utils/useModalFocus';
+import { useBotProtection, HONEYPOT_FIELD_NAME } from '../../utils/useBotProtection';
+import { TurnstileWidget } from '../TurnstileWidget';
 
 interface Service {
   _id: string;
@@ -21,7 +23,10 @@ export const ServiceInquiryModal = ({ isOpen, onClose, service }: ServiceInquiry
   const { t, i18n } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const dialogRef = useRef<HTMLDivElement>(null);
+  const { honeypotRef, isLikelyBot, getPayload } = useBotProtection();
 
   useModalFocus(dialogRef, onClose, isOpen);
 
@@ -37,9 +42,22 @@ export const ServiceInquiryModal = ({ isOpen, onClose, service }: ServiceInquiry
 
   const displayTitle = i18n.language === 'en' ? service.title_en : service.title_es;
   const WHATSAPP_NUMBER = "1234567890"; // Reemplaza con tu número
+  const turnstileRequired = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError('');
+
+    // Silently drop obvious bot submissions (filled honeypot or submitted too fast).
+    if (isLikelyBot()) {
+      return;
+    }
+
+    if (turnstileRequired && !turnstileToken) {
+      setFormError(t('booking.verification_required'));
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -49,7 +67,9 @@ export const ServiceInquiryModal = ({ isOpen, onClose, service }: ServiceInquiry
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           serviceId: service._id,
-          ...formData
+          ...formData,
+          turnstileToken,
+          ...getPayload()
         })
       });
 
@@ -72,9 +92,12 @@ export const ServiceInquiryModal = ({ isOpen, onClose, service }: ServiceInquiry
           window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${waMessage}`, '_blank');
           onClose();
         }, 2000);
+      } else {
+        setFormError(t('booking.submit_error'));
       }
     } catch (error) {
       console.error("Error sending inquiry:", error);
+      setFormError(t('booking.submit_error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -150,8 +173,25 @@ export const ServiceInquiryModal = ({ isOpen, onClose, service }: ServiceInquiry
               <textarea rows={3} value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="w-full rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm outline-none focus:border-slate-900" />
             </div>
 
+            {/* Honeypot field: hidden from humans, irresistible to bots */}
+            <div aria-hidden="true" className="absolute h-px w-px overflow-hidden -left-2499.75">
+              <label htmlFor="company-service">Company</label>
+              <input
+                ref={honeypotRef}
+                id="company-service"
+                name={HONEYPOT_FIELD_NAME}
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
+            {formError ? <p className="text-xs font-medium text-red-500">{formError}</p> : null}
+
+            <TurnstileWidget onVerify={setTurnstileToken} onExpire={() => setTurnstileToken('')} />
+
             <button
-              disabled={isSubmitting}
+              disabled={isSubmitting || (turnstileRequired && !turnstileToken)}
               type="submit"
               className="flex w-full items-center justify-center gap-3 rounded-2xl bg-slate-900 py-5 text-xs font-bold uppercase tracking-[0.15em] text-white transition-all hover:bg-slate-800 disabled:opacity-50"
             >
