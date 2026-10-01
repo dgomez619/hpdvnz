@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { PropertyCard } from './PropertyCard';
+import { PropertyCardSkeleton } from './common/PropertyCardSkeleton';
 import type { Property } from '../types/property';
 
 
 // 2. Accept properties as a prop from App.tsx
-export const PropertyCatalog = ({ properties = [] }: { properties: Property[] }) => {
+export const PropertyCatalog = ({ properties = [], isLoading = false }: { properties: Property[]; isLoading?: boolean }) => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const selectedCity = searchParams.get('city') || t('search.placeholder_all_locations');
@@ -65,17 +66,18 @@ export const PropertyCatalog = ({ properties = [] }: { properties: Property[] })
 
           <main className="flex-1">
             <div className="mb-6 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              <span>{filteredProperties.length} {t('catalog.results_found')}</span>
+              <span>{isLoading ? '…' : filteredProperties.length} {t('catalog.results_found')}</span>
             </div>
             
             <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2">
-              {filteredProperties.map((property) => (
-                // 5. Use property._id for the key!
-                <PropertyCard key={property._id} property={property} searchParams={searchParams} />
-              ))}
+              {isLoading
+                ? Array.from({ length: 6 }, (_, index) => <PropertyCardSkeleton key={index} />)
+                : filteredProperties.map((property) => (
+                    <PropertyCard key={property._id} property={property} searchParams={searchParams} />
+                  ))}
             </div>
 
-            {filteredProperties.length === 0 && (
+            {!isLoading && filteredProperties.length === 0 && (
               <div className="py-20 text-center border border-dashed border-slate-100 rounded-3xl">
                 <p className="text-slate-400 font-light italic">{t('catalog.no_results')}</p>
               </div>

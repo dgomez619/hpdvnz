@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'; 
 import { AddPropertyModal } from './AddPropertyModal';
 import { AddServiceModal } from './AddServiceModal';
+import { ProgressiveImage } from '../common/ProgressiveImage';
 import { AdminInbox } from './AdminInbox';
 import type { Property } from '../../types/property';
 
@@ -344,7 +345,12 @@ export const AdminDashboard = () => {
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <img src={prop.images[0]} className="w-10 h-10 rounded-lg object-cover" alt="" />
+                                <ProgressiveImage
+                                  src={prop.images[0]}
+                                  alt=""
+                                  className="h-10 w-10 shrink-0 rounded-lg"
+                                  imageClassName="object-cover"
+                                />
                                 <span className="text-sm font-medium text-white">{getLocalizedTitle(prop)}</span>
                               </div>
                             </td>
@@ -387,7 +393,12 @@ export const AdminDashboard = () => {
               {services.map((service) => (
                 <div key={service._id} className="bg-[#111114] border border-white/5 rounded-2xl overflow-hidden group">
                   <div className="aspect-video relative">
-                    <img src={service.image} alt={service.title_es} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                    <ProgressiveImage
+                      src={service.image}
+                      alt={service.title_es}
+                      className="h-full w-full"
+                      imageClassName="object-cover opacity-60 transition-opacity group-hover:opacity-100"
+                    />
                     <div className="absolute top-4 right-4 flex gap-2">
                        <button onClick={() => { setSelectedService(service); setIsServiceModalOpen(true); }} className="bg-black/50 backdrop-blur-md p-2 rounded-lg text-white hover:bg-white hover:text-black transition-all">
                           <Edit3 size={16} />

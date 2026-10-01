@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { ProgressiveImage } from '../common/ProgressiveImage';
 
 interface GalleryProps {
   images: string[];
@@ -6,12 +7,18 @@ interface GalleryProps {
   isLoading?: boolean;
 }
 
-export const PropertyGallery = ({ images, onImageClick, isLoading = true }: GalleryProps) => {
+export const PropertyGallery = ({ images, onImageClick, isLoading = false }: GalleryProps) => {
   const { t } = useTranslation();
 
   // Safety check: If no images, show a placeholder
   if (!isLoading && (!images || images.length === 0)) {
-    return <div className="h-64 w-full bg-slate-100 animate-pulse rounded-2xl" />;
+    return (
+      <section className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex h-64 w-full items-center justify-center rounded-2xl bg-slate-100 px-6 text-center text-sm font-medium text-slate-400">
+          Photos unavailable
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -20,7 +27,7 @@ export const PropertyGallery = ({ images, onImageClick, isLoading = true }: Gall
           DESKTOP: 5-image Mosaic using 12-column grid 
       */}
       <div
-        className="relative grid aspect-[4/5] grid-cols-1 gap-2 overflow-hidden rounded-xl sm:aspect-[3/2] md:aspect-[16/7] md:grid-cols-4 md:grid-rows-2 md:rounded-2xl"
+        className="relative grid aspect-4/5 grid-cols-1 gap-2 overflow-hidden rounded-xl sm:aspect-3/2 md:aspect-16/7 md:grid-cols-4 md:grid-rows-2 md:rounded-2xl"
         aria-busy={isLoading}
       >
         
@@ -29,11 +36,13 @@ export const PropertyGallery = ({ images, onImageClick, isLoading = true }: Gall
           {isLoading ? (
             <div className="skeleton-shimmer h-full w-full rounded-[inherit]" aria-hidden="true" />
           ) : (
-            <img
+            <ProgressiveImage
               src={images[0]}
-              className="h-full w-full cursor-pointer object-cover transition-opacity hover:opacity-90"
               alt="Property Main"
+              loading="eager"
               onClick={() => onImageClick(0)}
+              className="h-full w-full"
+              imageClassName="transition-transform duration-500 hover:scale-[1.02] motion-reduce:transition-none"
             />
           )}
         </div>
@@ -44,11 +53,13 @@ export const PropertyGallery = ({ images, onImageClick, isLoading = true }: Gall
             {isLoading ? (
               <div className="skeleton-shimmer h-full w-full rounded-[inherit]" aria-hidden="true" />
             ) : (
-              <img
+              <ProgressiveImage
                 src={images[index] || images[0]}
-                className="h-full w-full cursor-pointer object-cover hover:opacity-90"
                 alt={`Interior ${index}`}
+                loading="lazy"
                 onClick={() => onImageClick(index)}
+                className="h-full w-full"
+                imageClassName="transition-transform duration-500 hover:scale-[1.02] motion-reduce:transition-none"
               />
             )}
           </div>

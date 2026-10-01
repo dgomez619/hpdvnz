@@ -1,9 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { PropertyDetail } from './propertyDetail/PropertyDetail';
-import { Loader2 } from 'lucide-react';
 import type { Property } from '../types/property';
 
+const PropertyDetailSkeleton = () => (
+  <div className="min-h-screen bg-white pb-20 pt-24" aria-busy="true" aria-label="Loading property details">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="mt-6 h-4 w-32 rounded bg-slate-100" />
+      <div className="mt-8 h-10 w-2/5 rounded bg-slate-200" />
+    </div>
+    <div className="mx-auto mt-8 max-w-7xl px-4 sm:px-6">
+      <div className="skeleton-shimmer aspect-4/5 w-full rounded-xl sm:aspect-3/2 md:aspect-16/7 md:rounded-2xl" />
+      <div className="mt-8 grid grid-cols-1 gap-12 xl:grid-cols-3">
+        <div className="space-y-4 xl:col-span-2">
+          <div className="h-7 w-48 rounded bg-slate-200" />
+          <div className="h-4 w-full rounded bg-slate-100" />
+          <div className="h-4 w-5/6 rounded bg-slate-100" />
+        </div>
+        <div className="order-first skeleton-shimmer h-72 rounded-2xl xl:order-none" />
+      </div>
+    </div>
+  </div>
+);
 
 
 export const PropertyDetailWrapper = () => {
@@ -43,12 +61,7 @@ export const PropertyDetailWrapper = () => {
 
   // 1. LOADING STATE
   if (loading) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center pt-40">
-        <Loader2 className="animate-spin text-slate-200" size={40} />
-        <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Cargando Detalles...</p>
-      </div>
-    );
+    return <PropertyDetailSkeleton />;
   }
 
   // 2. ERROR STATE

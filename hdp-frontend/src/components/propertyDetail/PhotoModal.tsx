@@ -1,6 +1,7 @@
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { useModalFocus } from '../../utils/useModalFocus';
+import { ProgressiveImage } from '../common/ProgressiveImage';
 
 interface PhotoModalProps {
   images: string[];
@@ -53,11 +54,13 @@ export const PhotoModal = ({ images, currentIndex, onClose, onNext, onPrev }: Ph
       </button>
 
       {/* Main Image Container */}
-      <div className="max-h-[85dvh] max-w-[90vw] overflow-hidden select-none">
-        <img 
+      <div className="relative h-[75dvh] w-[90vw] max-w-6xl select-none sm:h-[85dvh]">
+        <ProgressiveImage
           src={images[currentIndex]} 
           alt={`View ${currentIndex + 1}`}
-          className="max-h-[85dvh] max-w-[90vw] object-contain"
+          loading="eager"
+          className="h-full w-full"
+          imageClassName="object-contain"
         />
       </div>
 

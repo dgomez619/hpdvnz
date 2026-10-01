@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import { ServiceInquiryModal } from './Booking/ServiceInquiryModal'; // We'll create this next
+import { ProgressiveImage } from './common/ProgressiveImage';
 
 interface Service {
   _id: string;
@@ -82,10 +83,11 @@ export const AdditionalServices = () => {
                   className="relative aspect-16/10 mb-6 overflow-hidden rounded-2xl shadow-sm"
                   onClick={() => handleInquireClick(service)}
                 >
-                  <img 
+                  <ProgressiveImage
                     src={service.image} 
                     alt={title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="h-full w-full"
+                    imageClassName="transition-transform duration-700 group-hover:scale-110 motion-reduce:transition-none"
                   />
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                 </div>

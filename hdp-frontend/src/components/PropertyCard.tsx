@@ -2,6 +2,7 @@
 import type { Property } from '../types/property';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ProgressiveImage } from './common/ProgressiveImage';
 
 interface PropertyCardProps {
   property: Property;
@@ -33,11 +34,13 @@ export const PropertyCard = ({ property, searchParams }: PropertyCardProps) => {
       className="group cursor-pointer block"
     >
       {/* Image Container */}
-      <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-gray-100">
-        <img 
-          src={property.images && property.images[0] ? property.images[0] : '/placeholder-property.jpg'} 
+      <div className="relative aspect-4/5 overflow-hidden rounded-sm">
+        <ProgressiveImage
+          src={property.images?.[0]}
           alt={displayTitle}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
+          className="h-full w-full"
+          imageClassName="transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
         />
         
         {/* Top Badge (Category) */}

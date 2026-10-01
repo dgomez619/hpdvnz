@@ -47,7 +47,7 @@ const LazyImage = ({ lowResSrc, highResSrc, alt, className }: LazyImageProps) =>
         alt={alt}
         loading="eager"
         decoding="async"
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out hover:scale-105 ${
+        className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
           isHighResLoaded ? 'opacity-0' : 'opacity-100'
         }`}
       />
@@ -56,7 +56,7 @@ const LazyImage = ({ lowResSrc, highResSrc, alt, className }: LazyImageProps) =>
         alt={alt}
         loading="eager"
         decoding="async"
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out hover:scale-105 ${
+        className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
           isHighResLoaded ? 'opacity-100' : 'opacity-0'
         }`}
       />
@@ -97,37 +97,45 @@ export const AboutUs = () => {
           </h1>
         </header>
 
-        {/* 2. IMAGE & INTRO CONTENT */}
-        <section className="flow-root mt-20 max-w-5xl">
+        {/* 2. VENEZUELAN LANDMARKS & INTRO CONTENT */}
+        <section className="mt-20 max-w-6xl">
           <h2 className="mb-6 font-display text-3xl text-slate-900">{t('about.vision_title')}</h2>
-          <LazyImage
-            lowResSrc={abimg1sm}
-            highResSrc="https://res.cloudinary.com/dwrinmdz0/image/upload/v1786046791/WebAssets/araguaney_yqlauv.jpg"
-            alt="Our Vision"
-            className="mb-5 w-full overflow-hidden rounded-2xl aspect-video sm:float-left sm:mr-8 sm:mb-4 sm:w-56"
-          />
-          <p className="mb-6 text-lg font-light leading-relaxed text-slate-500 italic">
-            "{t('about.vision_quote')}"
-          </p>
-          <p className="font-light leading-relaxed text-slate-600">
-            {t('about.vision_desc')}
-          </p>
+          <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-12">
+            <LazyImage
+              lowResSrc={abimg1sm}
+              highResSrc="https://res.cloudinary.com/dwrinmdz0/image/upload/v1786046791/WebAssets/araguaney_yqlauv.jpg"
+              alt="Araguaney tree, a national symbol of Venezuela"
+              className="group aspect-4/3 w-full overflow-hidden rounded-2xl shadow-lg lg:col-span-5 lg:aspect-5/4"
+            />
+            <div className="lg:col-span-7">
+              <p className="mb-6 text-lg font-light leading-relaxed text-slate-500 italic">
+                "{t('about.vision_quote')}"
+              </p>
+              <p className="font-light leading-relaxed text-slate-600">
+                {t('about.vision_desc')}
+              </p>
+            </div>
+          </div>
         </section>
 
-        <section className="flow-root mt-20 max-w-5xl">
+        <section className="mt-20 max-w-6xl">
           <h2 className="mb-6 font-display text-3xl text-slate-900">{t('about.vision_title2')}</h2>
-          <LazyImage
-            lowResSrc={abimg2sm}
-            highResSrc="https://res.cloudinary.com/dwrinmdz0/image/upload/v1786046790/WebAssets/vnz1_t9avt7.jpg"
-            alt="Our Vision"
-            className="mb-5 w-full overflow-hidden rounded-2xl aspect-video sm:float-right sm:mb-4 sm:ml-8 sm:w-56"
-          />
-          <p className="mb-6 text-lg font-light leading-relaxed text-slate-500">
-            {t('about.vision_quote2')}
-          </p>
-          <p className="font-light leading-relaxed text-slate-600">
-            {t('about.vision_desc2')}
-          </p>
+          <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-12">
+            <LazyImage
+              lowResSrc={abimg2sm}
+              highResSrc="https://res.cloudinary.com/dwrinmdz0/image/upload/v1786046790/WebAssets/vnz1_t9avt7.jpg"
+              alt="Venezuelan landscape"
+              className="group aspect-4/3 w-full overflow-hidden rounded-2xl shadow-lg lg:order-2 lg:col-span-5 lg:aspect-5/4"
+            />
+            <div className="lg:col-span-7">
+              <p className="mb-6 text-lg font-light leading-relaxed text-slate-500">
+                {t('about.vision_quote2')}
+              </p>
+              <p className="font-light leading-relaxed text-slate-600">
+                {t('about.vision_desc2')}
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* 3. CORE VALUES GRID */}

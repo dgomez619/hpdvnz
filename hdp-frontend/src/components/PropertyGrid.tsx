@@ -1,5 +1,6 @@
 // src/components/PropertyGrid.tsx
 import { PropertyCard } from './PropertyCard';
+import { PropertyCardSkeleton } from './common/PropertyCardSkeleton';
 import type { Property } from '../types/property';
 import { useTranslation } from 'react-i18next';
 
@@ -7,9 +8,10 @@ import {Link} from 'react-router-dom';
 
 interface PropertyGridProps {
   properties: Property[];
+  isLoading?: boolean;
 }
 
-export const PropertyGrid = ({ properties }: PropertyGridProps) => {
+export const PropertyGrid = ({ properties, isLoading = false }: PropertyGridProps) => {
   const { t } = useTranslation();
 
   return (
@@ -29,9 +31,9 @@ export const PropertyGrid = ({ properties }: PropertyGridProps) => {
       </div>
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
-        {properties.map((property) => (
-          <PropertyCard key={property._id} property={property} />
-        ))}
+        {isLoading
+          ? Array.from({ length: 6 }, (_, index) => <PropertyCardSkeleton key={index} />)
+          : properties.map((property) => <PropertyCard key={property._id} property={property} />)}
       </div>
     </section>
   );

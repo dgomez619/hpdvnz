@@ -8,7 +8,6 @@ import { PropertyDetailWrapper } from './components/PropertyDetailWrapper';
 import { PropertyCatalog } from './components/PropertyCatalog';
 import { AdditionalServices } from './components/AdditionalServices';
 import { ScrollToTop } from './components/ScrollToTop';
-import { useTranslation } from 'react-i18next';
 import { AboutUs } from './components/AboutUs';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
@@ -16,7 +15,6 @@ import { PropertyCalendarPage } from './components/admin/PropertyCalendarPage';
 import { ProtectedRoute } from './components/admin/ProtectedRoute';
 
 const AppContent = () => {
-  const { t } = useTranslation();
   const location = useLocation();
 
   // 1. ADD THIS: Define the API base URL for deployment
@@ -54,14 +52,7 @@ const AppContent = () => {
           <main>
             <Hero />
             <div id="properties">
-              {/* 4. Pass the realProperties instead of MOCK_PROPERTIES */}
-              {loading ? (
-                <div className="py-20 text-center text-xs text-slate-400 uppercase tracking-widest">
-                  {t('common.loading_collection')} {/* <--- Now 't' is being used! */}
-                </div>
-              ) : (
-                <PropertyGrid properties={realProperties} />
-              )}
+              <PropertyGrid properties={realProperties} isLoading={loading} />
             </div>
 
             <section id="about" className="bg-slate-50 py-24 px-6 text-center">
@@ -70,7 +61,7 @@ const AppContent = () => {
           </main>
         } />
 
-        <Route path="/catalog" element={<PropertyCatalog properties={realProperties} />} />
+        <Route path="/catalog" element={<PropertyCatalog properties={realProperties} isLoading={loading} />} />
         <Route path="/services" element={<AdditionalServices />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/property/:id" element={<PropertyDetailWrapper />} />
