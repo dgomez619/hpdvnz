@@ -124,8 +124,8 @@ i18n
                         workspace: "Dedicated workspace"
                     },
                     catalog: {
-                        title: "Currently available properties",
-                        subtitle: "Browse our entire portfolio of exclusively managed properties",
+                        title: "Current Availability",
+                        subtitle: "Find properties available today.",
                         filter_location: "Filter by Location",
                         results_found: "Properties found",
                         no_results: "No properties found"
@@ -162,6 +162,15 @@ i18n
                         value_3_title: "Local Heritage",
                         value_3_desc: "Deeply rooted in Venezuela, we showcase the best of our culture through sophisticated living.",
                         footer_text: "Welcome to your home away from home."
+                    },
+                    welcome: {
+                        eyebrow: "Hospedaje por Dias",
+                        title: "Welcome to our collection",
+                        description: "Explore our personally managed property catalog with no account creation or payment required.",
+                        service_message: "We handle every listing directly to provide attentive service and a stay you can trust.",
+                        reassurance: "Browse freely and contact us directly from any property.",
+                        action: "Explore properties",
+                        close: "Close welcome message"
                     },
                     common: {
                         loading_collection: "Loading collection..."
@@ -279,8 +288,8 @@ i18n
                         workspace: "Zona de trabajo dedicada"
                     },
                     catalog: {
-                        title: "Disponibilidad actual de propiedades",
-                        subtitle: "Explore nuestro portafolio completo de propiedades exclusivamente gestionadas",
+                        title: "Disponibilidad actual",
+                        subtitle: "Encuentra las propiedades disponibles hoy.",
                         filter_location: "Filtrar por Ubicación",
                         results_found: "Propiedades encontradas",
                         no_results: "No se encontraron propiedades"
@@ -316,6 +325,15 @@ i18n
                         value_3_title: "Herencia Local",
                         value_3_desc: "Profundamente arraigados en Venezuela, mostramos lo mejor de nuestra cultura.",
                         footer_text: "Bienvenidos a su hogar lejos de casa."
+                    },
+                    welcome: {
+                        eyebrow: "Hospedaje por Dias",
+                        title: "Bienvenido a nuestra colección",
+                        description: "Explora nuestro catálogo de propiedades gestionado personalmente, sin necesidad de crear una cuenta ni realizar pagos.",
+                        service_message: "Administramos cada propiedad directamente para brindarte una atención cercana y una estancia en la que puedes confiar.",
+                        reassurance: "Explora con libertad y contáctanos directamente desde cualquier propiedad.",
+                        action: "Explorar propiedades",
+                        close: "Cerrar mensaje de bienvenida"
                     },
                     common: {
                         loading_collection: "Cargando colección..." 

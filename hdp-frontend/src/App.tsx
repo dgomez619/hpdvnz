@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'; // 1. Add these imports
+import { useCallback, useEffect, useState } from 'react'; // 1. Add these imports
 
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
@@ -13,6 +13,9 @@ import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { PropertyCalendarPage } from './components/admin/PropertyCalendarPage';
 import { ProtectedRoute } from './components/admin/ProtectedRoute';
+import { WelcomeModal } from './components/WelcomeModal';
+
+const WELCOME_MODAL_STORAGE_KEY = 'hpd-welcome-modal-seen';
 
 const AppContent = () => {
   const location = useLocation();
@@ -22,6 +25,30 @@ const AppContent = () => {
   
   const [realProperties, setRealProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
+  const isAdminPage = location.pathname.startsWith('/admin');
+
+  useEffect(() => {
+    if (isAdminPage) return;
+
+    try {
+      setShowWelcomeModal(!window.localStorage.getItem(WELCOME_MODAL_STORAGE_KEY));
+    } catch {
+      // Keep the welcome message available when browser storage is unavailable.
+      setShowWelcomeModal(true);
+    }
+  }, [isAdminPage]);
+
+  const dismissWelcomeModal = useCallback(() => {
+    try {
+      window.localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
+    } catch {
+      // The modal still closes for this visit if storage access is blocked.
+    }
+
+    setShowWelcomeModal(false);
+  }, []);
 
   useEffect(() => {
     const fetchPublicProperties = async () => {
@@ -40,11 +67,10 @@ const AppContent = () => {
     fetchPublicProperties();
   }, [API_BASE]); // Added API_BASE to dependencies
 
-  const isAdminPage = location.pathname.startsWith('/admin');
-
   return (
     <div className="relative min-h-screen bg-white font-sans text-slate-900">
       {!isAdminPage && <Navbar />}
+      {!isAdminPage && <WelcomeModal isOpen={showWelcomeModal} onClose={dismissWelcomeModal} />}
 
       <Routes>
         {/* Public Routes */}

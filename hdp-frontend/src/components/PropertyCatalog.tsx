@@ -40,28 +40,47 @@ export const PropertyCatalog = ({ properties = [], isLoading = false }: { proper
         </header>
 
         <div className="flex flex-col gap-12 xl:flex-row">
-          
-          <aside className="w-full space-y-8 xl:w-64">
-            <div>
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-4">
-                {t('catalog.filter_location')}
-              </h3>
-              <div className="flex flex-wrap gap-2 xl:flex-col">
-                {dynamicFilters.map((city) => (
-                  <button
-                    key={city}
-                    onClick={() => setActiveFilter(city)}
-                    className={`text-left text-sm transition-all py-1 ${
-                      activeFilter === city 
-                        ? 'font-bold text-slate-900 translate-x-2' 
-                        : 'text-slate-400 hover:text-slate-600'
-                    }`}
-                  >
-                    {city}
-                  </button>
-                ))}
+
+          {/* Sidebar for dynamic filters */}
+          <aside className="w-full shrink-0 xl:sticky xl:top-28 xl:w-72 xl:self-start">
+            <section
+              aria-labelledby="location-filter-heading"
+              className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm sm:p-5"
+            >
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h3
+                  id="location-filter-heading"
+                  className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500"
+                >
+                  {t('catalog.filter_location')}
+                </h3>
+                <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-slate-400 shadow-sm">
+                  {properties.length}
+                </span>
               </div>
-            </div>
+
+              <div className="flex max-h-44 gap-2 overflow-x-auto pb-1 xl:max-h-none xl:flex-col xl:overflow-visible xl:pb-0">
+                {dynamicFilters.map((city) => {
+                  const isActive = activeFilter === city;
+
+                  return (
+                    <button
+                      key={city}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setActiveFilter(city)}
+                      className={`whitespace-nowrap rounded-xl px-3 py-2 text-left text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 xl:w-full ${
+                        isActive
+                          ? 'bg-slate-900 text-white shadow-md shadow-slate-900/15'
+                          : 'bg-white text-slate-600 shadow-sm hover:bg-slate-100 hover:text-slate-900'
+                      }`}
+                    >
+                      {city}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
           </aside>
 
           <main className="flex-1">
