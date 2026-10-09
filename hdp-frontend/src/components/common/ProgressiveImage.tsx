@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 interface ProgressiveImageProps {
   src?: string;
@@ -23,26 +23,10 @@ export const ProgressiveImage = ({
   loading = 'lazy',
   onClick,
 }: ProgressiveImageProps) => {
-  const imageRef = useRef<HTMLImageElement>(null);
-  const [status, setStatus] = useState<'loading' | 'loaded' | 'error' | 'missing'>(src ? 'loading' : 'missing');
-  const isLoaded = status === 'loaded';
-  const hasError = status === 'error' || status === 'missing';
-
-  useEffect(() => {
-    if (!src) {
-      setStatus('missing');
-      return;
-    }
-
-    setStatus('loading');
-
-    // Cached images can finish before React's onLoad handler is attached.
-    // Inspecting `complete` prevents those images from being left behind the skeleton.
-    const image = imageRef.current;
-    if (image?.complete) {
-      setStatus(image.naturalWidth > 0 ? 'loaded' : 'error');
-    }
-  }, [src]);
+  const [loadedSrc, setLoadedSrc] = useState<string>();
+  const [failedSrc, setFailedSrc] = useState<string>();
+  const isLoaded = Boolean(src && loadedSrc === src);
+  const hasError = !src || failedSrc === src;
 
   const isInteractive = Boolean(onClick);
 
@@ -51,7 +35,7 @@ export const ProgressiveImage = ({
       className={`relative overflow-hidden bg-slate-100 ${isInteractive ? 'cursor-pointer' : ''} ${className}`}
       onClick={onClick}
     >
-      {status === 'loading' && !previewSrc ? <div className="skeleton-shimmer absolute inset-0" aria-hidden="true" /> : null}
+      {!isLoaded && !hasError && !previewSrc ? <div className="skeleton-shimmer absolute inset-0" aria-hidden="true" /> : null}
 
       {previewSrc ? (
         <img
@@ -62,15 +46,14 @@ export const ProgressiveImage = ({
         />
       ) : null}
 
-      {src && status !== 'error' ? (
+      {src && !hasError ? (
         <img
-          ref={imageRef}
           src={src}
           alt={alt}
           loading={loading}
           decoding="async"
-          onLoad={() => setStatus('loaded')}
-          onError={() => setStatus('error')}
+          onLoad={() => setLoadedSrc(src)}
+          onError={() => setFailedSrc(src)}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 motion-reduce:transition-none ${isLoaded ? 'opacity-100' : 'opacity-0'} ${imageClassName}`}
         />
       ) : null}
