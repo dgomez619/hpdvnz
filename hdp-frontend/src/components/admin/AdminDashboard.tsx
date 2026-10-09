@@ -26,9 +26,12 @@ interface Service {
   _id: string;
   title_en: string;
   title_es: string;
+  description_en: string;
+  description_es: string;
   category: string;
   image: string;
   isActive: boolean;
+  isAvailable?: boolean;
   priceInfo?: string;
 }
 
@@ -83,9 +86,10 @@ export const AdminDashboard = () => {
   const fetchServices = useCallback(async () => {
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${API_BASE}/api/services`, {
+      const response = await fetch(`${API_BASE}/api/services/admin`, {
         headers: { 'x-auth-token': token || '' }
       });
+      if (!response.ok) throw new Error('Unable to fetch services');
       const data = await response.json();
       setServices(data);
     } catch (error) {
@@ -139,14 +143,35 @@ export const AdminDashboard = () => {
       });
 
       if (response.ok) {
-        setServices(prev => prev.map(s =>
-          s._id === serviceId ? { ...s, isActive: !s.isActive } : s
-        ));
+        const updatedService: Service = await response.json();
+        setServices(prev => prev.map(s => s._id === serviceId ? updatedService : s));
       } else {
         alert('Error al cambiar el estado del servicio');
       }
     } catch (error) {
       console.error("Error toggling service:", error);
+    }
+  };
+
+  const handleToggleServiceAvailability = async (serviceId: string) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${API_BASE}/api/services/${serviceId}/availability`, {
+        method: 'PATCH',
+        headers: {
+          'x-auth-token': token || '',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const updatedService: Service = await response.json();
+        setServices(prev => prev.map(s => s._id === serviceId ? updatedService : s));
+      } else {
+        alert('Error al cambiar la disponibilidad del servicio');
+      }
+    } catch (error) {
+      console.error('Error toggling service availability:', error);
     }
   };
 
@@ -391,7 +416,7 @@ export const AdminDashboard = () => {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {services.map((service) => (
-                <div key={service._id} className="bg-[#111114] border border-white/5 rounded-2xl overflow-hidden group">
+                <div key={service._id} className="overflow-hidden rounded-2xl border border-white/5 bg-[#111114] group">
                   <div className="aspect-video relative">
                     <ProgressiveImage
                       src={service.image}
@@ -408,15 +433,18 @@ export const AdminDashboard = () => {
                   <div className="p-5 text-sm">
                     <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{service.category}</span>
                     <h3 className="text-lg text-white font-medium mt-1">{i18n.language === 'en' ? service.title_en : service.title_es}</h3>
-                    <div className="flex justify-between items-center mt-4">
+                    <div className="mt-4 space-y-3">
                       <span className="text-xs text-slate-400 font-light">
                         {service.priceInfo || 'Consultar'}
                       </span>
 
-                      <div className="flex items-center gap-3">
-                        <span className={`text-[9px] font-bold uppercase tracking-widest ${service.isActive ? 'text-green-500' : 'text-slate-500'}`}>
-                          {service.isActive ? 'Activo' : 'Pausado'}
-                        </span>
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Visible en el sitio</p>
+                          <span className={`text-[9px] font-bold uppercase tracking-widest ${service.isActive ? 'text-green-500' : 'text-slate-500'}`}>
+                            {service.isActive ? 'Activo' : 'Pausado'}
+                          </span>
+                        </div>
                         <button
                           type="button"
                           onClick={() => handleToggleService(service._id)}
@@ -431,6 +459,27 @@ export const AdminDashboard = () => {
                                 service.isActive ? 'left-5' : 'left-1'
                               }`}
                             />
+                          </span>
+                        </button>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Solicitudes</p>
+                          <span className={`text-[9px] font-bold uppercase tracking-widest ${service.isAvailable !== false ? 'text-green-500' : 'text-amber-400'}`}>
+                            {service.isAvailable !== false ? 'Disponible' : 'No disponible'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleServiceAvailability(service._id)}
+                          role="switch"
+                          aria-checked={service.isAvailable !== false}
+                          aria-label={`${service.isAvailable !== false ? 'Mark unavailable' : 'Mark available'} ${service.title_es}`}
+                          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                        >
+                          <span className={`relative h-5 w-9 rounded-full transition-colors ${service.isAvailable !== false ? 'bg-green-500' : 'bg-amber-500'}`}>
+                            <span className={`absolute top-1 inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${service.isAvailable !== false ? 'left-5' : 'left-1'}`} />
                           </span>
                         </button>
                       </div>

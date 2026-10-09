@@ -12,6 +12,7 @@ interface ServiceFormData {
   image: string;
   priceInfo: string;
   isActive: boolean;
+  isAvailable: boolean;
 }
 
 const emptyServiceForm: ServiceFormData = {
@@ -23,6 +24,7 @@ const emptyServiceForm: ServiceFormData = {
   image: '',
   priceInfo: '',
   isActive: true,
+  isAvailable: false,
 };
 
 interface AddServiceModalProps {
@@ -48,9 +50,10 @@ export const AddServiceModal = ({ isOpen, onClose, onSuccess, serviceToEdit }: A
     e.preventDefault();
     setLoading(true);
     const method = serviceToEdit ? 'PUT' : 'POST';
-    const url = serviceToEdit 
-        ? `${import.meta.env.VITE_API_URL}/api/services/${serviceToEdit._id}` 
-        : `${import.meta.env.VITE_API_URL}/api/services`;
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    const url = serviceToEdit
+      ? `${apiBase}/api/services/${serviceToEdit._id}`
+      : `${apiBase}/api/services`;
 
     try {
       const res = await fetch(url, {
@@ -64,6 +67,9 @@ export const AddServiceModal = ({ isOpen, onClose, onSuccess, serviceToEdit }: A
       if (res.ok) {
         onSuccess();
         onClose();
+      } else {
+        const data = await res.json().catch(() => null);
+        alert(data?.msg || 'No se pudo guardar la experiencia.');
       }
     } catch (err) {
       console.error("Error saving service:", err);
@@ -116,6 +122,10 @@ export const AddServiceModal = ({ isOpen, onClose, onSuccess, serviceToEdit }: A
             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Descripción (ES)</label>
             <textarea rows={3} value={formData.description_es} onChange={e => setFormData({...formData, description_es: e.target.value})} className="w-full bg-[#1c1c1e] border-none rounded-xl p-4 text-sm text-white focus:ring-1 focus:ring-white/20" />
           </div>
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Description (EN)</label>
+            <textarea rows={3} value={formData.description_en} onChange={e => setFormData({...formData, description_en: e.target.value})} className="w-full bg-[#1c1c1e] border-none rounded-xl p-4 text-sm text-white focus:ring-1 focus:ring-white/20" />
+          </div>
 
           {/* Image URL */}
           <div className="space-y-2 md:col-span-2">
@@ -125,6 +135,14 @@ export const AddServiceModal = ({ isOpen, onClose, onSuccess, serviceToEdit }: A
               {formData.image && <img src={formData.image} className="w-14 h-14 rounded-lg object-cover border border-white/10" alt="Preview" />}
             </div>
           </div>
+
+          <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 md:col-span-2">
+            <input type="checkbox" checked={formData.isAvailable} onChange={e => setFormData({...formData, isAvailable: e.target.checked})} className="h-4 w-4 rounded" />
+            <span>
+              <span className="block font-medium">Disponible para solicitudes</span>
+              <span className="block text-xs text-slate-500">Las experiencias no disponibles seguirán visibles con el aviso “Actualmente no disponible”.</span>
+            </span>
+          </label>
 
           <div className="md:col-span-2 pt-4">
             <button disabled={loading} type="submit" className="w-full bg-white text-black py-4 rounded-xl font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-slate-200 transition-all flex justify-center items-center gap-2">

@@ -131,8 +131,8 @@ i18n
                         no_results: "No properties found"
                     },
                     services: {
-                        page_title: "Elevated Experiences",
-                        page_subtitle: "Beyond luxury stays, we offer a curated suite of services to ensure your time in Venezuela is seamless and unforgettable.",
+                        page_title: "Your comfort, tailored.",
+                        page_subtitle: "From transfers to local experiences: we're here to help you enjoy Venezuela to the fullest, with a personal and approachable touch.",
                         cat_logistics: "Logistics",
                         cat_experience: "Exploration",
                         cat_leisure: "Leisure",
@@ -142,7 +142,8 @@ i18n
                         tours_desc: "Bespoke tours of the city's hidden gems, fine dining, and historical attractions.",
                         beaches_title: "Coastal Escapes",
                         beaches_desc: "Private day trips to Venezuela's most pristine beaches and crystal-clear keys.",
-                        inquire_now: "Inquire for Details"
+                        inquire_now: "Inquire for Details",
+                        currently_unavailable: "Currently unavailable"
                     },
                     about: {
                         subtitle: "Our Philosophy",
@@ -295,8 +296,8 @@ i18n
                         no_results: "No se encontraron propiedades"
                     },
                     services: {
-                        page_title: "Experiencias Elevadas",
-                        page_subtitle: "Más allá de estancias de lujo, ofrecemos una suite curada de servicios para asegurar que su tiempo en Venezuela sea perfecto e inolvidable.",
+                        page_title: "Tu comodidad, a la medida.",
+                        page_subtitle: "Desde traslados hasta experiencias locales: estamos disponibles para ayudarles a disfrutar Venezuela al máximo, con un trato cercano y accesible.",
                         cat_logistics: "Logística",
                         cat_experience: "Exploración",
                         cat_leisure: "Ocio",
@@ -306,7 +307,8 @@ i18n
                         tours_desc: "Recorridos personalizados por las joyas ocultas de la ciudad, alta cocina y atracciones históricas.",
                         beaches_title: "Escapadas Costeras",
                         beaches_desc: "Excursiones de un día a las playas más prístinas y cayos de aguas cristalinas de Venezuela.",
-                        inquire_now: "Solicitar Información"
+                        inquire_now: "Solicitar Información",
+                        currently_unavailable: "Actualmente no disponible"
                     },
                     about: {
                         subtitle: "Nuestra Filosofía",

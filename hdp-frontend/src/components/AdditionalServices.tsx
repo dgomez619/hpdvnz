@@ -13,6 +13,7 @@ interface Service {
   description_es: string;
   category: string;
   image: string;
+  isAvailable?: boolean;
   priceInfo?: string;
 }
 
@@ -28,7 +29,9 @@ export const AdditionalServices = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/services`);
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+        const response = await fetch(`${apiBase}/api/services`);
+        if (!response.ok) throw new Error('Unable to fetch services');
         const data = await response.json();
         setServices(data);
       } catch (error) {
@@ -41,6 +44,7 @@ export const AdditionalServices = () => {
   }, []);
 
   const handleInquireClick = (service: Service) => {
+    if (service.isAvailable === false) return;
     setSelectedService(service);
     setIsInquiryOpen(true);
   };
@@ -76,12 +80,13 @@ export const AdditionalServices = () => {
           {services.map((service) => {
             const title = i18n.language === 'en' ? service.title_en : service.title_es;
             const description = i18n.language === 'en' ? service.description_en : service.description_es;
+            const isAvailable = service.isAvailable !== false;
 
             return (
-              <div key={service._id} className="group cursor-pointer">
+              <div key={service._id} className={`group ${isAvailable ? 'cursor-pointer' : ''}`}>
                 <div 
-                  className="relative aspect-16/10 mb-6 overflow-hidden rounded-2xl shadow-sm"
-                  onClick={() => handleInquireClick(service)}
+                  className="relative mb-6 aspect-16/10 overflow-hidden rounded-2xl shadow-sm"
+                  onClick={isAvailable ? () => handleInquireClick(service) : undefined}
                 >
                   <ProgressiveImage
                     src={service.image} 
@@ -90,6 +95,13 @@ export const AdditionalServices = () => {
                     imageClassName="transition-transform duration-700 group-hover:scale-110 motion-reduce:transition-none"
                   />
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+                  {!isAvailable ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-950/45 p-4 text-center">
+                      <span className="rounded-full border border-white/40 bg-slate-950/70 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white">
+                        {t('services.currently_unavailable')}
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
                 
                 <div className="flex justify-between items-start">
@@ -110,11 +122,13 @@ export const AdditionalServices = () => {
                   {description}
                 </p>
                 
-                <button 
+                <button
+                  type="button"
+                  disabled={!isAvailable}
                   onClick={() => handleInquireClick(service)}
-                  className="mt-6 text-[10px] font-bold uppercase tracking-widest border-b border-slate-900 pb-1 hover:opacity-50 transition-all"
+                  className={`mt-6 text-[10px] font-bold uppercase tracking-widest border-b pb-1 transition-all ${isAvailable ? 'border-slate-900 hover:opacity-50' : 'cursor-not-allowed border-slate-300 text-slate-400'}`}
                 >
-                  {t('services.inquire_now')}
+                  {isAvailable ? t('services.inquire_now') : t('services.currently_unavailable')}
                 </button>
               </div>
             );
