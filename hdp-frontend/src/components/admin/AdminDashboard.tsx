@@ -11,6 +11,7 @@ import {
   GripVertical,
   RefreshCw,
   Lock,
+  KeyRound,
   Search,
   Trash2,
   Calendar,
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react'; 
 import { AddPropertyModal } from './AddPropertyModal';
 import { AddServiceModal } from './AddServiceModal';
+import { ChangePasswordModal } from './ChangePasswordModal';
 import { ProgressiveImage } from '../common/ProgressiveImage';
 import { AdminInbox } from './AdminInbox';
 import type { Property } from '../../types/property';
@@ -53,6 +55,7 @@ export const AdminDashboard = () => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
@@ -252,6 +255,10 @@ export const AdminDashboard = () => {
           <SidebarLink icon={<Home size={18} />} label="Experiencias" active={activeTab === 'experiences'} onClick={() => setActiveTab('experiences')} />
         </nav>
         <div className="p-6 border-t border-white/5">
+          <button onClick={() => setIsChangePasswordOpen(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:text-white hover:bg-white/5 transition-all">
+            <KeyRound size={18} />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Cambiar Contraseña</span>
+          </button>
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-all group">
             <Lock size={18} />
             <span className="text-[10px] font-bold uppercase tracking-widest">Cerrar Sesión</span>
@@ -270,6 +277,9 @@ export const AdminDashboard = () => {
           </button>
           <button type="button" onClick={() => setActiveTab('experiences')} className={`min-h-11 rounded-xl px-4 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'experiences' ? 'bg-white text-black' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}>
             Experiencias
+          </button>
+          <button type="button" onClick={() => setIsChangePasswordOpen(true)} className="min-h-11 rounded-xl px-4 text-xs font-bold uppercase tracking-wider text-slate-300 transition-colors bg-white/5 hover:bg-white/10">
+            Cambiar Contraseña
           </button>
           <button type="button" onClick={handleLogout} className="min-h-11 rounded-xl px-4 text-xs font-bold uppercase tracking-wider text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300">
             Cerrar sesión
@@ -494,6 +504,7 @@ export const AdminDashboard = () => {
 
       <AddPropertyModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setSelectedProperty(null); }} onSuccess={() => fetchProperties()} propertyToEdit={selectedProperty} />
       <AddServiceModal isOpen={isServiceModalOpen} onClose={() => { setIsServiceModalOpen(false); setSelectedService(null); }} onSuccess={() => fetchServices()} serviceToEdit={selectedService} />
+      <ChangePasswordModal isOpen={isChangePasswordOpen} onClose={() => setIsChangePasswordOpen(false)} />
     </div>
   );
 };
