@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useModalFocus } from '../utils/useModalFocus';
 
 const HPD_LOGO_URL =
-  'https://res.cloudinary.com/dwrinmdz0/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1791242892/WebAssets/hpd3d2_copy_h2ps5c.png';
+  'https://res.cloudinary.com/dwrinmdz0/image/upload/v1791938039/WebAssets/welcomelLogo_j7pazs.png';
 
 const LogoHpd = () => {
   const [hasImageError, setHasImageError] = useState(false);
@@ -17,7 +17,7 @@ const LogoHpd = () => {
     <img
       src={HPD_LOGO_URL}
       alt="Hospedaje por Dias logo"
-      className="h-10 w-10 rounded-xl object-cover"
+      className="h-full w-full object-cover"
       loading="eager"
       decoding="async"
       onError={() => setHasImageError(true)}
@@ -79,7 +79,7 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
         </button>
 
         <div className="px-6 pb-7 pt-10 text-center sm:px-10 sm:pb-10 sm:pt-12">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg shadow-slate-900/20">
+          <div className="mx-auto h-32 w-full overflow-hidden sm:h-40 md:h-48">
             <LogoHpd />
           </div>
 

@@ -37,12 +37,25 @@ const dateFormatter = new Intl.DateTimeFormat('es-VE', {
   year: 'numeric',
 });
 
+const requestDateFormatter = new Intl.DateTimeFormat('es-VE', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 const getPropertyTitle = (property: BookingProperty | string) => {
   if (!property || typeof property === 'string') {
     return 'Propiedad sin título';
   }
 
   return property.title_es || property.title_en || 'Propiedad sin título';
+};
+
+const getPropertyId = (property: BookingProperty | string) => {
+  if (!property) return null;
+  return typeof property === 'string' ? property : property._id;
 };
 
 const formatDate = (value: string) => {
@@ -52,6 +65,17 @@ const formatDate = (value: string) => {
   }
 
   return dateFormatter.format(parsedDate);
+};
+
+const formatRequestDate = (value?: string) => {
+  if (!value) return 'Fecha no disponible';
+
+  const parsedDate = new Date(value);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return 'Fecha no disponible';
+  }
+
+  return requestDateFormatter.format(parsedDate);
 };
 
 const getWhatsAppHref = (whatsapp: string) => {
@@ -132,6 +156,7 @@ export const AdminInbox = () => {
         <div className="grid auto-rows-[minmax(280px,auto)] grid-cols-1 gap-5 xl:grid-cols-6">
           {requests.map((req, index) => {
             const propertyTitle = getPropertyTitle(req.propertyId);
+            const propertyId = getPropertyId(req.propertyId);
             const cardSpan = index % 3 === 0 ? 'xl:col-span-3' : 'xl:col-span-3';
 
             return (
@@ -145,9 +170,33 @@ export const AdminInbox = () => {
                       <div className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] ${statusStyles[req.status]}`}>
                         {req.status}
                       </div>
+                      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+                        Recibida: {formatRequestDate(req.createdAt)}
+                      </p>
                       <div>
                         <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-slate-500">Propiedad</p>
-                        <h3 className="mt-2 text-2xl font-semibold text-white">{propertyTitle}</h3>
+                        {propertyId ? (
+                          <a
+                            href={`/property/${propertyId}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-2 inline-flex text-2xl font-semibold text-white underline decoration-slate-500/60 decoration-1 underline-offset-6 transition-colors hover:text-sky-200 hover:decoration-sky-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                          >
+                            {propertyTitle}
+                          </a>
+                        ) : (
+                          <h3 className="mt-2 text-2xl font-semibold text-white">{propertyTitle}</h3>
+                        )}
+                        {propertyId ? (
+                          <a
+                            href={`/property/${propertyId}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-4 inline-flex rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-sky-200 transition-colors hover:bg-sky-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                          >
+                            Ver propiedad ↗
+                          </a>
+                        ) : null}
                       </div>
                     </div>
 
