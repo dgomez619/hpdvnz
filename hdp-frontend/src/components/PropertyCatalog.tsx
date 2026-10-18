@@ -5,6 +5,10 @@ import { PropertyCard } from './PropertyCard';
 import { PropertyCardSkeleton } from './common/PropertyCardSkeleton';
 import type { Property } from '../types/property';
 
+// Locations are free text, so "Lecheria", "Lechería " and "lecheria, Anzoátegui" must collapse to one city.
+const normalize = (value: string) =>
+  value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+const getCityLabel = (location: string) => location.split(',')[0].replace(/\s+/g, ' ').trim();
 
 // 2. Accept properties as a prop from App.tsx
 export const PropertyCatalog = ({ properties = [], isLoading = false }: { properties: Property[]; isLoading?: boolean }) => {
@@ -18,13 +22,22 @@ export const PropertyCatalog = ({ properties = [], isLoading = false }: { proper
   }, [selectedCity]);
 
   // 3. Logic to filter based on real MongoDB data
-  const filteredProperties = activeFilter === t('search.placeholder_all_locations')
-    ? properties 
-    : properties.filter(p => p.location.includes(activeFilter));
+  const allLabel = t('search.placeholder_all_locations');
+  const isAllActive = activeFilter === allLabel;
+  const normalizedFilter = normalize(activeFilter);
+  const filteredProperties = isAllActive
+    ? properties
+    : properties.filter(p => normalize(p.location).includes(normalizedFilter));
 
   // 4. Generate dynamic filters based on what's actually in your DB
-  // This takes your property locations, removes duplicates, and adds 'All'
-  const dynamicFilters = [t('search.placeholder_all_locations'), ...new Set(properties.map(p => p.location))];
+  // Cities are de-duplicated by normalized name (case, accents, spacing, trailing region), keeping the first label seen
+  const cityMap = new Map<string, string>();
+  properties.forEach(p => {
+    const label = getCityLabel(p.location);
+    const key = normalize(label);
+    if (key && !cityMap.has(key)) cityMap.set(key, label);
+  });
+  const dynamicFilters = [allLabel, ...cityMap.values()];
 
   return (
     <div className="min-h-screen bg-white pt-32 pb-20">
@@ -61,7 +74,7 @@ export const PropertyCatalog = ({ properties = [], isLoading = false }: { proper
 
               <div className="flex max-h-44 gap-2 overflow-x-auto pb-1 xl:max-h-none xl:flex-col xl:overflow-visible xl:pb-0">
                 {dynamicFilters.map((city) => {
-                  const isActive = activeFilter === city;
+                  const isActive = city === allLabel ? isAllActive : normalize(activeFilter) === normalize(city);
 
                   return (
                     <button

@@ -1,4 +1,5 @@
 // src/components/PropertyGrid.tsx
+import { useState } from 'react';
 import { PropertyCard } from './PropertyCard';
 import { PropertyCardSkeleton } from './common/PropertyCardSkeleton';
 import type { Property } from '../types/property';
@@ -11,8 +12,15 @@ interface PropertyGridProps {
   isLoading?: boolean;
 }
 
+const INITIAL_VISIBLE = 6;
+const LOAD_MORE_STEP = 3;
+
 export const PropertyGrid = ({ properties, isLoading = false }: PropertyGridProps) => {
   const { t } = useTranslation();
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
+  const visibleProperties = properties.slice(0, visibleCount);
+  const hasMore = visibleCount < properties.length;
 
   return (
     <section id="properties" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 md:py-24">
@@ -33,8 +41,20 @@ export const PropertyGrid = ({ properties, isLoading = false }: PropertyGridProp
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
         {isLoading
           ? Array.from({ length: 6 }, (_, index) => <PropertyCardSkeleton key={index} />)
-          : properties.map((property) => <PropertyCard key={property._id} property={property} />)}
+          : visibleProperties.map((property) => <PropertyCard key={property._id} property={property} />)}
       </div>
+
+      {!isLoading && hasMore && (
+        <div className="mt-12 flex justify-center sm:mt-14 lg:mt-16">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((count) => count + LOAD_MORE_STEP)}
+            className="w-full max-w-xs border border-slate-900 px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-900 transition-all hover:bg-slate-900 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 sm:w-auto sm:text-xs"
+          >
+            {t('properties.load_more')}
+          </button>
+        </div>
+      )}
     </section>
   );
 };

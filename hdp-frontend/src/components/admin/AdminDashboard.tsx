@@ -15,11 +15,13 @@ import {
   Search,
   Trash2,
   Calendar,
-  Loader2
+  Loader2,
+  FileText
 } from 'lucide-react'; 
 import { AddPropertyModal } from './AddPropertyModal';
 import { AddServiceModal } from './AddServiceModal';
 import { ChangePasswordModal } from './ChangePasswordModal';
+import { InvoiceGeneratorModal } from './InvoiceGeneratorModal';
 import { ProgressiveImage } from '../common/ProgressiveImage';
 import { AdminInbox } from './AdminInbox';
 import type { Property } from '../../types/property';
@@ -56,6 +58,7 @@ export const AdminDashboard = () => {
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
@@ -292,7 +295,10 @@ export const AdminDashboard = () => {
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Vista General</p>
                 <h1 className="text-2xl sm:text-3xl font-display text-white italic">Panel de Control</h1>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
+                <button onClick={() => setIsInvoiceOpen(true)} className="flex items-center gap-2 bg-white/5 border border-white/10 text-white px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-white/10">
+                  <FileText size={14} /> Generar Factura
+                </button>
                 <button onClick={handleSyncAll} className="flex items-center gap-2 bg-white/5 border border-white/10 text-white px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-white/10">
                   <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} />
                   {isSyncing ? 'Sincronizando...' : 'Sincronizar'}
@@ -505,6 +511,7 @@ export const AdminDashboard = () => {
       <AddPropertyModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setSelectedProperty(null); }} onSuccess={() => fetchProperties()} propertyToEdit={selectedProperty} />
       <AddServiceModal isOpen={isServiceModalOpen} onClose={() => { setIsServiceModalOpen(false); setSelectedService(null); }} onSuccess={() => fetchServices()} serviceToEdit={selectedService} />
       <ChangePasswordModal isOpen={isChangePasswordOpen} onClose={() => setIsChangePasswordOpen(false)} />
+      <InvoiceGeneratorModal isOpen={isInvoiceOpen} onClose={() => setIsInvoiceOpen(false)} properties={properties} />
     </div>
   );
 };
