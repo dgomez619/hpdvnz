@@ -210,9 +210,9 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
   };
 
   return (
-    <div className="fixed inset-0 z-110 grid place-items-start overflow-y-auto bg-black/80 p-4 backdrop-blur-sm sm:place-items-center">
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="invoice-modal-title" tabIndex={-1} className="my-4 w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#111114]">
-        <div className="flex items-center justify-between border-b border-white/5 bg-white/5 p-5 sm:p-6">
+    <div className="fixed inset-0 z-110 grid place-items-center overflow-y-auto bg-black/80 p-2 backdrop-blur-sm sm:p-4">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="invoice-modal-title" tabIndex={-1} className="flex max-h-[calc(100dvh-1rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#111114] sm:max-h-[calc(100dvh-2rem)]">
+        <div className="flex shrink-0 items-center justify-between border-b border-white/5 bg-white/5 p-5 sm:p-6">
           <h2 id="invoice-modal-title" className="flex items-center gap-2 font-display text-xl italic text-white">
             <FileText size={20} /> Generar Factura
           </h2>
@@ -222,7 +222,7 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
         </div>
 
         {invoice ? (
-          <div className="space-y-6 p-5 sm:p-8">
+          <div className="flex-1 space-y-6 overflow-y-auto p-5 sm:p-8">
             <div className="rounded-xl border border-white/10 bg-[#1c1c1e] p-5">
               <p className={labelClass}>Aviso de pago listo</p>
               <p className="mt-2 text-sm text-white">{invoice.data.guestName}</p>
@@ -254,7 +254,7 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
             </button>
           </div>
         ) : (
-          <form onSubmit={handleGenerate} className="space-y-5 p-5 sm:p-8">
+          <form onSubmit={handleGenerate} className="flex-1 space-y-5 overflow-y-auto p-5 sm:p-8">
             <div className="space-y-2">
               <label htmlFor="inv-guest" className={labelClass}>Nombre del huésped</label>
               <input id="inv-guest" required value={guestName} onChange={(e) => setGuestName(e.target.value)} className={inputClass} />
