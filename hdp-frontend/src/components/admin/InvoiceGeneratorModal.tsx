@@ -24,6 +24,7 @@ interface GeneratedInvoice {
   fileName: string;
   data: InvoiceData;
   total: number;
+  balance: number;
 }
 
 const inputClass = 'w-full rounded-xl border-none bg-[#1c1c1e] p-4 text-sm text-white placeholder:text-slate-600 focus:ring-1 focus:ring-white/20';
@@ -47,6 +48,9 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
   const [adminFee, setAdminFee] = useState('');
   const [cleaningFee, setCleaningFee] = useState('');
   const [extras, setExtras] = useState<ExtraRow[]>([]);
+  const [prepayment, setPrepayment] = useState('');
+  const [prepaymentDate, setPrepaymentDate] = useState('');
+  const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [loading, setLoading] = useState(false);
@@ -68,7 +72,8 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
     adminFee: toAmount(adminFee),
     cleaningFee: toAmount(cleaningFee),
     extras: extras.map((extra) => ({ description: extra.description, amount: toAmount(extra.amount) })),
-  }), [checkIn, checkOut, rate, adminFee, cleaningFee, extras]);
+    prepayment: toAmount(prepayment),
+  }), [checkIn, checkOut, rate, adminFee, cleaningFee, extras, prepayment]);
 
   if (!isOpen) return null;
 
@@ -84,6 +89,9 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
     setAdminFee('');
     setCleaningFee('');
     setExtras([]);
+    setPrepayment('');
+    setPrepaymentDate('');
+    setNotes('');
     setError('');
     setNotice('');
     setInvoice(null);
@@ -122,6 +130,11 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
       return;
     }
 
+    if (liveTotals.prepayment > liveTotals.total) {
+      setError('El abono no puede ser mayor que el total.');
+      return;
+    }
+
     const data: InvoiceData = {
       guestName: guestName.trim(),
       propertyName: propertyName.trim(),
@@ -131,6 +144,9 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
       adminFee: toAmount(adminFee),
       cleaningFee: toAmount(cleaningFee),
       extras: filledExtras.map((extra) => ({ description: extra.description.trim(), amount: toAmount(extra.amount) })),
+      prepayment: toAmount(prepayment),
+      prepaymentDate: toAmount(prepayment) > 0 ? prepaymentDate : '',
+      notes: notes.trim(),
       issuedAt: new Date(),
     };
     const totals = calculateTotals(data);
@@ -149,6 +165,7 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
         fileName: buildInvoiceFileName(data.guestName),
         data,
         total: totals.total,
+        balance: totals.balance,
       });
     } catch (err) {
       console.error('Error generating invoice:', err);
@@ -170,8 +187,9 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
 
   const buildMessage = () => {
     if (!invoice) return '';
-    const { data, total } = invoice;
-    return `Hola ${data.guestName}, te enviamos el aviso de pago de tu estadía en ${data.propertyName} del ${formatInvoiceDate(data.checkIn)} al ${formatInvoiceDate(data.checkOut)}. Total a pagar: ${formatMoney(total)} USD.`;
+    const { data, balance } = invoice;
+    const label = data.prepayment > 0 ? 'Saldo a pagar' : 'Total a pagar';
+    return `Hola ${data.guestName}, te enviamos el recibo de pago de tu estadía en ${data.propertyName} del ${formatInvoiceDate(data.checkIn)} al ${formatInvoiceDate(data.checkOut)}. ${label}: ${formatMoney(balance)} USD.`;
   };
 
   const handleShare = async () => {
@@ -181,7 +199,7 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
 
     if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], title: 'Aviso de Pago', text: buildMessage() });
+        await navigator.share({ files: [file], title: 'Recibo de Pago', text: buildMessage() });
       } catch (err) {
         if ((err as DOMException).name !== 'AbortError') {
           console.error('Error sharing invoice:', err);
@@ -204,7 +222,7 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
 
   const handleEmail = () => {
     if (!invoice) return;
-    const subject = `Aviso de pago - ${invoice.data.propertyName}`;
+    const subject = `Recibo de pago - ${invoice.data.propertyName}`;
     window.location.href = `mailto:${guestEmail.trim()}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildMessage())}`;
     setNotice('El correo no adjunta archivos automáticamente: descarga el PDF y adjúntalo al mensaje.');
   };
@@ -224,10 +242,10 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
         {invoice ? (
           <div className="flex-1 space-y-6 overflow-y-auto p-5 sm:p-8">
             <div className="rounded-xl border border-white/10 bg-[#1c1c1e] p-5">
-              <p className={labelClass}>Aviso de pago listo</p>
+              <p className={labelClass}>Recibo de pago listo</p>
               <p className="mt-2 text-sm text-white">{invoice.data.guestName}</p>
               <p className="text-xs text-slate-400">{invoice.data.propertyName}</p>
-              <p className="mt-3 font-display text-3xl italic text-white">{formatMoney(invoice.total)} <span className="text-xs not-italic text-slate-500">USD</span></p>
+              <p className="mt-3 font-display text-3xl italic text-white">{formatMoney(invoice.balance)} <span className="text-xs not-italic text-slate-500">USD</span></p>
             </div>
 
             <iframe title="Vista previa del documento" src={invoice.url} className="hidden h-96 w-full rounded-xl border border-white/10 bg-white md:block" />
@@ -326,12 +344,31 @@ export const InvoiceGeneratorModal = ({ isOpen, onClose, properties }: InvoiceGe
               ))}
             </div>
 
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label htmlFor="inv-prepayment" className={labelClass}>Abono / pago a cuenta (USD)</label>
+                <input id="inv-prepayment" type="number" inputMode="decimal" min="0" step="0.01" placeholder="0.00" value={prepayment} onChange={(e) => setPrepayment(e.target.value)} className={inputClass} />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="inv-prepayment-date" className={labelClass}>Fecha del abono (opcional)</label>
+                <input id="inv-prepayment-date" type="date" value={prepaymentDate} onChange={(e) => setPrepaymentDate(e.target.value)} disabled={toAmount(prepayment) <= 0} className={`${inputClass} scheme-dark disabled:opacity-40`} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="inv-notes" className={labelClass}>Notas (opcional)</label>
+              <textarea id="inv-notes" rows={3} maxLength={300} value={notes} onChange={(e) => setNotes(e.target.value)} className={`${inputClass} resize-none`} />
+            </div>
+
             <div className="flex items-end justify-between gap-4 rounded-xl border border-white/10 bg-[#1c1c1e] p-5">
               <div>
-                <p className={labelClass}>Total a pagar</p>
-                <p className="mt-1 text-xs text-slate-500">{liveTotals.nights} {liveTotals.nights === 1 ? 'noche' : 'noches'}</p>
+                <p className={labelClass}>{liveTotals.prepayment > 0 ? 'Saldo a pagar' : 'Total a pagar'}</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {liveTotals.nights} {liveTotals.nights === 1 ? 'noche' : 'noches'}
+                  {liveTotals.prepayment > 0 ? ` · Total ${formatMoney(liveTotals.total)} − abono ${formatMoney(liveTotals.prepayment)}` : ''}
+                </p>
               </div>
-              <p className="font-display text-3xl italic text-white">{formatMoney(liveTotals.total)} <span className="text-xs not-italic text-slate-500">USD</span></p>
+              <p className="font-display text-3xl italic text-white">{formatMoney(liveTotals.balance)} <span className="text-xs not-italic text-slate-500">USD</span></p>
             </div>
 
             {error ? <p role="alert" className="text-xs font-medium text-red-500">{error}</p> : null}

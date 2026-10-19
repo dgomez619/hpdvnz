@@ -14,6 +14,8 @@ import {
     ChevronRight
 } from 'lucide-react';
 import 'react-day-picker/dist/style.css';
+import { AdminThemeToggle } from './AdminThemeToggle';
+import { useAdminTheme } from '../../utils/useAdminTheme';
 
 // 1. DEFINE STRICT TYPES
 interface BlockedDate {
@@ -34,6 +36,7 @@ interface PropertyData {
 export const PropertyCalendarPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { theme, toggleTheme, themeClass } = useAdminTheme();
 
     const [property, setProperty] = useState<PropertyData | null>(null);
     const [selectedRange, setSelectedRange] = useState<DateRange | undefined>();
@@ -137,7 +140,7 @@ export const PropertyCalendarPage = () => {
 };
 
     if (loading || !property) return (
-        <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-[#0a0a0b]">
+        <div className={`flex min-h-dvh flex-col items-center justify-center gap-4 bg-[#0a0a0b] ${themeClass}`}>
             <RefreshCw className="animate-spin text-white" size={32} />
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Cargando Calendario...</p>
         </div>
@@ -166,7 +169,7 @@ export const PropertyCalendarPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0a0a0b] p-4 text-slate-300 xl:p-10">
+        <div className={`min-h-screen bg-[#0a0a0b] p-4 text-slate-300 xl:p-10 ${themeClass}`}>
             <div className="max-w-6xl mx-auto mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center gap-4">
                     <button onClick={() => navigate(-1)} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-all text-white">
@@ -177,14 +180,17 @@ export const PropertyCalendarPage = () => {
                         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Panel de Disponibilidad</p>
                     </div>
                 </div>
-                <button 
-                    onClick={fetchData} 
-                    disabled={actionLoading}
-                    className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase hover:bg-white/10 transition-all text-white disabled:opacity-50"
-                >
-                    <RefreshCw size={14} className={actionLoading ? "animate-spin" : ""} /> 
-                    Sincronizar Ahora
-                </button>
+                <div className="flex items-center gap-3">
+                    <AdminThemeToggle theme={theme} onToggle={toggleTheme} />
+                    <button 
+                        onClick={fetchData} 
+                        disabled={actionLoading}
+                        className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase hover:bg-white/10 transition-all text-white disabled:opacity-50"
+                    >
+                        <RefreshCw size={14} className={actionLoading ? "animate-spin" : ""} /> 
+                        Sincronizar Ahora
+                    </button>
+                </div>
             </div>
 
             <div className="max-w-6xl mx-auto grid grid-cols-1 gap-8 xl:grid-cols-12">

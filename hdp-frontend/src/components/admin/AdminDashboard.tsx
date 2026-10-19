@@ -21,6 +21,8 @@ import {
 import { AddPropertyModal } from './AddPropertyModal';
 import { AddServiceModal } from './AddServiceModal';
 import { ChangePasswordModal } from './ChangePasswordModal';
+import { AdminThemeToggle } from './AdminThemeToggle';
+import { useAdminTheme } from '../../utils/useAdminTheme';
 import { InvoiceGeneratorModal } from './InvoiceGeneratorModal';
 import { ProgressiveImage } from '../common/ProgressiveImage';
 import { AdminInbox } from './AdminInbox';
@@ -42,6 +44,7 @@ interface Service {
 export const AdminDashboard = () => {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
+  const { theme, toggleTheme, themeClass } = useAdminTheme();
   
   const [properties, setProperties] = useState<Property[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -246,7 +249,7 @@ export const AdminDashboard = () => {
   const isReorderDisabled = searchTerm.trim().length > 0 || isSavingOrder;
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a0b] text-slate-300">
+    <div className={`flex min-h-screen bg-[#0a0a0b] text-slate-300 ${themeClass}`}>
       {/* SIDEBAR */}
       <aside className="sticky top-0 hidden h-dvh w-64 flex-col border-r border-white/5 bg-[#111114] xl:flex">
         <div className="p-8">
@@ -271,6 +274,9 @@ export const AdminDashboard = () => {
 
       {/* MAIN CONTENT */}
       <main className="min-w-0 flex-1 overflow-x-clip p-4 sm:p-6 xl:p-8">
+        <div className="mb-4 flex justify-end">
+          <AdminThemeToggle theme={theme} onToggle={toggleTheme} />
+        </div>
         <nav aria-label="Admin sections" className="mb-6 flex flex-wrap gap-2 xl:hidden">
           <button type="button" onClick={() => setActiveTab('dashboard')} className={`min-h-11 rounded-xl px-4 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'dashboard' ? 'bg-white text-black' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}>
             Dashboard

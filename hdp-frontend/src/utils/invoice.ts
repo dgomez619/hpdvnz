@@ -15,6 +15,9 @@ export interface InvoiceData {
   adminFee: number;
   cleaningFee: number;
   extras: InvoiceExtra[];
+  prepayment: number;
+  prepaymentDate: string; // yyyy-MM-dd, optional
+  notes: string;
   issuedAt: Date;
 }
 
@@ -22,6 +25,8 @@ export interface InvoiceTotals {
   nights: number;
   lodging: number;
   total: number;
+  prepayment: number;
+  balance: number;
 }
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
@@ -33,11 +38,12 @@ export const getNights = (checkIn: string, checkOut: string) => {
   return Math.max(0, differenceInCalendarDays(end, start));
 };
 
-export const calculateTotals = (data: Pick<InvoiceData, 'checkIn' | 'checkOut' | 'ratePerNight' | 'adminFee' | 'cleaningFee' | 'extras'>): InvoiceTotals => {
+export const calculateTotals = (data: Pick<InvoiceData, 'checkIn' | 'checkOut' | 'ratePerNight' | 'adminFee' | 'cleaningFee' | 'extras' | 'prepayment'>): InvoiceTotals => {
   const nights = getNights(data.checkIn, data.checkOut);
   const lodging = round2(nights * data.ratePerNight);
   const extrasTotal = data.extras.reduce((sum, extra) => sum + extra.amount, 0);
-  return { nights, lodging, total: round2(lodging + data.adminFee + data.cleaningFee + extrasTotal) };
+  const total = round2(lodging + data.adminFee + data.cleaningFee + extrasTotal);
+  return { nights, lodging, total, prepayment: data.prepayment, balance: round2(total - data.prepayment) };
 };
 
 const moneyFormatter = new Intl.NumberFormat('es-VE', {
@@ -60,5 +66,5 @@ export const buildInvoiceFileName = (guestName: string) => {
     .replace(/[^a-zA-Z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .toLowerCase();
-  return `aviso-de-pago-${slug || 'huesped'}.pdf`;
+  return `recibo-de-pago-${slug || 'huesped'}.pdf`;
 };

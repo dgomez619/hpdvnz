@@ -1,0 +1,75 @@
+/*
+ * Light theme for the admin area.
+ * The admin UI is written with dark-theme utilities (text-white, bg-white/5, bg-[#111114]...).
+ * Inside .admin-light the palette variables those utilities read are remapped, so no component
+ * needs duplicated light classes: "white" becomes the ink color and "black" becomes the paper color.
+ */
+.admin-light {
+  color-scheme: light;
+
+  --color-white: #0f172a;
+  --color-black: #ffffff;
+
+  --color-slate-200: #334155;
+  --color-slate-300: #334155;
+  --color-slate-400: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-600: #94a3b8;
+
+  /* Pastel accent text is tuned for dark backgrounds; use deeper shades for contrast */
+  --color-emerald-300: #047857;
+  --color-amber-300: #b45309;
+  --color-amber-400: #b45309;
+  --color-red-300: #b91c1c;
+  --color-red-400: #dc2626;
+  --color-rose-300: #be123c;
+  --color-sky-200: #0369a1;
+  --color-cyan-200: #0e7490;
+  --color-fuchsia-200: #a21caf;
+}
+
+/* Surfaces written as hard-coded hex values */
+.admin-light.bg-\[\#0a0a0b\] { background-color: #f1f5f9; }
+.admin-light .bg-\[\#111114\] { background-color: #ffffff; }
+.admin-light .bg-\[\#161618\] { background-color: #ffffff; }
+.admin-light .bg-\[\#1c1c1e\] { background-color: #f1f5f9; }
+
+/* Hairlines need a little more weight on a light background */
+.admin-light .border-white\/5 { border-color: rgb(15 23 42 / 0.09); }
+.admin-light .border-white\/10 { border-color: rgb(15 23 42 / 0.14); }
+.admin-light .divide-white\/5 > :not(:last-child) { border-color: rgb(15 23 42 / 0.09); }
+
+/* Modal scrims: keep a dim backdrop instead of a white wash */
+.admin-light .bg-black\/80,
+.admin-light .bg-black\/90 { background-color: rgb(15 23 42 / 0.55); }
+
+/* Text that sits on a saturated background must stay white */
+.admin-light .bg-red-600.text-white { color: #ffffff; }
+.admin-light .bg-green-500 { --color-white: #ffffff; }
+
+.admin-light .scheme-dark { color-scheme: light; }
+
+/* Calendar (react-day-picker) */
+.admin-light .rdp {
+  --rdp-accent-color: #0f172a;
+  --rdp-background-color: #f1f5f9;
+}
+.admin-light .rdp-caption_label { color: #0f172a; }
+.admin-light .rdp-head_cell { color: #64748b; }
+.admin-light .rdp-day:hover:not(.rdp-day_selected) {
+  background-color: rgb(15 23 42 / 0.06) !important;
+  color: #0f172a;
+}
+.admin-light .rdp-day_selected {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+.admin-light .rdp-nav_button {
+  background-color: rgb(15 23 42 / 0.04);
+  border-color: rgb(15 23 42 / 0.12);
+  color: #475569;
+}
+.admin-light .rdp-nav_button:hover {
+  background-color: rgb(15 23 42 / 0.1);
+  color: #0f172a;
+}
