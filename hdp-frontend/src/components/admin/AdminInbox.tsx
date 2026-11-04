@@ -6,6 +6,7 @@ interface BookingProperty {
   title_es?: string;
   title_en?: string;
   images?: string[];
+  slug?: string;
 }
 
 type BookingStatus = 'pending' | 'approved' | 'denied' | 'cancelled';
@@ -53,9 +54,13 @@ const getPropertyTitle = (property: BookingProperty | string) => {
   return property.title_es || property.title_en || 'Propiedad sin título';
 };
 
-const getPropertyId = (property: BookingProperty | string) => {
+// Prefers the current slug for public-facing links; falls back to the raw
+// ObjectId only if a property couldn't be populated with its slug (e.g. an
+// older cached payload) — the backend resolver still accepts either.
+const getPropertyLinkId = (property: BookingProperty | string) => {
   if (!property) return null;
-  return typeof property === 'string' ? property : property._id;
+  if (typeof property === 'string') return property;
+  return property.slug || property._id;
 };
 
 const formatDate = (value: string) => {
@@ -156,7 +161,7 @@ export const AdminInbox = () => {
         <div className="grid auto-rows-[minmax(280px,auto)] grid-cols-1 gap-5 xl:grid-cols-6">
           {requests.map((req, index) => {
             const propertyTitle = getPropertyTitle(req.propertyId);
-            const propertyId = getPropertyId(req.propertyId);
+            const propertyLinkId = getPropertyLinkId(req.propertyId);
             const cardSpan = index % 3 === 0 ? 'xl:col-span-3' : 'xl:col-span-3';
 
             return (
@@ -175,9 +180,9 @@ export const AdminInbox = () => {
                       </p>
                       <div>
                         <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-slate-500">Propiedad</p>
-                        {propertyId ? (
+                        {propertyLinkId ? (
                           <a
-                            href={`/property/${propertyId}`}
+                            href={`/property/${propertyLinkId}`}
                             target="_blank"
                             rel="noreferrer"
                             className="mt-2 inline-flex text-2xl font-semibold text-white underline decoration-slate-500/60 decoration-1 underline-offset-6 transition-colors hover:text-sky-200 hover:decoration-sky-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
@@ -187,9 +192,9 @@ export const AdminInbox = () => {
                         ) : (
                           <h3 className="mt-2 text-2xl font-semibold text-white">{propertyTitle}</h3>
                         )}
-                        {propertyId ? (
+                        {propertyLinkId ? (
                           <a
-                            href={`/property/${propertyId}`}
+                            href={`/property/${propertyLinkId}`}
                             target="_blank"
                             rel="noreferrer"
                             className="mt-4 inline-flex rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-sky-200 transition-colors hover:bg-sky-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"

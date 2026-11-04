@@ -90,7 +90,7 @@ const AppContent = () => {
         <Route path="/catalog" element={<PropertyCatalog properties={realProperties} isLoading={loading} />} />
         <Route path="/services" element={<AdditionalServices />} />
         <Route path="/about" element={<AboutUs />} />
-        <Route path="/property/:id" element={<PropertyDetailWrapper />} />
+        <Route path="/property/:slug" element={<PropertyDetailWrapper />} />
 
         {/* ADMIN ROUTES */}
         <Route path="/admin/login" element={<AdminLogin />} />

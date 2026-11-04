@@ -38,7 +38,9 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
   const [bookingDates, setBookingDates] = useState({
     startDate: initialBookingDates?.startDate || '',
     endDate: initialBookingDates?.endDate || '',
-    guests: initialBookingDates?.guests || 1,
+    // Clamp so a stale/out-of-range value (e.g. from a `?guests=` URL param) can never
+    // exceed this property's maxCapacity, even before the user touches the selector.
+    guests: Math.min(Math.max(initialBookingDates?.guests || 1, 1), property.maxCapacity),
   });
   const [bookingValidationError, setBookingValidationError] = useState('');
   const [availabilityStatus, setAvailabilityStatus] = useState<'available' | 'mayBeUnavailable' | null>(null);
@@ -51,7 +53,7 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
   const displayTitle = property.title_en && property.title_es
     ? (i18n.language === 'en' ? property.title_en : property.title_es)
     : property.title_es || property.title_en || ' ';
-  const shareUrl = `${apiBase}/share/property/${property._id}`;
+  const shareUrl = `${apiBase}/share/property/${property.slug}`;
 
   // --- HANDLERS: Gallery ---
   const openModal = (index: number) => {
@@ -74,7 +76,7 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
   };
 
   const handleOpenBookingModal = () => {
-    const { startDate, endDate } = bookingDates;
+    const { startDate, endDate, guests } = bookingDates;
     if (!startDate || !endDate) {
       setBookingValidationError(t('detail.available_dates'));
       return;
@@ -84,6 +86,14 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
     const end = new Date(endDate);
     if (end <= start) {
       setBookingValidationError(t('search.check_out'));
+      return;
+    }
+
+    // Defensive guard: even if the guest count somehow exceeds maxCapacity
+    // (e.g. a stale value from before the property's capacity was lowered),
+    // block opening the modal instead of letting it reach the booking request.
+    if (guests > property.maxCapacity) {
+      setBookingValidationError(t('booking.guests_exceed_capacity', { count: property.maxCapacity }));
       return;
     }
 
@@ -218,7 +228,10 @@ export const PropertyDetail = ({ property, initialBookingDates }: PropertyDetail
               setAvailabilityStatus(null);
               setBookingDates((prev) => ({ ...prev, endDate: value }));
             }}
-            onGuestsChange={(value) => setBookingDates((prev) => ({ ...prev, guests: value }))}
+            onGuestsChange={(value) => setBookingDates((prev) => ({
+              ...prev,
+              guests: Math.min(Math.max(value, 1), property.maxCapacity),
+            }))}
             onCheckAvailability={handleCheckAvailability}
             onReserveClick={handleOpenBookingModal}
             validationError={bookingValidationError}

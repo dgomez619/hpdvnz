@@ -95,7 +95,7 @@ export const BookingWidget = ({
                         onChange={(e) => onGuestsChange(Number(e.target.value))}
                         className="w-full text-sm bg-transparent outline-none"
                     >
-                        {[1, 2, 3, 4, 5, 6].map((count) => (
+                        {Array.from({ length: property.maxCapacity }, (_, i) => i + 1).map((count) => (
                             <option key={count} value={count}>
                                 {count} {count === 1 ? t('search.guest') : t('search.guests_plural')}
                             </option>
@@ -103,6 +103,10 @@ export const BookingWidget = ({
                     </select>
                 </div>
             </div>
+
+            <p className="mb-4 text-xs font-light text-slate-400">
+                {t('booking.max_guests_hint', { count: property.maxCapacity })}
+            </p>
 
             {validationError ? (
                 <p className="mb-4 text-xs font-medium text-red-500">{validationError}</p>

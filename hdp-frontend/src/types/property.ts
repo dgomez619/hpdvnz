@@ -2,6 +2,13 @@
 
 export interface Property {
   _id: string;
+  // Public-facing, SEO-friendly identifier. Always present (required at the
+  // database level). Use this — not _id — for any public-facing URL.
+  slug: string;
+  // Every slug this property has ever had (current one included, as the
+  // last entry). Optional on the client since older cached payloads or
+  // partial fetches may omit it.
+  slugHistory?: string[];
   // Localized Strings
   title_es: string;
   title_en: string;
@@ -14,6 +21,7 @@ export interface Property {
   pricePerNight: number;
   beds: number;
   baths: number;
+  maxCapacity: number;
   
   // The Base Unit
   sqm: number; 

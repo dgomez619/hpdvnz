@@ -14,12 +14,19 @@ interface PropertyFormData {
     pricePerNight: string | number;
     beds: string | number;
     baths: string | number;
+    maxCapacity: string | number;
     sqm: string | number;  // Ensure this is sqm now
     category_es: string;   // Added
     category_en: string;   // Added
     amenities: string[];
     images: string[];
     externalSyncLinks: { platform: string; url: string; _id?: string }[];
+    // Public-facing URL slug. Left blank on create lets the backend derive
+    // it from title_es automatically. When editing, this is pre-filled with
+    // the property's CURRENT slug and is only changed on the backend if the
+    // admin actually edits this field — leaving it untouched never
+    // regenerates or alters the existing slug.
+    slug: string;
 }
 
 interface ModalProps {
@@ -48,12 +55,14 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
         pricePerNight: '',
         beds: '',
         baths: '',
+        maxCapacity: 5,
         category_es: 'Apartamento',
         category_en: 'Apartment',
         amenities: [],
         images: [],
         externalSyncLinks: [],
-        sqm: ''
+        sqm: '',
+        slug: ''
     });
 
     const [newSyncLink, setNewSyncLink] = useState({ platform: 'Airbnb', url: '' });
@@ -72,18 +81,25 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                     pricePerNight: propertyToEdit.pricePerNight,
                     beds: propertyToEdit.beds,
                     baths: propertyToEdit.baths,
+                    // Fall back to the default for properties saved before maxCapacity existed
+                    maxCapacity: propertyToEdit.maxCapacity ?? 5,
                     amenities: propertyToEdit.amenities || [],
                     images: propertyToEdit.images || [],
                     externalSyncLinks: propertyToEdit.externalSyncLinks || [],
                     category_es: propertyToEdit.category_es || 'Apartamento',
                     category_en: propertyToEdit.category_en || 'Apartment',
-                    sqm: propertyToEdit.sqm || ''
+                    sqm: propertyToEdit.sqm || '',
+                    // Pre-filled with the CURRENT slug; resubmitting it
+                    // unchanged is a safe no-op on the backend (it only
+                    // treats this as a rename if the value actually differs).
+                    slug: propertyToEdit.slug || ''
                 });
             } else {
                 setFormData({
                     title_es: '', title_en: '', location: '', description_es: '', description_en: '',
-                    pricePerNight: '', beds: '', baths: '', amenities: [],
-                    images: [], externalSyncLinks: [], category_es: 'Apartamento', category_en: 'Apartment', sqm: ''
+                    pricePerNight: '', beds: '', baths: '', maxCapacity: 5, amenities: [],
+                    images: [], externalSyncLinks: [], category_es: 'Apartamento', category_en: 'Apartment', sqm: '',
+                    slug: ''
                 });
             }
         }
@@ -177,7 +193,11 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                     pricePerNight: parseFloat(formData.pricePerNight.toString()) || 0,
                     beds: parseInt(formData.beds.toString(), 10) || 0,
                     baths: parseInt(formData.baths.toString(), 10) || 0,
-                    sqm: parseFloat(formData.sqm.toString()) || 0
+                    maxCapacity: Math.max(1, parseInt(formData.maxCapacity.toString(), 10) || 5),
+                    sqm: parseFloat(formData.sqm.toString()) || 0,
+                    // Trimmed only; the backend normalizes (lowercase, hyphenation,
+                    // accent stripping) and auto-generates one from title_es if blank.
+                    slug: formData.slug.trim()
                 }),
             });
 
@@ -300,6 +320,25 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                         />
                     </div>
 
+                    {/* --- SLUG (Public URL) --- */}
+                    <div className="space-y-2 md:col-span-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-sans">
+                            Slug (URL Pública)
+                        </label>
+                        <input
+                            value={formData.slug}
+                            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                            className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20"
+                            placeholder="Se genera automáticamente a partir del título si se deja en blanco"
+                        />
+                        <p className="text-[10px] text-slate-500">
+                            {propertyToEdit
+                                ? 'Cambiar este valor renombra la URL pública. El enlace anterior seguirá funcionando automáticamente.'
+                                : 'Déjalo en blanco para generarlo automáticamente a partir del título en español.'}
+                        </p>
+                    </div>
+
                     <div className="space-y-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Precio / Noche</label>
                         <input required type="number" value={formData.pricePerNight} onChange={(e) => setFormData({ ...formData, pricePerNight: e.target.value })} className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20" />
@@ -313,6 +352,11 @@ export const AddPropertyModal = ({ isOpen, onClose, onSuccess, propertyToEdit }:
                     <div className="space-y-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Baños</label>
                         <input required type="number" value={formData.baths} onChange={(e) => setFormData({ ...formData, baths: e.target.value })} className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20" />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Capacidad Máxima (Huéspedes)</label>
+                        <input required type="number" min={1} step={1} value={formData.maxCapacity} onChange={(e) => setFormData({ ...formData, maxCapacity: e.target.value })} className="w-full bg-[#1c1c1e] rounded-xl p-4 text-white text-sm outline-none focus:ring-1 focus:ring-white/20" placeholder="Ej: 5" />
                     </div>
 
                     <div className="space-y-2 md:col-span-2">

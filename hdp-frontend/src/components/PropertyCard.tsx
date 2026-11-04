@@ -30,7 +30,7 @@ export const PropertyCard = ({ property, searchParams }: PropertyCardProps) => {
 
   return (
     <Link
-      to={{ pathname: `/property/${property._id}`, search: searchParams?.toString() ? `?${searchParams.toString()}` : '' }}
+      to={{ pathname: `/property/${property.slug}`, search: searchParams?.toString() ? `?${searchParams.toString()}` : '' }}
       className="group cursor-pointer block"
     >
       {/* Image Container */}

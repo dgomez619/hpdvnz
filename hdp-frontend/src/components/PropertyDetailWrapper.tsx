@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { PropertyDetail } from './propertyDetail/PropertyDetail';
 import type { Property } from '../types/property';
 
@@ -25,8 +25,9 @@ const PropertyDetailSkeleton = () => (
 
 
 export const PropertyDetailWrapper = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   
   // 1. ADD THIS: Define the API base URL
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
@@ -39,15 +40,27 @@ export const PropertyDetailWrapper = () => {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        // 2. UPDATE THIS: Use the backticks with the API_BASE variable
-        const response = await fetch(`${API_BASE}/api/properties/${id}`);
+        // The backend resolves `slug` whether it's the current slug, a
+        // historical (renamed) slug, or a legacy MongoDB ObjectId.
+        const response = await fetch(`${API_BASE}/api/properties/${slug}`);
         
         if (!response.ok) {
           throw new Error('Property not found');
         }
 
-        const data = await response.json();
+        const data: Property = await response.json();
         setProperty(data);
+
+        // Self-heal: if the URL used a legacy ObjectId or an old/renamed
+        // slug, silently upgrade the address bar to the canonical current
+        // slug. `replace: true` swaps the current history entry instead of
+        // pushing a new one, so back-navigation isn't affected and no
+        // unnecessary entry is added. The existing query string (dates,
+        // guests) is preserved.
+        if (data.slug && data.slug !== slug) {
+          const search = searchParams.toString();
+          navigate(`/property/${data.slug}${search ? `?${search}` : ''}`, { replace: true });
+        }
       } catch (err) {
         console.error("Error fetching property detail:", err);
         setError(true);
@@ -56,8 +69,8 @@ export const PropertyDetailWrapper = () => {
       }
     };
 
-    if (id) fetchProperty();
-  }, [id, API_BASE]); // Added API_BASE to dependency array for safety
+    if (slug) fetchProperty();
+  }, [slug, API_BASE, navigate, searchParams]); // Added API_BASE to dependency array for safety
 
   // 1. LOADING STATE
   if (loading) {
