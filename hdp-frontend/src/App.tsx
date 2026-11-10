@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'; // 1. Add these imports
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'; // 1. Add these imports
 
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
@@ -9,11 +9,18 @@ import { PropertyCatalog } from './components/PropertyCatalog';
 import { AdditionalServices } from './components/AdditionalServices';
 import { ScrollToTop } from './components/ScrollToTop';
 import { AboutUs } from './components/AboutUs';
-import { AdminLogin } from './components/admin/AdminLogin';
-import { AdminDashboard } from './components/admin/AdminDashboard';
-import { PropertyCalendarPage } from './components/admin/PropertyCalendarPage';
 import { ProtectedRoute } from './components/admin/ProtectedRoute';
 import { WelcomeModal } from './components/WelcomeModal';
+
+const AdminLogin = lazy(() =>
+  import('./components/admin/AdminLogin').then((m) => ({ default: m.AdminLogin }))
+);
+const AdminDashboard = lazy(() =>
+  import('./components/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
+);
+const PropertyCalendarPage = lazy(() =>
+  import('./components/admin/PropertyCalendarPage').then((m) => ({ default: m.PropertyCalendarPage }))
+);
 
 const WELCOME_MODAL_STORAGE_KEY = 'hpd-welcome-modal-seen';
 
@@ -93,12 +100,33 @@ const AppContent = () => {
         <Route path="/property/:slug" element={<PropertyDetailWrapper />} />
 
         {/* ADMIN ROUTES */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/login"
+          element={
+            <Suspense fallback={<div className="min-h-screen bg-slate-950" />}>
+              <AdminLogin />
+            </Suspense>
+          }
+        />
 
         {/* Protected admin routes */}
-     <Route element={<ProtectedRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/calendar/:id" element={<PropertyCalendarPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/admin/dashboard"
+            element={
+              <Suspense fallback={<div className="min-h-screen bg-slate-950" />}>
+                <AdminDashboard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/admin/calendar/:id"
+            element={
+              <Suspense fallback={<div className="min-h-screen bg-slate-950" />}>
+                <PropertyCalendarPage />
+              </Suspense>
+            }
+          />
         </Route>
 
       </Routes>

@@ -1,0 +1,34 @@
+/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+/logo.png
+  Content-Type: image/png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/favicon.svg
+  Content-Type: image/svg+xml
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/favicon.ico
+  Content-Type: image/x-icon
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/favicon-32x32.png
+  Content-Type: image/png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/favicon-96x96.png
+  Content-Type: image/png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/apple-touch-icon.png
+  Content-Type: image/png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/site.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+  Cache-Control: public, max-age=86400
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
